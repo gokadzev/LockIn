@@ -1,0 +1,9 @@
+<i>LockIn</i> is an app for your Productivity. Its features include:
+
+* Habit Tracking: Create, organize, and complete habits with streaks and categories.
+* XP & Level System: Earn XP for completing habits and tasks, unlock new levels, and stay motivated.
+* Advanced Statistics: Visualize your progress with streaks, focus clusters, accuracy, fatigue, and more.
+* Productivity Dashboard: See your daily, weekly, and monthly stats at a glance.
+* Custom Categories: Group habits and tasks for better organization.
+* Engagement Notifications: Smart reminders to keep you on track.
+* Cross-Device Support: Works great on phones and tablets.

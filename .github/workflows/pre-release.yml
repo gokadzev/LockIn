@@ -1,0 +1,61 @@
+on: workflow_dispatch
+
+name: Test, Build and Pre-release apk
+
+env:
+  PROPERTIES_PATH: './android/key.properties'
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup Java environment in order to build the Android app.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17.x'
+
+      # Gradle cache for faster builds
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # Setup the flutter environment.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      # Write key properties
+      - run: |
+          echo keyPassword=${{ secrets.KEY_STORE }} > ${{ env.PROPERTIES_PATH }}
+          echo storePassword=${{ secrets.KEY_PASSWORD }} >> ${{ env.PROPERTIES_PATH }}
+          echo keyAlias=${{ secrets.KEY_ALIAS }} >> ${{ env.PROPERTIES_PATH }}
+
+      # Decode keystore
+      - run: echo "${{ secrets.KEYSTORE2 }}" | base64 --decode > android/app/key.jks
+
+      # Get flutter dependencies.
+      - run: flutter pub get
+
+      # Build universal apk.
+      - run: flutter build apk --release
+
+      # Upload release
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_name: gokadzev/LockIn
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/app/outputs/flutter-apk/app-release.apk
+          asset_name: LockIn.apk
+          tag: ${{ github.ref }}
+          prerelease: true
+          overwrite: true
+          body: "**New LockIn Pre-Release!**"

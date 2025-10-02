@@ -9,7 +9,9 @@ import 'package:lockin/core/utils/box_crud_mixin.dart';
 final goalsBoxProvider = Provider<Box<Goal>?>((ref) {
   try {
     return Hive.isBoxOpen('goals') ? Hive.box<Goal>('goals') : null;
-  } catch (e) {
+  } catch (e, stackTrace) {
+    debugPrint('Error accessing goals box: $e');
+    debugPrint('StackTrace: $stackTrace');
     return null;
   }
 });
@@ -50,25 +52,32 @@ class GoalsNotifier extends StateNotifier<List<Goal>> with BoxCrudMixin<Goal> {
   ) {
     if (box == null) return;
     if (index < 0 || index >= box!.length) return;
-    final prevGoal = box!.getAt(index);
 
-    // Calculate XP delta BEFORE mutating storage/state
-    final prevCompleted =
-        prevGoal?.milestones.where((m) => m.completed).length ?? 0;
-    final newCompleted = goal.milestones.where((m) => m.completed).length;
-    final xpDelta =
-        (newCompleted - prevCompleted) * AppValues.milestoneCompletionXP;
+    try {
+      final prevGoal = box!.getAt(index);
 
-    // Recalculate progress only if there are milestones; for milestone-less
-    // goals we preserve manually set progress (e.g., marking finished sets 1.0)
-    if (goal.milestones.isNotEmpty) {
-      goal.progress = goal.milestoneProgress;
-    }
-    updateItem(index, goal);
+      // Calculate XP delta BEFORE mutating storage/state
+      final prevCompleted =
+          prevGoal?.milestones.where((m) => m.completed).length ?? 0;
+      final newCompleted = goal.milestones.where((m) => m.completed).length;
+      final xpDelta =
+          (newCompleted - prevCompleted) * AppValues.milestoneCompletionXP;
 
-    // Award or remove XP if milestone completion status changed.
-    if (xpDelta != 0) {
-      onXPChange?.call(xpDelta);
+      // Recalculate progress only if there are milestones; for milestone-less
+      // goals we preserve manually set progress (e.g., marking finished sets 1.0)
+      if (goal.milestones.isNotEmpty) {
+        goal.progress = goal.milestoneProgress;
+      }
+
+      updateItem(index, goal);
+
+      // Award or remove XP if milestone completion status changed.
+      if (xpDelta != 0) {
+        onXPChange?.call(xpDelta);
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Error updating goal at index $index: $e');
+      debugPrint('StackTrace: $stackTrace');
     }
   }
 
@@ -82,20 +91,22 @@ class GoalsNotifier extends StateNotifier<List<Goal>> with BoxCrudMixin<Goal> {
     void Function(int xpChange)? onXPChange,
   ) {
     if (box == null) return;
-    final keys = box!.keys.toList();
-    final index = keys.indexOf(key);
-    if (index == -1) return;
-    updateGoal(index, goal, onXPChange);
+    try {
+      final keys = box!.keys.toList();
+      final index = keys.indexOf(key);
+      if (index == -1) {
+        debugPrint('Goal key $key not found');
+        return;
+      }
+      updateGoal(index, goal, onXPChange);
+    } catch (e, stackTrace) {
+      debugPrint('Error updating goal by key: $e');
+      debugPrint('StackTrace: $stackTrace');
+    }
   }
 
-  /// Delete goal by Hive [key] instead of index.
-  void deleteGoalByKey(dynamic key) {
-    if (box == null) return;
-    final keys = box!.keys.toList();
-    final index = keys.indexOf(key);
-    if (index == -1) return;
-    deleteGoal(index);
-  }
+  /// Delete goal by Hive [key] instead of index - delegates to mixin.
+  void deleteGoalByKey(dynamic key) => deleteItemByKey(key);
 
   @override
   void dispose() {

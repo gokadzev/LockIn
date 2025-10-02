@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
 import 'package:lockin/features/dashboard/dashboard_home.dart';
@@ -43,7 +44,7 @@ class MainNavigationState extends State<MainNavigation> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isTablet = constraints.maxWidth >= 600;
+        final isTablet = constraints.maxWidth >= UIConstants.tabletBreakpoint;
         if (isTablet) {
           // Tablet layout
           return Row(
@@ -52,8 +53,10 @@ class MainNavigationState extends State<MainNavigation> {
                 selectedIndex: _selectedIndex,
                 onDestinationSelected: (index) =>
                     setState(() => _selectedIndex = index),
-                extended: constraints.maxWidth > 900,
-                labelType: constraints.maxWidth > 900
+                extended:
+                    constraints.maxWidth > UIConstants.extendedNavBreakpoint,
+                labelType:
+                    constraints.maxWidth > UIConstants.extendedNavBreakpoint
                     ? NavigationRailLabelType.none
                     : NavigationRailLabelType.all,
                 destinations: [
@@ -76,7 +79,9 @@ class MainNavigationState extends State<MainNavigation> {
                     children: [
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: UIConstants.extraLargeSpacing,
+                          ),
                           child: _pages[_selectedIndex],
                         ),
                       ),

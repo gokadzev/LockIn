@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/constants/app_constants.dart';
+import 'package:lockin/constants/gamification_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
@@ -12,11 +13,13 @@ import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
 import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/average_mood_card.dart';
+import 'package:lockin/widgets/encouragement_card.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 import 'package:lockin/widgets/lockin_dashboard_card.dart';
 import 'package:lockin/widgets/main_navigation.dart';
-import 'package:lockin/widgets/stat_tile.dart';
+import 'package:lockin/widgets/quick_stats_card.dart';
+import 'package:lockin/widgets/weekly_overview_chart.dart';
 import 'package:lockin/widgets/xp_dashboard_card.dart';
 
 class DashboardHome extends ConsumerWidget {
@@ -29,41 +32,6 @@ class DashboardHome extends ConsumerWidget {
     final xpState = ref.watch(xpNotifierProvider);
     final xpProfile = xpState.asData?.value.profile;
     final userLevel = xpProfile?.level ?? 0;
-    final streak = stats.streak;
-
-    String encouragement;
-    if (userLevel >= 15) {
-      encouragement =
-          "Legendary! You're setting new standards. Level $userLevel achieved!";
-    } else if (userLevel >= 12) {
-      encouragement =
-          'Incredible! Your growth is unstoppable. Level $userLevel unlocked.';
-    } else if (userLevel >= 10) {
-      encouragement = "You're a productivity master! Keep inspiring others.";
-    } else if (streak >= 30) {
-      encouragement = '30-day streak! Your consistency is remarkable.';
-    } else if (streak >= 14) {
-      encouragement =
-          'Two weeks strong! $streak days in a row. Amazing dedication!';
-    } else if (userLevel >= 8) {
-      encouragement = "Level $userLevel! You're making serious progress.";
-    } else if (stats.tasksDone >= 100) {
-      encouragement = '100+ tasks completed! Outstanding achievement.';
-    } else if (stats.habitsCompleted >= 50) {
-      encouragement = '50+ habits completed! Your routines are solidifying.';
-    } else if (userLevel >= 5) {
-      encouragement =
-          'Amazing! Your dedication is paying off. Level $userLevel unlocked.';
-    } else if (streak >= 7) {
-      encouragement =
-          'Great streak! $streak days in a row. Your dedication is inspiring!';
-    } else if (userLevel > 1) {
-      encouragement = 'Level $userLevel reached! Every step counts.';
-    } else if (stats.tasksDone > 0 || stats.habitsCompleted > 0) {
-      encouragement = 'Nice start! Keep building your momentum.';
-    } else {
-      encouragement = 'Welcome! Start your journey and level up your life.';
-    }
 
     return Scaffold(
       appBar: const LockinAppBar(title: 'Dashboard'),
@@ -72,24 +40,7 @@ class DashboardHome extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            LockinCard(
-              child: Row(
-                children: [
-                  const Icon(Icons.emoji_events, color: Colors.white, size: 32),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      encouragement,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            EncouragementCard(stats: stats, userLevel: userLevel),
             // Average Mood Card
             const AverageMoodCard(),
             LockinDashboardCard(
@@ -102,158 +53,13 @@ class DashboardHome extends ConsumerWidget {
                 },
               ),
             ),
-            if (userLevel >= 8 && _buildStats(statsFull).isNotEmpty)
+            if (userLevel >= GamificationConstants.advancedLevel &&
+                _buildStats(statsFull).isNotEmpty)
               LockinDashboardCard(title: 'Stats', items: _buildStats(statsFull))
             else
-              LockinCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Quick Stats',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          StatTile(label: 'Tasks', value: stats.tasksDone),
-                          StatTile(
-                            label: 'Habits',
-                            value: stats.habitsCompleted,
-                          ),
-                          StatTile(
-                            label: 'Sessions',
-                            value: stats.focusSessions,
-                          ),
-                          StatTile(
-                            label: 'Journals',
-                            value: stats.journalEntries,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              QuickStatsCard(stats: stats),
             if (xpProfile != null) XPDashboardCard(xpProfile: xpProfile),
-            LockinCard(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Weekly Overview',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 200,
-                      child: BarChart(
-                        BarChartData(
-                          alignment: BarChartAlignment.spaceAround,
-                          barTouchData: const BarTouchData(enabled: false),
-                          titlesData: FlTitlesData(
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 28,
-                                getTitlesWidget: (value, meta) => Text(
-                                  value.toInt().toString(),
-                                  style: TextStyle(color: scheme.onSurface),
-                                ),
-                              ),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  switch (value.toInt()) {
-                                    case 0:
-                                      return Text(
-                                        'Tasks',
-                                        style: TextStyle(
-                                          color: scheme.onSurface,
-                                        ),
-                                      );
-                                    case 1:
-                                      return Text(
-                                        'Habits',
-                                        style: TextStyle(
-                                          color: scheme.onSurface,
-                                        ),
-                                      );
-                                    case 2:
-                                      return Text(
-                                        'Sessions',
-                                        style: TextStyle(
-                                          color: scheme.onSurface,
-                                        ),
-                                      );
-                                    default:
-                                      return Text(
-                                        '',
-                                        style: TextStyle(
-                                          color: scheme.onSurface,
-                                        ),
-                                      );
-                                  }
-                                },
-                                reservedSize: 32,
-                              ),
-                            ),
-                            rightTitles: const AxisTitles(),
-                            topTitles: const AxisTitles(),
-                          ),
-                          borderData: FlBorderData(show: false),
-                          barGroups: [
-                            BarChartGroupData(
-                              x: 0,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: stats.tasksDone.toDouble(),
-                                  color: scheme.primary,
-                                  width: 24,
-                                ),
-                              ],
-                            ),
-                            BarChartGroupData(
-                              x: 1,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: stats.habitsCompleted.toDouble(),
-                                  color: scheme.primary,
-                                  width: 24,
-                                ),
-                              ],
-                            ),
-                            BarChartGroupData(
-                              x: 2,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: stats.focusSessions.toDouble(),
-                                  color: scheme.primary,
-                                  width: 24,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            WeeklyOverviewChart(stats: stats),
             LockinCard(
               child: Padding(
                 padding: const EdgeInsets.all(20),

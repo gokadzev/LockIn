@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -24,8 +25,9 @@ mixin BoxCrudMixin<T> on StateNotifier<List<T>> {
         // On any change event, refresh state from box.
         syncStateFromBox();
       });
-    } catch (_) {
-      // ignore listen errors; best-effort sync
+    } catch (e, stackTrace) {
+      debugPrint('Error watching box: $e');
+      debugPrint('StackTrace: $stackTrace');
     }
   }
 
@@ -37,44 +39,124 @@ mixin BoxCrudMixin<T> on StateNotifier<List<T>> {
 
   /// Adds an item to the box and updates state.
   void addItem(T item) {
-    if (box == null) return;
+    if (box == null) {
+      debugPrint('Cannot add item: box is null');
+      return;
+    }
     try {
       box!.add(item);
-    } catch (e) {
-      // best-effort: still try to keep state consistent
+      syncStateFromBox();
+    } catch (e, stackTrace) {
+      debugPrint('Error adding item to box: $e');
+      debugPrint('StackTrace: $stackTrace');
+      // Still try to keep state consistent
+      syncStateFromBox();
     }
-    syncStateFromBox();
   }
 
   /// Updates an item at [index] in the box and updates state efficiently.
   void updateItem(int index, T item) {
-    if (box == null) return;
-    if (index < 0 || index >= box!.length) return;
-    try {
-      box!.putAt(index, item);
-    } catch (e) {
-      // ignore and fallback to full sync
-      syncStateFromBox();
+    if (box == null) {
+      debugPrint('Cannot update item: box is null');
       return;
     }
-    if (index < state.length) {
-      final updated = List<T>.from(state);
-      updated[index] = item;
-      state = updated;
-    } else {
+    if (index < 0 || index >= box!.length) {
+      debugPrint('Invalid index $index for box with length ${box!.length}');
+      return;
+    }
+    try {
+      box!.putAt(index, item);
+      if (index < state.length) {
+        final updated = List<T>.from(state);
+        updated[index] = item;
+        state = updated;
+      } else {
+        syncStateFromBox();
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Error updating item at index $index: $e');
+      debugPrint('StackTrace: $stackTrace');
       syncStateFromBox();
     }
   }
 
   /// Deletes an item at [index] from the box and updates state.
   void deleteItem(int index) {
-    if (box == null) return;
-    if (index < 0 || index >= box!.length) return;
+    if (box == null) {
+      debugPrint('Cannot delete item: box is null');
+      return;
+    }
+    if (index < 0 || index >= box!.length) {
+      debugPrint('Invalid index $index for box with length ${box!.length}');
+      return;
+    }
     try {
       box!.deleteAt(index);
-    } catch (e) {
-      // fallback
+      syncStateFromBox();
+    } catch (e, stackTrace) {
+      debugPrint('Error deleting item at index $index: $e');
+      debugPrint('StackTrace: $stackTrace');
+      syncStateFromBox();
     }
-    syncStateFromBox();
+  }
+
+  /// Updates an item by its Hive key. Returns true if update succeeded.
+  bool updateItemByKey(dynamic key, T item, {VoidCallback? onSuccess}) {
+    if (box == null) {
+      debugPrint('Cannot update item by key: box is null');
+      return false;
+    }
+    try {
+      final keys = box!.keys.toList();
+      final index = keys.indexOf(key);
+      if (index == -1) {
+        debugPrint('Key $key not found in box');
+        return false;
+      }
+      updateItem(index, item);
+      onSuccess?.call();
+      return true;
+    } catch (e, stackTrace) {
+      debugPrint('Error updating item by key $key: $e');
+      debugPrint('StackTrace: $stackTrace');
+      return false;
+    }
+  }
+
+  /// Deletes an item by its Hive key. Returns true if deletion succeeded.
+  bool deleteItemByKey(dynamic key) {
+    if (box == null) {
+      debugPrint('Cannot delete item by key: box is null');
+      return false;
+    }
+    try {
+      final keys = box!.keys.toList();
+      final index = keys.indexOf(key);
+      if (index == -1) {
+        debugPrint('Key $key not found in box');
+        return false;
+      }
+      deleteItem(index);
+      return true;
+    } catch (e, stackTrace) {
+      debugPrint('Error deleting item by key $key: $e');
+      debugPrint('StackTrace: $stackTrace');
+      return false;
+    }
+  }
+
+  /// Gets an item by its Hive key. Returns null if not found.
+  T? getItemByKey(dynamic key) {
+    if (box == null) {
+      debugPrint('Cannot get item by key: box is null');
+      return null;
+    }
+    try {
+      return box!.get(key);
+    } catch (e, stackTrace) {
+      debugPrint('Error getting item by key $key: $e');
+      debugPrint('StackTrace: $stackTrace');
+      return null;
+    }
   }
 }

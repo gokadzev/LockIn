@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/features/xp/xp_models.dart';
@@ -18,8 +19,10 @@ class XPNotifier extends StateNotifier<XPProfile> {
       service.addXP(amount);
       state = service.profile;
       hiveBox?.put('profile', state);
-    } catch (e) {
-      // Optionally log error
+    } catch (e, stackTrace) {
+      debugPrint('Error adding XP: $e');
+      debugPrint('StackTrace: $stackTrace');
+      // State remains unchanged on error
     }
   }
 
@@ -43,7 +46,9 @@ class XPNotifier extends StateNotifier<XPProfile> {
       } else {
         box = await Hive.openBox<XPProfile>('xp_profile');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Error opening XP profile box: $e');
+      debugPrint('StackTrace: $stackTrace');
       box = null;
     }
     final profile =

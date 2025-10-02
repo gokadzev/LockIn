@@ -1,14 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_values.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
+import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
+import 'package:lockin/features/habits/habit_streak_calculator.dart';
 
 /// Provides access to the Hive box for habits.
 final habitsBoxProvider = Provider<Box<Habit>?>((ref) {
   try {
     return Hive.isBoxOpen('habits') ? Hive.box<Habit>('habits') : null;
-  } catch (e) {
+  } catch (e, stackTrace) {
+    debugPrint('Error accessing habits box: $e');
+    debugPrint('StackTrace: $stackTrace');
     return null;
   }
 });
@@ -65,62 +70,32 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
   ) {
     if (box == null) return;
     if (index < 0 || index >= box!.length) return;
-    final prevHabit = box!.getAt(index);
-    final today = DateTime.now();
-    bool isSameDay(DateTime a, DateTime b) =>
-        a.year == b.year && a.month == b.month && a.day == b.day;
-    bool isToday(DateTime d) => isSameDay(d, today);
 
-    final normalizedToday = DateTime(today.year, today.month, today.day);
-    // Normalize all history entries to date-only and remove duplicates.
-    habit.history =
-        (habit.history
-            .map((d) => DateTime(d.year, d.month, d.day))
-            .toSet()
-            .toList()
-          ..sort());
-    final prevHistory =
-        prevHabit?.history
-                  .map((d) => DateTime(d.year, d.month, d.day))
-                  .toList() ??
-              []
-          ..sort();
+    try {
+      final prevHabit = box!.getAt(index);
 
-    final wasDoneToday = prevHistory.any(isToday);
-    final isDoneToday = habit.history.any(isToday);
+      // Normalize history using the streak calculator
+      habit.history = HabitStreakCalculator.normalizeHistory(habit.history);
+      final prevHistory =
+          prevHabit?.history.map((d) => d.dateOnly).toList() ?? [];
 
-    // Ensure only one entry for today in history.
-    if (isDoneToday) {
-      habit.history = [
-        ...habit.history.where((d) => !isToday(d)),
-        normalizedToday,
-      ]..sort();
-    }
+      final wasDoneToday = prevHistory.any((d) => d.isToday);
+      final isDoneToday = habit.history.any((d) => d.isToday);
 
-    // Recalculate streak: count consecutive days up to today.
-    int computeStreak(List<DateTime> history) {
-      if (history.isEmpty) return 0;
-      history.sort();
-      var streak = 0;
-      var cursor = normalizedToday;
-      while (true) {
-        final found = history.any((d) => isSameDay(d, cursor));
-        if (!found) break;
-        streak++;
-        cursor = cursor.subtract(const Duration(days: 1));
+      // Recalculate streak using the dedicated service
+      habit.streak = HabitStreakCalculator.calculateStreak(habit.history);
+
+      updateItem(index, habit);
+
+      // Award or remove XP if today's completion status changed.
+      if (!wasDoneToday && isDoneToday) {
+        onXPChange?.call(AppValues.habitCompletionXP);
+      } else if (wasDoneToday && !isDoneToday) {
+        onXPChange?.call(-AppValues.habitCompletionXP);
       }
-      return streak;
-    }
-
-    habit.streak = computeStreak(habit.history);
-
-    updateItem(index, habit);
-
-    // Award or remove XP if today's completion status changed.
-    if (!wasDoneToday && isDoneToday) {
-      onXPChange?.call(AppValues.habitCompletionXP);
-    } else if (wasDoneToday && !isDoneToday) {
-      onXPChange?.call(-AppValues.habitCompletionXP);
+    } catch (e, stackTrace) {
+      debugPrint('Error updating habit at index $index: $e');
+      debugPrint('StackTrace: $stackTrace');
     }
   }
 
@@ -134,20 +109,22 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
     void Function(int xpChange)? onXPChange,
   ) {
     if (box == null) return;
-    final keys = box!.keys.toList();
-    final index = keys.indexOf(key);
-    if (index == -1) return;
-    updateHabit(index, habit, onXPChange);
+    try {
+      final keys = box!.keys.toList();
+      final index = keys.indexOf(key);
+      if (index == -1) {
+        debugPrint('Habit key $key not found');
+        return;
+      }
+      updateHabit(index, habit, onXPChange);
+    } catch (e, stackTrace) {
+      debugPrint('Error updating habit by key: $e');
+      debugPrint('StackTrace: $stackTrace');
+    }
   }
 
-  /// Delete habit by Hive [key] instead of index.
-  void deleteHabitByKey(dynamic key) {
-    if (box == null) return;
-    final keys = box!.keys.toList();
-    final index = keys.indexOf(key);
-    if (index == -1) return;
-    deleteHabit(index);
-  }
+  /// Delete habit by Hive [key] instead of index - delegates to mixin.
+  void deleteHabitByKey(dynamic key) => deleteItemByKey(key);
 
   @override
   void dispose() {

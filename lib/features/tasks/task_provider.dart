@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_values.dart';
@@ -8,7 +9,9 @@ import 'package:lockin/core/utils/box_crud_mixin.dart';
 final tasksBoxProvider = Provider<Box<Task>?>((ref) {
   try {
     return Hive.isBoxOpen('tasks') ? Hive.box<Task>('tasks') : null;
-  } catch (e) {
+  } catch (e, stackTrace) {
+    debugPrint('Error accessing tasks box: $e');
+    debugPrint('StackTrace: $stackTrace');
     return null;
   }
 });
@@ -40,21 +43,30 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
   ) {
     if (box == null) return;
     if (index < 0 || index >= box!.length) return;
-    final prevTask = box!.getAt(index);
-    // If marking as completed, set completion time; if un-completing, clear it.
-    if (prevTask != null && !prevTask.completed && task.completed) {
-      task.completionTime = DateTime.now();
-    } else if (prevTask != null && prevTask.completed && !task.completed) {
-      task.completionTime = null;
-    }
-    updateItem(index, task);
-    // Award or remove XP if completion state changed.
-    if (prevTask != null) {
-      if (!prevTask.completed && task.completed) {
-        onXPChange?.call(AppValues.taskCompletionXP);
-      } else if (prevTask.completed && !task.completed) {
-        onXPChange?.call(-AppValues.taskCompletionXP);
+
+    try {
+      final prevTask = box!.getAt(index);
+
+      // If marking as completed, set completion time; if un-completing, clear it.
+      if (prevTask != null && !prevTask.completed && task.completed) {
+        task.completionTime = DateTime.now();
+      } else if (prevTask != null && prevTask.completed && !task.completed) {
+        task.completionTime = null;
       }
+
+      updateItem(index, task);
+
+      // Award or remove XP if completion state changed.
+      if (prevTask != null) {
+        if (!prevTask.completed && task.completed) {
+          onXPChange?.call(AppValues.taskCompletionXP);
+        } else if (prevTask.completed && !task.completed) {
+          onXPChange?.call(-AppValues.taskCompletionXP);
+        }
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Error updating task at index $index: $e');
+      debugPrint('StackTrace: $stackTrace');
     }
   }
 
@@ -66,15 +78,25 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
   ) {
     if (box == null) return false;
     try {
-      final idx = box!.keys.toList().indexOf(key);
-      if (idx == -1) return false;
+      final keys = box!.keys.toList();
+      final idx = keys.indexOf(key);
+      if (idx == -1) {
+        debugPrint('Task key $key not found');
+        return false;
+      }
+
       final prevTask = box!.getAt(idx);
+
+      // Manage completion time
       if (prevTask != null && !prevTask.completed && task.completed) {
         task.completionTime = DateTime.now();
       } else if (prevTask != null && prevTask.completed && !task.completed) {
         task.completionTime = null;
       }
+
       updateItem(idx, task);
+
+      // Manage XP
       if (prevTask != null) {
         if (!prevTask.completed && task.completed) {
           onXPChange?.call(AppValues.taskCompletionXP);
@@ -82,8 +104,11 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
           onXPChange?.call(-AppValues.taskCompletionXP);
         }
       }
+
       return true;
-    } catch (_) {
+    } catch (e, stackTrace) {
+      debugPrint('Error updating task by key: $e');
+      debugPrint('StackTrace: $stackTrace');
       return false;
     }
   }
@@ -91,18 +116,8 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
   /// Deletes a task at [index] from the box and updates state.
   void deleteTask(int index) => deleteItem(index);
 
-  /// Deletes a task by its Hive key. Returns true if deletion succeeded.
-  bool deleteTaskByKey(dynamic key) {
-    if (box == null) return false;
-    try {
-      final idx = box!.keys.toList().indexOf(key);
-      if (idx == -1) return false;
-      deleteItem(idx);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
+  /// Deletes a task by its Hive key - delegates to mixin.
+  bool deleteTaskByKey(dynamic key) => deleteItemByKey(key);
 
   @override
   void dispose() {

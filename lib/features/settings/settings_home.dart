@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lockin/core/services/notification_service.dart';
+import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/features/dashboard/dashboard_provider.dart';
 import 'package:lockin/features/goals/goal_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
@@ -203,7 +203,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                               _status = 'Running notification health check...',
                         );
                         final result = await NotificationService()
-                            .healthCheck();
+                            .getHealthCheck();
                         if (result.containsKey('error')) {
                           setState(
                             () => _status =
@@ -211,7 +211,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                           );
                           return;
                         }
-                        final perm = result['granted'] == true
+                        final perm = result['permissionGranted'] == true
                             ? 'Granted'
                             : 'Not granted';
                         final pending = result['pendingCount'] ?? 0;

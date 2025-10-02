@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
-import 'package:lockin/core/services/notification_id_manager.dart';
-import 'package:lockin/core/services/notification_service.dart';
+
+import 'package:lockin/core/notifications/habit_notification_manager.dart';
 import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/data/recommendations/goals.dart';
 import 'package:lockin/data/recommendations/habits.dart';
@@ -194,7 +194,7 @@ class SuggestionsPage extends ConsumerWidget {
                                       title: s.title,
                                       description: s.description,
                                       category: s.category,
-                                      onAdd: () {
+                                      onAdd: () async {
                                         final category =
                                             s.category ?? 'General';
                                         if (category.isNotEmpty &&
@@ -215,13 +215,12 @@ class SuggestionsPage extends ConsumerWidget {
                                           final engagementTime = ref.watch(
                                             engagementTimeProvider,
                                           );
-                                          NotificationService()
-                                              .scheduleHabitNotification(
-                                                id: NotificationIdManager.getHabitNotificationId(
-                                                  s.title,
-                                                ),
-                                                title: s.title,
-                                                time: TimeOfDay(
+                                          await HabitNotificationManager()
+                                              .scheduleHabitReminder(
+                                                habitId: s.title.hashCode
+                                                    .toString(),
+                                                habitTitle: s.title,
+                                                reminderTime: TimeOfDay(
                                                   hour: engagementTime.hour,
                                                   minute: engagementTime.minute,
                                                 ),
@@ -232,15 +231,17 @@ class SuggestionsPage extends ConsumerWidget {
                                             'Failed to schedule notification for ${s.title}',
                                           );
                                         }
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Habit added: ${s.title}',
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Habit added: ${s.title}',
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       },
                                     ),
                                   )

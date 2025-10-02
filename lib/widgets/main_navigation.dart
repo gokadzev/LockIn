@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lockin/core/services/notification_service.dart';
+import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
 import 'package:lockin/features/dashboard/dashboard_home.dart';
 import 'package:lockin/features/goals/goals_home.dart';
@@ -33,7 +33,7 @@ class MainNavigationState extends State<MainNavigation> {
     _selectedIndex = widget.initialIndex;
     // Request notification permission globally for all features
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await NotificationService().init(context);
+      await NotificationService().initialize(context);
       // Mark user as active when opening app
       await UserActivityTracker.markActive();
     });

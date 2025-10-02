@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-import 'package:lockin/background/habit_engagement_task.dart';
 import 'package:lockin/config/app_router.dart';
 import 'package:lockin/config/app_setup.dart';
+import 'package:lockin/core/notifications/notification_background_service.dart';
 import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/main_navigation.dart';
-import 'package:workmanager/workmanager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await initializeApp();
 
-  await Workmanager().initialize(habitEngagementCallbackDispatcher);
-  await Workmanager().registerPeriodicTask(
-    habitEngagementTaskName,
-    habitEngagementTaskName,
-    frequency: const Duration(hours: 24),
-    initialDelay: const Duration(minutes: 1),
-  );
+  // Initialize the new background notification service
+  final backgroundManager = NotificationBackgroundManager();
+  await backgroundManager.initialize();
 
   runApp(const ProviderScope(child: LockinApp()));
 }

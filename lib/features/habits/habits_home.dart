@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/habit_category.dart';
-import 'package:lockin/core/services/notification_id_manager.dart';
-import 'package:lockin/core/services/notification_service.dart';
+import 'package:lockin/core/notifications/habit_notification_manager.dart';
 import 'package:lockin/features/categories/category_manager_dialog.dart';
 import 'package:lockin/features/habits/habit_category_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
@@ -31,7 +30,8 @@ class HabitsHome extends ConsumerStatefulWidget {
 }
 
 class _HabitsHomeState extends ConsumerState<HabitsHome> {
-  final NotificationService _notificationService = NotificationService();
+  final HabitNotificationManager _habitNotificationManager =
+      HabitNotificationManager();
 
   @override
   void initState() {
@@ -204,6 +204,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
               final time = result['reminder'] as TimeOfDay?;
               if (time != null) {
                 await _scheduleHabitNotification(
+                  habit.key.toString(),
                   habit.title,
                   time,
                   habit.frequency,
@@ -455,17 +456,18 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
   }
 
   Future<void> _scheduleHabitNotification(
+    String habitId,
     String title,
     TimeOfDay time,
     String frequency,
     String? cue,
   ) async {
-    await _notificationService.scheduleHabitNotification(
-      id: NotificationIdManager.getHabitNotificationId(title),
-      title: title,
-      time: time,
+    await _habitNotificationManager.scheduleHabitReminder(
+      habitId: habitId,
+      habitTitle: title,
+      reminderTime: time,
       frequency: frequency,
-      cue: cue,
+      customWeekdays: cue,
     );
   }
 
@@ -493,13 +495,10 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       final notifier = ref.read(habitsListProvider.notifier);
 
       // Cancel the habit's notifications before deleting
-      await _notificationService.cancelHabitNotifications(
-        NotificationIdManager.getHabitNotificationId(habit.title),
-        habit.cue,
+      await _habitNotificationManager.cancelHabitReminders(
+        habit.key.toString(),
+        customWeekdays: habit.cue,
       );
-
-      // Remove the habit from notification ID manager
-      NotificationIdManager.removeHabitNotificationId(habit.title);
 
       try {
         notifier.deleteHabitByKey(habitKey);
@@ -538,9 +537,9 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
     Map<String, dynamic> result,
   ) async {
     // Cancel old notifications first
-    await _notificationService.cancelHabitNotifications(
-      NotificationIdManager.getHabitNotificationId(habit.title),
-      habit.cue,
+    await _habitNotificationManager.cancelHabitReminders(
+      habit.key.toString(),
+      customWeekdays: habit.cue,
     );
 
     final updated = Habit()
@@ -557,9 +556,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
     final notifier = ref.read(habitsListProvider.notifier);
     try {
       // If title changed, remove old notification ID
-      if (habit.title != updated.title) {
-        NotificationIdManager.removeHabitNotificationId(habit.title);
-      }
+      if (habit.title != updated.title) {}
 
       notifier.updateHabitByKey(habitKey, updated, null);
 
@@ -567,6 +564,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       final time = result['reminder'] as TimeOfDay?;
       if (time != null) {
         await _scheduleHabitNotification(
+          updated.key.toString(),
           updated.title,
           time,
           updated.frequency,

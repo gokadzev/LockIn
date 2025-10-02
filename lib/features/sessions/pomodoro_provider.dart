@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/core/models/session.dart';
-import 'package:lockin/core/services/notification_service.dart';
+import 'package:lockin/core/notifications/notification_service.dart';
+
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
 import 'package:lockin/widgets/lockin_notification.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 enum PomodoroPhase { work, breakTime }
 
@@ -61,9 +61,6 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
   DateTime? get sessionStart => _sessionStart;
   Duration get sessionDuration => _sessionDuration;
 
-  final int _notificationId =
-      1001; // use same id to get all notification with sound
-
   void startOrResume(BuildContext context) {
     if (state.isRunning) return;
     // Cancel any existing timer before starting a new one
@@ -86,18 +83,17 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
       try {
         if (state.phase == PomodoroPhase.work) {
           _pomodoroCount++;
-          // Check permission before sending notification
-          final permission = await Permission.notification.status;
-          if (permission.isGranted) {
-            try {
-              await NotificationService().showNotification(
-                id: _notificationId,
-                title: 'Pomodoro Finished',
-                body: 'Time for a break!',
-              );
-            } catch (e) {
-              debugPrint('Notification error: $e');
+          // Send pomodoro notification using new service
+          try {
+            final result = await NotificationService().showInstantNotification(
+              title: '⏱️ Pomodoro Finished',
+              body: 'Time for a break!',
+            );
+            if (!result.success) {
+              debugPrint('Notification failed: ${result.error}');
             }
+          } catch (e) {
+            debugPrint('Notification error: $e');
           }
           state = PomodoroState(
             phase: PomodoroPhase.breakTime,
@@ -106,17 +102,17 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
           );
         } else {
           _breakCount++;
-          final permission = await Permission.notification.status;
-          if (permission.isGranted) {
-            try {
-              await NotificationService().showNotification(
-                id: _notificationId,
-                title: 'Break Finished',
-                body: 'Time to focus!',
-              );
-            } catch (e) {
-              debugPrint('Notification error: $e');
+          // Send break finished notification using new service
+          try {
+            final result = await NotificationService().showInstantNotification(
+              title: '⏰ Break Finished',
+              body: 'Time to focus!',
+            );
+            if (!result.success) {
+              debugPrint('Notification failed: ${result.error}');
             }
+          } catch (e) {
+            debugPrint('Notification error: $e');
           }
           // Starting a new work period. If we don't have a session start, set it.
           _sessionStart ??= DateTime.now();

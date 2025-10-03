@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/themes/app_theme.dart';
+import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 
 class AverageMoodCard extends ConsumerWidget {
@@ -43,52 +45,72 @@ class AverageMoodCard extends ConsumerWidget {
         color = scheme.onSurface.withValues(alpha: 0.6);
       }
     }
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return LockinCard(
-      child: Row(
+      padding: const EdgeInsets.all(UIConstants.largeSpacing),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: color.withValues(alpha: 0.15),
-            child: CircleAvatar(
-              radius: 36,
-              backgroundColor: scheme.onSurface,
-              child: Image.asset(_emojiAsset(moodAvg), width: 48, height: 48),
-            ),
+          CardHeader(
+            title: 'Average Mood',
+            icon: Icons.mood_rounded,
+            containerColor: colorScheme.secondaryContainer,
+            iconColor: colorScheme.onSecondaryContainer,
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Average Mood (7 days)',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  moodAvg != null ? moodAvg.toStringAsFixed(1) : '-',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.headlineSmall?.copyWith(color: color),
-                ),
-                if (recent.isNotEmpty)
-                  Text(
-                    '${DateFormat.yMMMd().format(weekAgo)} - ${DateFormat.yMMMd().format(now)}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                      fontSize: 13,
-                    ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: color.withValues(alpha: 0.15),
+                child: CircleAvatar(
+                  radius: 36,
+                  backgroundColor: scheme.onSurface,
+                  child: Image.asset(
+                    _emojiAsset(moodAvg),
+                    width: 48,
+                    height: 48,
                   ),
-                if (recent.isEmpty)
-                  Text(
-                    'No journal entries this week.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                      fontSize: 13,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Last 7 days',
+                      style: textTheme.titleMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-              ],
-            ),
+                    const SizedBox(height: 4),
+                    Text(
+                      moodAvg != null ? moodAvg.toStringAsFixed(1) : '-',
+                      style: textTheme.headlineSmall?.copyWith(color: color),
+                    ),
+                    if (recent.isNotEmpty)
+                      Text(
+                        '${DateFormat.yMMMd().format(weekAgo)} - ${DateFormat.yMMMd().format(now)}',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                          fontSize: 13,
+                        ),
+                      ),
+                    if (recent.isEmpty)
+                      Text(
+                        'No journal entries this week.',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                          fontSize: 13,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

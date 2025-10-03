@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lockin/constants/app_constants.dart';
+import 'package:lockin/constants/ui_constants.dart';
+import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 
 class LockinDashboardCard extends StatelessWidget {
@@ -19,28 +21,32 @@ class LockinDashboardCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final Widget? trailing;
 
+  IconData _getIconForTitle(String title) {
+    switch (title.toLowerCase()) {
+      case 'recommendations':
+        return Icons.lightbulb_rounded;
+      case 'stats':
+        return Icons.analytics_rounded;
+      default:
+        return Icons.dashboard_rounded;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return LockinCard(
+      padding: const EdgeInsets.all(UIConstants.largeSpacing),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.dashboard, color: Colors.white, size: 28),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    height: 1.15,
-                  ),
-                ),
-              ),
-              if (trailing != null) trailing!,
-            ],
+          CardHeader(
+            title: title,
+            icon: _getIconForTitle(title),
+            containerColor: colorScheme.secondaryContainer,
+            iconColor: colorScheme.onSecondaryContainer,
+            trailing: trailing,
           ),
           const SizedBox(height: 10),
           ...items.map(

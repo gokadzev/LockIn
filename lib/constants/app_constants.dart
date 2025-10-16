@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppConstants {
-  static const String appName = 'Lockin Productivity';
   static const double defaultPadding = 16;
   static const double cardElevation = 8;
   static const EdgeInsets bodyPadding = EdgeInsets.all(20);

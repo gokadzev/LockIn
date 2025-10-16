@@ -41,17 +41,15 @@ class PomodoroTimer extends ConsumerWidget {
                     backgroundColor: scheme.primary,
                     foregroundColor: scheme.onPrimary,
                     textStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 16,
                     ),
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    elevation: 3,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
+                      horizontal: 32,
+                      vertical: 16,
                     ),
+                    minimumSize: const Size(120, 56),
                   ),
                   onPressed: notifier.sessionStart == null
                       ? () => notifier.startOrResume(context)
@@ -62,6 +60,18 @@ class PomodoroTimer extends ConsumerWidget {
                 ),
                 const SizedBox(width: 16),
                 OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    minimumSize: const Size(100, 56),
+                    side: BorderSide(color: scheme.outline),
+                  ),
                   onPressed: notifier.reset,
                   child: const Text('Reset'),
                 ),

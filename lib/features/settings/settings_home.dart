@@ -92,29 +92,23 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 // --- Engagement ---
                 Card(
                   elevation: 0,
+                  margin: const EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
                     leading: const Icon(Icons.notifications_active),
                     title: const Text('Engagement Notification Time'),
-                    trailing: TextButton(
-                      onPressed: () async {
-                        final picked = await showTimePicker(
-                          context: context,
-                          initialTime: engagementTime,
-                        );
-                        if (picked != null) {
-                          ref
-                              .read(engagementTimeProvider.notifier)
-                              .setTime(picked);
-                        }
-                      },
-                      child: Text(
-                        engagementTime.format(context),
-                        style: TextStyle(
-                          color: scheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                    subtitle: Text(engagementTime.format(context)),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () async {
+                      final picked = await showTimePicker(
+                        context: context,
+                        initialTime: engagementTime,
+                      );
+                      if (picked != null) {
+                        ref
+                            .read(engagementTimeProvider.notifier)
+                            .setTime(picked);
+                      }
+                    },
                   ),
                 ),
 
@@ -136,6 +130,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 // Backup
                 Card(
                   elevation: 0,
+                  margin: const EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
                     leading: const Icon(Icons.backup),
                     title: const Text('Backup'),
@@ -148,6 +143,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 // Restore
                 Card(
                   elevation: 0,
+                  margin: const EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
                     leading: const Icon(Icons.restore),
                     title: const Text('Restore'),
@@ -174,6 +170,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 // Battery optimization
                 const Card(
                   elevation: 0,
+                  margin: EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
                     leading: Icon(Icons.battery_alert),
                     title: Text('Battery Optimization'),
@@ -190,6 +187,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 // Notification health
                 Card(
                   elevation: 0,
+                  margin: const EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
                     leading: const Icon(Icons.health_and_safety),
                     title: const Text('Notification Health'),
@@ -231,9 +229,9 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
 
                 // Status
                 if (_status != null) ...[
-                  const SizedBox(height: 8),
                   Card(
                     elevation: 0,
+                    margin: const EdgeInsets.symmetric(vertical: 6),
                     child: ListTile(
                       leading: Icon(
                         _status!.contains('failed')

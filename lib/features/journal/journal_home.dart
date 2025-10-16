@@ -17,8 +17,7 @@ class JournalHome extends ConsumerStatefulWidget {
 }
 
 class _JournalHomeState extends ConsumerState<JournalHome> {
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  late DateTime _selectedDay;
   late final PageController _weekController;
   static final DateTime _weekRef = DateTime(1970, 1, 5); // Monday reference
   static const int _pageCenter = 20000;
@@ -26,7 +25,8 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
   @override
   void initState() {
     super.initState();
-    final weekIndex = _focusedDay.difference(_weekRef).inDays ~/ 7;
+    _selectedDay = DateTime.now();
+    final weekIndex = _selectedDay.difference(_weekRef).inDays ~/ 7;
     _weekController = PageController(initialPage: _pageCenter + weekIndex);
   }
 
@@ -51,9 +51,11 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
       final day = DateTime(j.date.year, j.date.month, j.date.day);
       entriesByDay.putIfAbsent(day, () => []).add(j);
     }
-    final selectedDay =
-        _selectedDay ??
-        DateTime(_focusedDay.year, _focusedDay.month, _focusedDay.day);
+    final selectedDay = DateTime(
+      _selectedDay.year,
+      _selectedDay.month,
+      _selectedDay.day,
+    );
     final selectedEntries = entriesByDay[selectedDay] ?? [];
 
     return Scaffold(
@@ -64,16 +66,11 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
           slivers: [
             SliverToBoxAdapter(
               child: LockinCard(
-                // margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                // shape: RoundedRectangleBorder(
-                //   borderRadius: BorderRadius.circular(12),
-                // ),
-                // color: Colors.grey[900],
                 child: Column(
                   children: [
                     // Header with chevrons and month title
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -81,36 +78,33 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                             icon: const Icon(Icons.chevron_left),
                             color: scheme.onSurface,
                             onPressed: () {
-                              setState(() {
-                                _focusedDay = DateTime(
-                                  _focusedDay.year,
-                                  _focusedDay.month,
-                                  _focusedDay.day - 7,
-                                );
-                                _selectedDay = null;
-                              });
+                              _weekController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
                             },
                           ),
-                          Text(
-                            DateFormat.yMMMM().format(_focusedDay),
-                            style: TextStyle(
-                              color: scheme.onSurface,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Column(
+                            children: [
+                              Text(
+                                DateFormat.yMMMM().format(_selectedDay),
+                                style: TextStyle(
+                                  color: scheme.onSurface,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
                           ),
                           IconButton(
                             icon: const Icon(Icons.chevron_right),
                             color: scheme.onSurface,
                             onPressed: () {
-                              setState(() {
-                                _focusedDay = DateTime(
-                                  _focusedDay.year,
-                                  _focusedDay.month,
-                                  _focusedDay.day + 7,
-                                );
-                                _selectedDay = null;
-                              });
+                              _weekController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
                             },
                           ),
                         ],
@@ -127,8 +121,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                             Duration(days: weekIndex * 7),
                           );
                           setState(() {
-                            _focusedDay = firstOfWeek;
-                            _selectedDay = null;
+                            _selectedDay = firstOfWeek;
                           });
                         },
                         itemBuilder: (ctx, page) {
@@ -170,7 +163,6 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                           day.month,
                                           day.day,
                                         );
-                                        _focusedDay = day;
                                       });
                                     },
                                     child: Container(
@@ -199,7 +191,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                             ),
                                           ),
                                           const SizedBox(height: 6),
-                                          if (day.month == _focusedDay.month)
+                                          if (day.month == _selectedDay.month)
                                             Text(
                                               '${day.day}',
                                               style: TextStyle(

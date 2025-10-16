@@ -204,7 +204,8 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                         );
                         final result = await NotificationService()
                             .getHealthCheck();
-                        if (result.containsKey('error')) {
+                        if (result.containsKey('error') &&
+                            result['error'] != null) {
                           setState(
                             () => _status =
                                 'Health check failed: ${result['error']}',

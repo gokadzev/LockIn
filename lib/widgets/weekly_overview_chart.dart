@@ -16,6 +16,12 @@ class WeeklyOverviewChart extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    // Check if there's any activity this week
+    final hasActivity =
+        stats.tasksDone > 0 ||
+        stats.habitsCompleted > 0 ||
+        stats.focusSessions > 0;
+
     return LockinCard(
       padding: const EdgeInsets.all(UIConstants.largeSpacing),
       child: Column(
@@ -29,131 +35,172 @@ class WeeklyOverviewChart extends StatelessWidget {
           ),
           const SizedBox(height: UIConstants.largeSpacing),
 
-          // Chart
-          SizedBox(
-            height: 200,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: _getMaxY() * 1.2,
-                barTouchData: BarTouchData(
-                  enabled: true,
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => colorScheme.inverseSurface,
-                    tooltipBorderRadius: BorderRadius.circular(8),
-                    tooltipPadding: const EdgeInsets.all(12),
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      final labels = ['Tasks', 'Habits', 'Sessions'];
-                      return BarTooltipItem(
-                        '${labels[group.x]}\n',
-                        TextStyle(
-                          color: colorScheme.onInverseSurface,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: '${rod.toY.toInt()} completed',
-                            style: TextStyle(
-                              color: colorScheme.onInverseSurface.withValues(
-                                alpha: 0.8,
+          // Chart or Empty State
+          if (hasActivity)
+            SizedBox(
+              height: 200,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: _getMaxY() * 1.2,
+                  barTouchData: BarTouchData(
+                    enabled: true,
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipColor: (_) => colorScheme.inverseSurface,
+                      tooltipBorderRadius: BorderRadius.circular(8),
+                      tooltipPadding: const EdgeInsets.all(12),
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        final labels = ['Tasks', 'Habits', 'Sessions'];
+                        return BarTooltipItem(
+                          '${labels[group.x]}\n',
+                          TextStyle(
+                            color: colorScheme.onInverseSurface,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '${rod.toY.toInt()} completed',
+                              style: TextStyle(
+                                color: colorScheme.onInverseSurface.withValues(
+                                  alpha: 0.8,
+                                ),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
                               ),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
                             ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 32,
-                      interval: _getInterval(),
-                      getTitlesWidget: (value, meta) {
-                        // Only show if it's a multiple of the interval and not 0
-                        if (value == 0 || value % _getInterval() != 0) {
-                          return const SizedBox.shrink();
-                        }
-                        return Text(
-                          value.toInt().toString(),
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant.withValues(
-                              alpha: 0.8,
-                            ),
-                            fontSize: 11,
-                          ),
+                          ],
                         );
                       },
                     ),
                   ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 32,
-                      getTitlesWidget: (value, meta) {
-                        final labels = ['Tasks', 'Habits', 'Sessions'];
-                        if (value.toInt() < labels.length) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              labels[value.toInt()],
-                              style: textTheme.bodySmall?.copyWith(
-                                fontSize: 12,
-                                color: colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w500,
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 32,
+                        interval: _getInterval(),
+                        getTitlesWidget: (value, meta) {
+                          // Only show if it's a multiple of the interval and not 0
+                          if (value == 0 || value % _getInterval() != 0) {
+                            return const SizedBox.shrink();
+                          }
+                          return Text(
+                            value.toInt().toString(),
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant.withValues(
+                                alpha: 0.8,
                               ),
+                              fontSize: 11,
                             ),
                           );
-                        }
-                        return const SizedBox.shrink();
-                      },
+                        },
+                      ),
                     ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 32,
+                        getTitlesWidget: (value, meta) {
+                          final labels = ['Tasks', 'Habits', 'Sessions'];
+                          if (value.toInt() < labels.length) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                labels[value.toInt()],
+                                style: textTheme.bodySmall?.copyWith(
+                                  fontSize: 12,
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ),
+                    topTitles: const AxisTitles(),
+                    rightTitles: const AxisTitles(),
                   ),
-                  topTitles: const AxisTitles(),
-                  rightTitles: const AxisTitles(),
-                ),
-                gridData: FlGridData(
-                  drawVerticalLine: false,
-                  horizontalInterval: _getInterval(),
-                  getDrawingHorizontalLine: (value) {
-                    if (value == 0) {
+                  gridData: FlGridData(
+                    drawVerticalLine: false,
+                    horizontalInterval: _getInterval(),
+                    getDrawingHorizontalLine: (value) {
+                      if (value == 0) {
+                        return FlLine(
+                          color: colorScheme.outline.withValues(alpha: 0.3),
+                          strokeWidth: 1,
+                        );
+                      }
                       return FlLine(
-                        color: colorScheme.outline.withValues(alpha: 0.3),
-                        strokeWidth: 1,
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.2,
+                        ),
+                        strokeWidth: 0.8,
+                        dashArray: [4, 4],
                       );
-                    }
-                    return FlLine(
-                      color: colorScheme.outlineVariant.withValues(alpha: 0.2),
-                      strokeWidth: 0.8,
-                      dashArray: [4, 4],
-                    );
-                  },
+                    },
+                  ),
+                  borderData: FlBorderData(show: false),
+                  barGroups: [
+                    _buildBarGroup(
+                      0,
+                      stats.tasksDone.toDouble(),
+                      colorScheme.primary,
+                    ),
+                    _buildBarGroup(
+                      1,
+                      stats.habitsCompleted.toDouble(),
+                      colorScheme.secondary,
+                    ),
+                    _buildBarGroup(
+                      2,
+                      stats.focusSessions.toDouble(),
+                      colorScheme.tertiary,
+                    ),
+                  ],
                 ),
-                borderData: FlBorderData(show: false),
-                barGroups: [
-                  _buildBarGroup(
-                    0,
-                    stats.tasksDone.toDouble(),
-                    colorScheme.primary,
-                  ),
-                  _buildBarGroup(
-                    1,
-                    stats.habitsCompleted.toDouble(),
-                    colorScheme.secondary,
-                  ),
-                  _buildBarGroup(
-                    2,
-                    stats.focusSessions.toDouble(),
-                    colorScheme.tertiary,
-                  ),
-                ],
+              ),
+            )
+          else
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.trending_up_rounded,
+                      size: 48,
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No activity this week',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Start a task, habit, or session to see your stats',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
           const SizedBox(height: UIConstants.largeSpacing),
 

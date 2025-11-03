@@ -18,6 +18,7 @@ import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 import 'package:lockin/widgets/lockin_dashboard_card.dart';
 import 'package:lockin/widgets/main_navigation.dart';
+import 'package:lockin/widgets/monthly_overview_heatmap.dart';
 import 'package:lockin/widgets/quick_stats_card.dart';
 import 'package:lockin/widgets/weekly_overview_chart.dart';
 import 'package:lockin/widgets/xp_dashboard_card.dart';
@@ -60,6 +61,9 @@ class DashboardHome extends ConsumerWidget {
               QuickStatsCard(stats: stats),
             if (xpProfile != null) XPDashboardCard(xpProfile: xpProfile),
             WeeklyOverviewChart(stats: stats),
+            MonthlyOverviewHeatmap(
+              monthlyData: ref.watch(monthlyHeatmapProvider),
+            ),
             LockinCard(
               child: Padding(
                 padding: const EdgeInsets.all(20),

@@ -81,3 +81,63 @@ final dashboardStatsProvider = Provider<DashboardStats>((ref) {
     nudge: nudge,
   );
 });
+
+/// Provider for monthly heatmap data
+/// Returns a map of DateTime -> activity count for the current month
+final monthlyHeatmapProvider = Provider<Map<DateTime, int>>((ref) {
+  final tasks = ref.watch(tasksListProvider);
+  final habits = ref.watch(habitsListProvider);
+  final sessions = ref.watch(sessionsListProvider);
+
+  final monthlyData = <DateTime, int>{};
+  final now = DateTime.now();
+  final lastDay = DateTime(now.year, now.month + 1, 0);
+
+  // Initialize all days of the month with 0
+  for (var day = 1; day <= lastDay.day; day++) {
+    final date = DateTime(now.year, now.month, day);
+    monthlyData[date] = 0;
+  }
+
+  // Count completed tasks for each day
+  for (final task in tasks) {
+    if (task.completed && task.completionTime != null) {
+      final completedDate = DateTime(
+        task.completionTime!.year,
+        task.completionTime!.month,
+        task.completionTime!.day,
+      );
+      if (completedDate.month == now.month && completedDate.year == now.year) {
+        monthlyData[completedDate] = (monthlyData[completedDate] ?? 0) + 1;
+      }
+    }
+  }
+
+  // Count completed habits for each day
+  for (final habit in habits) {
+    for (final historyDate in habit.history) {
+      if (historyDate.month == now.month && historyDate.year == now.year) {
+        final date = DateTime(
+          historyDate.year,
+          historyDate.month,
+          historyDate.day,
+        );
+        monthlyData[date] = (monthlyData[date] ?? 0) + 1;
+      }
+    }
+  }
+
+  // Count sessions for each day
+  for (final session in sessions) {
+    final sessionDate = DateTime(
+      session.startTime.year,
+      session.startTime.month,
+      session.startTime.day,
+    );
+    if (sessionDate.month == now.month && sessionDate.year == now.year) {
+      monthlyData[sessionDate] = (monthlyData[sessionDate] ?? 0) + 1;
+    }
+  }
+
+  return monthlyData;
+});

@@ -39,17 +39,17 @@ void notificationBackgroundHandler() {
 
 /// Register all Hive adapters needed for background tasks
 Future<void> _registerHiveAdapters() async {
-  if (!Hive.isAdapterRegistered(0)) {
-    Hive.registerAdapter(TaskAdapter());
-  }
-  if (!Hive.isAdapterRegistered(1)) {
-    Hive.registerAdapter(HabitAdapter());
-  }
-  if (!Hive.isAdapterRegistered(2)) {
-    Hive.registerAdapter(GoalAdapter());
-  }
-  if (!Hive.isAdapterRegistered(10)) {
-    Hive.registerAdapter(MilestoneAdapter());
+  final adapters = <TypeAdapter<dynamic>>[
+    TaskAdapter(),
+    HabitAdapter(),
+    GoalAdapter(),
+    MilestoneAdapter(),
+  ];
+
+  for (final adapter in adapters) {
+    if (!Hive.isAdapterRegistered(adapter.typeId)) {
+      Hive.registerAdapter(adapter);
+    }
   }
 }
 

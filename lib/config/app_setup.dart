@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
@@ -11,7 +10,6 @@ import 'package:lockin/features/xp/xp_models.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> initializeApp() async {
-  WidgetsFlutterBinding.ensureInitialized();
   final dir = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(dir.path);
   Hive

@@ -32,7 +32,7 @@ Future<void> sendDailyEngagementNotifications(TimeOfDay preferredTime) async {
     final goals = goalBox.values.cast<Goal>().toList();
 
     // Send engagement notification
-    await manager.sendEngagementNotification(
+    await manager.sendEngagementNotificationBackground(
       habits: habits,
       tasks: tasks,
       goals: goals,

@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:lockin/core/notifications/notification_id_manager.dart';
+import 'package:lockin/core/notifications/notification_platform.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
+import 'package:lockin/core/notifications/notification_types.dart';
+import 'package:lockin/core/notifications/timezone_manager.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
 
 /// Manages engagement and motivational notifications
@@ -15,7 +19,7 @@ class EngagementNotificationManager {
   final NotificationService _notificationService = NotificationService();
 
   /// Send smart engagement notification based on user behavior
-  Future<bool> sendEngagementNotification({
+  Future<bool> sendEngagementNotificationBackground({
     required List<Habit> habits,
     required List<Task> tasks,
     required List<Goal> goals,
@@ -23,34 +27,43 @@ class EngagementNotificationManager {
     bool isUserActive = false,
   }) async {
     try {
-      // Don't send notifications if user is currently active
-      if (isUserActive) {
-        debugPrint('User is active, skipping engagement notification');
-        return true;
+      // Avoid spamming active users
+      if (isUserActive) return true;
+
+      // Initialize timezone db for scheduling
+      final tzManager = TimezoneManager();
+      final tzOk = await tzManager.initialize();
+      if (!tzOk) {
+        debugPrint('Timezone initialization failed in background');
+      }
+
+      // Initialize low-level notification platform
+      final platform = NotificationPlatform();
+      final platformResult = await platform.initialize();
+      if (!platformResult.success) {
+        debugPrint(
+          'Notification platform init failed in background: ${platformResult.error}',
+        );
+        return false;
       }
 
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
 
-      // Analyze user's current state
       final analysis = _analyzeUserState(habits, tasks, goals, today);
+      if (!_shouldSendNotification(analysis)) return true;
 
-      // Determine if we should send a notification
-      if (!_shouldSendNotification(analysis)) {
-        debugPrint('Analysis suggests not to send notification: $analysis');
-        return true;
-      }
-
-      // Generate appropriate message
       final message = _generateEngagementMessage(analysis);
-      if (message == null) {
-        debugPrint('No appropriate message generated');
-        return true;
-      }
+      if (message == null) return true;
 
-      // Schedule the notification
       final scheduledTime = _calculateOptimalTime(preferredTime, now);
-      final result = await _notificationService.scheduleEngagementNotification(
+
+      // Generate a deterministic engagement id
+      final idManager = NotificationIdManager();
+      final notifId = idManager.getEngagementId(message['type']);
+
+      final data = EngagementNotificationData(
+        id: notifId,
         title: message['title']!,
         body: message['body']!,
         scheduledTime: scheduledTime,
@@ -59,17 +72,20 @@ class EngagementNotificationManager {
         payload: 'engagement:${message['type']}',
       );
 
+      final result = await platform.scheduleNotification(data);
       if (result.success) {
-        debugPrint('Scheduled engagement notification: ${message['title']}');
+        debugPrint(
+          'Scheduled engagement notification (background): ${message['title']}',
+        );
         return true;
       } else {
         debugPrint(
-          'Failed to schedule engagement notification: ${result.error}',
+          'Failed to schedule engagement notification (background): ${result.error}',
         );
         return false;
       }
     } catch (e) {
-      debugPrint('Error in sendEngagementNotification: $e');
+      debugPrint('Error in sendEngagementNotificationBackground: $e');
       return false;
     }
   }

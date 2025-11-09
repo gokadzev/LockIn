@@ -77,7 +77,7 @@ Future<bool> _handleEngagementTask() async {
 
     // Send engagement notification
     final manager = EngagementNotificationManager();
-    final success = await manager.sendEngagementNotification(
+    final success = await manager.sendEngagementNotificationBackground(
       habits: habits,
       tasks: tasks,
       goals: goals,

@@ -15,18 +15,18 @@ void habitEngagementCallbackDispatcher() {
       // Initialize Hive for background isolate with path
       await Hive.initFlutter();
 
-      // Register adapters for models used in background
-      if (!Hive.isAdapterRegistered(1)) {
-        Hive.registerAdapter(HabitAdapter());
-      }
-      if (!Hive.isAdapterRegistered(2)) {
-        Hive.registerAdapter(TaskAdapter());
-      }
-      if (!Hive.isAdapterRegistered(3)) {
-        Hive.registerAdapter(GoalAdapter());
-      }
-      if (!Hive.isAdapterRegistered(4)) {
-        Hive.registerAdapter(MilestoneAdapter());
+      // Register adapters for models used in background.
+      final adapters = <TypeAdapter<dynamic>>[
+        TaskAdapter(),
+        HabitAdapter(),
+        GoalAdapter(),
+        MilestoneAdapter(),
+      ];
+
+      for (final adapter in adapters) {
+        if (!Hive.isAdapterRegistered(adapter.typeId)) {
+          Hive.registerAdapter(adapter);
+        }
       }
 
       // Load preferred time from Hive settings

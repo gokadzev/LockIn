@@ -2,8 +2,8 @@ import 'dart:math';
 
 /// Manages unique notification IDs across the app
 class NotificationIdManager {
+  // Singleton
   factory NotificationIdManager() => _instance;
-  // Singleton pattern
   NotificationIdManager._();
   static final NotificationIdManager _instance = NotificationIdManager._();
 
@@ -20,6 +20,32 @@ class NotificationIdManager {
   final Map<String, int> _habitIds = {};
   final Set<int> _usedIds = {};
   int _lastDynamicId = 6000; // For one-time/dynamic notifications
+
+  /// Produce a deterministic id for a weekly instance.
+  ///
+  /// We reserve the lower 3 bits to encode the weekday (1..7). The base id
+  /// is shifted left by 3 bits so collisions are avoided for reasonable base
+  /// ids. This scheme is reversible via [decodeWeeklyInstanceId].
+  static int weeklyInstanceId(int baseId, int weekday) {
+    if (weekday < 1 || weekday > 7) {
+      throw ArgumentError.value(weekday, 'weekday', 'Must be in 1..7');
+    }
+    return (baseId << 3) | (weekday & 0x7);
+  }
+
+  /// Decode an id produced by [weeklyInstanceId]. Returns a map with
+  /// `baseId` and `weekday` keys.
+  static Map<String, int> decodeWeeklyInstanceId(int instanceId) {
+    final weekday = instanceId & 0x7;
+    final baseId = instanceId >> 3;
+    return {'baseId': baseId, 'weekday': weekday};
+  }
+
+  /// Produce a list of weekly instance ids for the given base id and
+  /// weekdays.
+  static List<int> weeklyInstanceIds(int baseId, Iterable<int> weekdays) {
+    return weekdays.map((d) => weeklyInstanceId(baseId, d)).toList();
+  }
 
   /// Get or create a unique ID for a habit
   int getHabitId(String habitId) {
@@ -39,8 +65,8 @@ class NotificationIdManager {
   /// Get ID for a specific weekday of a habit (for custom schedules)
   int getHabitWeekdayId(String habitId, int weekday) {
     final baseId = getHabitId(habitId);
-    // Use offset within the same range to avoid conflicts
-    return baseId + (weekday % 10); // Keep within reasonable bounds
+    // Use deterministic weekly instance id mapping
+    return NotificationIdManager.weeklyInstanceId(baseId, weekday);
   }
 
   /// Get a unique ID for Pomodoro notifications

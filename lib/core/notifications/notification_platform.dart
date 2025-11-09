@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:lockin/core/notifications/notification_id_manager.dart';
 import 'package:lockin/core/notifications/notification_types.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -150,8 +151,12 @@ class NotificationPlatform {
                 data.scheduledTime,
                 weekday,
               );
+              final instanceId = NotificationIdManager.weeklyInstanceId(
+                data.id,
+                weekday,
+              );
               await _plugin.zonedSchedule(
-                data.id + weekday, // Unique ID for each weekday
+                instanceId,
                 data.title,
                 data.body,
                 weekdayScheduled,

@@ -6,12 +6,11 @@ import 'package:lockin/core/models/journal.dart';
 import 'package:lockin/core/models/rule.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:lockin/core/utils/hive_background_init.dart';
 import 'package:lockin/features/xp/xp_models.dart';
-import 'package:path_provider/path_provider.dart';
 
 Future<void> initializeApp() async {
-  final dir = await getApplicationDocumentsDirectory();
-  await Hive.initFlutter(dir.path);
+  await initHiveForBackground();
   Hive
     ..registerAdapter(TaskAdapter())
     ..registerAdapter(HabitAdapter())

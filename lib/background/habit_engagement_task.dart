@@ -3,6 +3,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:lockin/core/utils/hive_background_init.dart';
 import 'package:lockin/features/habits/engagement_notification.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -12,8 +13,7 @@ const String habitEngagementTaskName = 'habitEngagementTask';
 void habitEngagementCallbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     try {
-      // Initialize Hive for background isolate with path
-      await Hive.initFlutter();
+      await initHiveForBackground();
 
       // Register adapters for models used in background.
       final adapters = <TypeAdapter<dynamic>>[

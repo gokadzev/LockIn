@@ -5,6 +5,7 @@ import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
 import 'package:lockin/core/notifications/engagement_notification_manager.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
+import 'package:lockin/core/utils/hive_background_init.dart';
 import 'package:workmanager/workmanager.dart';
 
 const String engagementTaskName = 'dailyEngagementTask';
@@ -17,8 +18,7 @@ void notificationBackgroundHandler() {
     try {
       debugPrint('Background task started: $task');
 
-      // Initialize Hive for background isolate
-      await Hive.initFlutter();
+      await initHiveForBackground();
       await _registerHiveAdapters();
 
       switch (task) {

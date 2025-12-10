@@ -22,12 +22,14 @@ class SettingsHome extends ConsumerStatefulWidget {
 }
 
 class _SettingsHomeState extends ConsumerState<SettingsHome> {
-  String? _status;
+  ({String text, bool success})? _status;
 
   Future<void> _backup() async {
     final jsonData = await BackupRestoreUtil.exportAllData();
     final filePath = await BackupRestoreUtil.saveBackupFile(jsonData);
-    setState(() => _status = 'Backup saved to: $filePath');
+    setState(
+      () => _status = (text: 'Backup saved to: $filePath', success: true),
+    );
   }
 
   Future<void> _restore() async {
@@ -39,7 +41,9 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
           .where((f) => f.path.endsWith('.json'))
           .toList();
       if (files.isEmpty) {
-        setState(() => _status = 'No backup file found.');
+        setState(
+          () => _status = (text: 'No backup file found.', success: false),
+        );
         return;
       }
       final file = files.last;
@@ -53,9 +57,9 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
         ..invalidate(goalsListProvider)
         ..invalidate(sessionsListProvider)
         ..invalidate(journalsListProvider);
-      setState(() => _status = 'Restore complete.');
+      setState(() => _status = (text: 'Restore complete.', success: true));
     } catch (e) {
-      setState(() => _status = 'Restore failed: $e');
+      setState(() => _status = (text: 'Restore failed: $e', success: false));
     }
   }
 
@@ -197,29 +201,35 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                     trailing: TextButton(
                       onPressed: () async {
                         setState(
-                          () =>
-                              _status = 'Running notification health check...',
+                          () => _status = (
+                            text: 'Running notification health check...',
+                            success: true,
+                          ),
                         );
                         final result = await NotificationService()
                             .getHealthCheck();
                         if (result.containsKey('error') &&
                             result['error'] != null) {
                           setState(
-                            () => _status =
-                                'Health check failed: ${result['error']}',
+                            () => _status = (
+                              text: 'Health check failed: ${result['error']}',
+                              success: false,
+                            ),
                           );
                           return;
                         }
-                        final perm = result['permissionGranted'] == true
-                            ? 'Granted'
-                            : 'Not granted';
+                        final permGranted = result['permissionGranted'] == true;
+                        final perm = permGranted ? 'Granted' : 'Not granted';
                         final pending = result['pendingCount'] ?? 0;
                         final tzInit = result['tzInitialized'] == true
                             ? 'OK'
                             : 'No';
                         setState(
-                          () => _status =
-                              'Permission: $perm • Pending: $pending • TimeZone: $tzInit',
+                          () => _status = (
+                            text:
+                                'Permission: $perm • Pending: $pending • TimeZone: $tzInit',
+                            success: permGranted,
+                          ),
                         );
                       },
                       child: const Text('Run'),
@@ -234,11 +244,11 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     child: ListTile(
                       leading: Icon(
-                        _status!.contains('failed')
-                            ? Icons.error_outline
-                            : Icons.check_circle_outline,
+                        _status!.success
+                            ? Icons.check_circle_outline
+                            : Icons.error_outline,
                       ),
-                      title: Text(_status!),
+                      title: Text(_status!.text),
                     ),
                   ),
                 ],

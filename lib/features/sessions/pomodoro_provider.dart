@@ -46,7 +46,6 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
           isRunning: false,
         ),
       );
-  bool _isNotifying = false;
   final int workSeconds;
   final int breakSeconds;
   Timer? _timer;
@@ -72,8 +71,6 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     state = state.copyWith(isRunning: true);
 
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      if (_isNotifying) return;
-
       final elapsed = DateTime.now().difference(_sessionStart!).inSeconds;
       final remaining =
           (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
@@ -88,7 +85,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
         }
 
         if (remaining <= 0) {
-          _isNotifying = true;
+          timer.cancel();
           _handlePhaseTransition();
         }
       }
@@ -107,7 +104,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
           secondsLeft: breakSeconds,
           isRunning: true,
         );
-        _isNotifying = false;
+        _restartTimer();
       });
     } else {
       _breakCount++;
@@ -119,10 +116,39 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
             secondsLeft: workSeconds,
             isRunning: true,
           );
-          _isNotifying = false;
+          _restartTimer();
         },
       );
     }
+  }
+
+  void _restartTimer() {
+    _timer?.cancel();
+    var lastSecondDisplayed = state.secondsLeft;
+    final phaseStart = DateTime.now();
+
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      final elapsed = DateTime.now().difference(phaseStart).inSeconds;
+      final remaining =
+          (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
+          elapsed;
+
+      if (remaining != lastSecondDisplayed) {
+        lastSecondDisplayed = remaining;
+        state = state.copyWith(secondsLeft: remaining);
+
+        if (state.phase == PomodoroPhase.work) {
+          _sessionDuration = Duration(
+            seconds: DateTime.now().difference(_sessionStart!).inSeconds,
+          );
+        }
+
+        if (remaining <= 0) {
+          timer.cancel();
+          _handlePhaseTransition();
+        }
+      }
+    });
   }
 
   Future<void> _sendNotification({

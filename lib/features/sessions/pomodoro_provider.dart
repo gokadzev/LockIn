@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lockin/constants/app_values.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
 
@@ -35,11 +36,13 @@ class PomodoroState {
 }
 
 class PomodoroNotifier extends StateNotifier<PomodoroState> {
-  PomodoroNotifier({this.workSeconds = 1500, this.breakSeconds = 300})
-    : super(
+  PomodoroNotifier({int? workSeconds, int? breakSeconds})
+    : workSeconds = workSeconds ?? (AppValues.defaultWorkMinutes * 60),
+      breakSeconds = breakSeconds ?? (AppValues.defaultBreakMinutes * 60),
+      super(
         PomodoroState(
           phase: PomodoroPhase.work,
-          secondsLeft: workSeconds,
+          secondsLeft: workSeconds ?? (AppValues.defaultWorkMinutes * 60),
           isRunning: false,
         ),
       );

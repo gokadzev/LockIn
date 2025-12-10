@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
@@ -34,19 +35,15 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
 
   Future<void> _restore() async {
     try {
-      final dir = Directory('/storage/emulated/0/Download/LockinBackup');
-      final files = dir
-          .listSync()
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.json'))
-          .toList();
-      if (files.isEmpty) {
-        setState(
-          () => _status = (text: 'No backup file found.', success: false),
-        );
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (result == null || result.files.single.path == null) {
+        setState(() => _status = (text: 'No file selected.', success: false));
         return;
       }
-      final file = files.last;
+      final file = File(result.files.single.path!);
       final data = await BackupRestoreUtil.importBackupFile(file);
       await BackupRestoreUtil.restoreAllData(data);
       // Invalidate all major providers to refresh UI

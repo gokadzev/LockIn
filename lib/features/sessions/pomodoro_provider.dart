@@ -66,69 +66,80 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
 
   void startOrResume(BuildContext context) {
     if (state.isRunning) return;
-    // Cancel any existing timer before starting a new one
     _timer?.cancel();
     _sessionStart ??= DateTime.now();
-    var lastTick = DateTime.now();
+    var lastSecondDisplayed = state.secondsLeft;
     state = state.copyWith(isRunning: true);
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      if (_isNotifying) return; // Prevent overlapping async executions
-      final now = DateTime.now();
-      final elapsed = now.difference(lastTick).inSeconds;
-      lastTick = now;
-      state = state.copyWith(secondsLeft: state.secondsLeft - elapsed);
-      // Only count work time towards session duration.
-      if (state.phase == PomodoroPhase.work) {
-        _sessionDuration += Duration(seconds: elapsed);
-      }
-      if (state.secondsLeft > 0) return;
-      _isNotifying = true;
-      try {
+
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      if (_isNotifying) return;
+
+      final elapsed = DateTime.now().difference(_sessionStart!).inSeconds;
+      final remaining =
+          (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
+          elapsed;
+
+      if (remaining != lastSecondDisplayed) {
+        lastSecondDisplayed = remaining;
+        state = state.copyWith(secondsLeft: remaining);
+
         if (state.phase == PomodoroPhase.work) {
-          _pomodoroCount++;
-          // Send pomodoro notification using new service
-          try {
-            final result = await NotificationService().showInstantNotification(
-              title: '⏱️ Pomodoro Finished',
-              body: 'Time for a break!',
-            );
-            if (!result.success) {
-              debugPrint('Notification failed: ${result.error}');
-            }
-          } catch (e) {
-            debugPrint('Notification error: $e');
-          }
-          state = PomodoroState(
-            phase: PomodoroPhase.breakTime,
-            secondsLeft: breakSeconds,
-            isRunning: true,
-          );
-        } else {
-          _breakCount++;
-          // Send break finished notification using new service
-          try {
-            final result = await NotificationService().showInstantNotification(
-              title: '⏰ Break Finished',
-              body: 'Time to focus!',
-            );
-            if (!result.success) {
-              debugPrint('Notification failed: ${result.error}');
-            }
-          } catch (e) {
-            debugPrint('Notification error: $e');
-          }
-          // Starting a new work period. If we don't have a session start, set it.
+          _sessionDuration = Duration(seconds: elapsed);
+        }
+
+        if (remaining <= 0) {
+          _isNotifying = true;
+          _handlePhaseTransition();
+        }
+      }
+    });
+  }
+
+  void _handlePhaseTransition() {
+    if (state.phase == PomodoroPhase.work) {
+      _pomodoroCount++;
+      _sendNotification(
+        title: '⏱️ Pomodoro Finished',
+        body: 'Time for a break!',
+      ).then((_) {
+        state = PomodoroState(
+          phase: PomodoroPhase.breakTime,
+          secondsLeft: breakSeconds,
+          isRunning: true,
+        );
+        _isNotifying = false;
+      });
+    } else {
+      _breakCount++;
+      _sendNotification(title: '⏰ Break Finished', body: 'Time to focus!').then(
+        (_) {
           _sessionStart ??= DateTime.now();
           state = PomodoroState(
             phase: PomodoroPhase.work,
             secondsLeft: workSeconds,
             isRunning: true,
           );
-        }
-      } finally {
-        _isNotifying = false;
+          _isNotifying = false;
+        },
+      );
+    }
+  }
+
+  Future<void> _sendNotification({
+    required String title,
+    required String body,
+  }) async {
+    try {
+      final result = await NotificationService().showInstantNotification(
+        title: title,
+        body: body,
+      );
+      if (!result.success) {
+        debugPrint('Notification failed: ${result.error}');
       }
-    });
+    } catch (e) {
+      debugPrint('Notification error: $e');
+    }
   }
 
   void finishSession(WidgetRef ref, BuildContext context) {
@@ -146,7 +157,6 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
           ..pomodoroCount = _pomodoroCount
           ..breakCount = _breakCount,
       );
-      // Award XP for session completion
       ref
           .read(xpNotifierProvider.future)
           .then((xpNotifier) => xpNotifier.addXP(10));

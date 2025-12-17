@@ -197,7 +197,9 @@ class NotificationService {
     // Add custom weekday IDs if they exist
     if (customWeekdays != null) {
       for (final weekday in customWeekdays) {
-        idsToCancel.add(baseId + weekday);
+        idsToCancel.add(
+          NotificationIdManager.weeklyInstanceId(baseId, weekday),
+        );
       }
     }
 

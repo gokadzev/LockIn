@@ -205,20 +205,27 @@ class SuggestionsPage extends ConsumerWidget {
                                             category,
                                           );
                                         }
-                                        habitNotifier.addHabit(
-                                          Habit()
-                                            ..title = s.title
-                                            ..frequency = s.frequency
-                                            ..category = category,
-                                        );
+                                        final newHabit = Habit()
+                                          ..title = s.title
+                                          ..frequency = s.frequency
+                                          ..category = category;
+
+                                        habitNotifier.addHabit(newHabit);
+
                                         try {
                                           final engagementTime = ref.watch(
                                             engagementTimeProvider,
                                           );
+
+                                          final habitId =
+                                              newHabit.key?.toString() ??
+                                              DateTime.now()
+                                                  .millisecondsSinceEpoch
+                                                  .toString();
+
                                           await HabitNotificationManager()
                                               .scheduleHabitReminder(
-                                                habitId: s.title.hashCode
-                                                    .toString(),
+                                                habitId: habitId,
                                                 habitTitle: s.title,
                                                 reminderTime: TimeOfDay(
                                                   hour: engagementTime.hour,

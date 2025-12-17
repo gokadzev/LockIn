@@ -110,13 +110,31 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
   ) {
     if (box == null) return;
     try {
-      final keys = box!.keys.toList();
-      final index = keys.indexOf(key);
-      if (index == -1) {
+      final prevHabit = box!.get(key);
+      if (prevHabit == null) {
         debugPrint('Habit key $key not found');
         return;
       }
-      updateHabit(index, habit, onXPChange);
+
+      // Normalize history using the streak calculator
+      habit.history = HabitStreakCalculator.normalizeHistory(habit.history);
+      final prevHistory = prevHabit.history.map((d) => d.dateOnly).toList();
+
+      final wasDoneToday = prevHistory.any((d) => d.isToday);
+      final isDoneToday = habit.history.any((d) => d.isToday);
+
+      // Recalculate streak using the dedicated service
+      habit.streak = HabitStreakCalculator.calculateStreak(habit.history);
+
+      // Persist using key-based update
+      updateItemByKey(key, habit, onSuccess: () {});
+
+      // Award or remove XP if today's completion status changed.
+      if (!wasDoneToday && isDoneToday) {
+        onXPChange?.call(AppValues.habitCompletionXP);
+      } else if (wasDoneToday && !isDoneToday) {
+        onXPChange?.call(-AppValues.habitCompletionXP);
+      }
     } catch (e, stackTrace) {
       debugPrint('Error updating habit by key: $e');
       debugPrint('StackTrace: $stackTrace');

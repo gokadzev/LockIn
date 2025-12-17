@@ -78,34 +78,30 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
   ) {
     if (box == null) return false;
     try {
-      final keys = box!.keys.toList();
-      final idx = keys.indexOf(key);
-      if (idx == -1) {
+      final prevTask = box!.get(key);
+      if (prevTask == null) {
         debugPrint('Task key $key not found');
         return false;
       }
 
-      final prevTask = box!.getAt(idx);
-
       // Manage completion time
-      if (prevTask != null && !prevTask.completed && task.completed) {
+      if (!prevTask.completed && task.completed) {
         task.completionTime = DateTime.now();
-      } else if (prevTask != null && prevTask.completed && !task.completed) {
+      } else if (prevTask.completed && !task.completed) {
         task.completionTime = null;
       }
 
-      updateItem(idx, task);
+      // Persist using key-based update
+      final success = updateItemByKey(key, task, onSuccess: () {});
 
       // Manage XP
-      if (prevTask != null) {
-        if (!prevTask.completed && task.completed) {
-          onXPChange?.call(AppValues.taskCompletionXP);
-        } else if (prevTask.completed && !task.completed) {
-          onXPChange?.call(-AppValues.taskCompletionXP);
-        }
+      if (!prevTask.completed && task.completed) {
+        onXPChange?.call(AppValues.taskCompletionXP);
+      } else if (prevTask.completed && !task.completed) {
+        onXPChange?.call(-AppValues.taskCompletionXP);
       }
 
-      return true;
+      return success;
     } catch (e, stackTrace) {
       debugPrint('Error updating task by key: $e');
       debugPrint('StackTrace: $stackTrace');

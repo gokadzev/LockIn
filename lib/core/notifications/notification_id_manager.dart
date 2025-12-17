@@ -53,6 +53,18 @@ class NotificationIdManager {
       return _habitIds[habitId]!;
     }
 
+    // Prefer a deterministic mapping so IDs remain consistent across restarts.
+    final deterministic =
+        _habitIdStart + (habitId.hashCode.abs() % _categoryRange);
+
+    // If deterministic id is free or already associated with this habit, use it.
+    if (!_usedIds.contains(deterministic)) {
+      _habitIds[habitId] = deterministic;
+      _usedIds.add(deterministic);
+      return deterministic;
+    }
+
+    // If collision occurs (rare), fall back to allocation in range.
     final id = _generateIdInRange(
       _habitIdStart,
       _habitIdStart + _categoryRange - 1,

@@ -92,13 +92,31 @@ class GoalsNotifier extends StateNotifier<List<Goal>> with BoxCrudMixin<Goal> {
   ) {
     if (box == null) return;
     try {
-      final keys = box!.keys.toList();
-      final index = keys.indexOf(key);
-      if (index == -1) {
+      final prevGoal = box!.get(key);
+      if (prevGoal == null) {
         debugPrint('Goal key $key not found');
         return;
       }
-      updateGoal(index, goal, onXPChange);
+
+      // Calculate XP delta BEFORE mutating storage/state
+      final prevCompleted = prevGoal.milestones
+          .where((m) => m.completed)
+          .length;
+      final newCompleted = goal.milestones.where((m) => m.completed).length;
+      final xpDelta =
+          (newCompleted - prevCompleted) * AppValues.milestoneCompletionXP;
+
+      // Recalculate progress only if there are milestones
+      if (goal.milestones.isNotEmpty) {
+        goal.progress = goal.milestoneProgress;
+      }
+
+      // Persist using key-based update
+      updateItemByKey(key, goal, onSuccess: () {});
+
+      if (xpDelta != 0) {
+        onXPChange?.call(xpDelta);
+      }
     } catch (e, stackTrace) {
       debugPrint('Error updating goal by key: $e');
       debugPrint('StackTrace: $stackTrace');

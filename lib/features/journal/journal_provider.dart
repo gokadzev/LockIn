@@ -29,18 +29,13 @@ class JournalsNotifier extends StateNotifier<List<Journal>>
 
   void updateJournalByKey(dynamic key, Journal journal) {
     if (box == null) return;
-    final keys = box!.keys.toList();
-    final index = keys.indexOf(key);
-    if (index == -1) return;
-    updateJournal(index, journal);
+    if (!box!.containsKey(key)) return;
+    updateItemByKey(key, journal, onSuccess: () {});
   }
 
   void deleteJournalByKey(dynamic key) {
     if (box == null) return;
-    final keys = box!.keys.toList();
-    final index = keys.indexOf(key);
-    if (index == -1) return;
-    deleteJournal(index);
+    deleteItemByKey(key);
   }
 
   @override

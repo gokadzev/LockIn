@@ -40,10 +40,7 @@ class SessionsNotifier extends StateNotifier<List<Session>>
   bool deleteSessionByKey(dynamic key) {
     if (box == null) return false;
     try {
-      final idx = box!.keys.toList().indexOf(key);
-      if (idx == -1) return false;
-      deleteItem(idx);
-      return true;
+      return deleteItemByKey(key);
     } catch (_) {
       return false;
     }

@@ -107,13 +107,15 @@ mixin BoxCrudMixin<T> on StateNotifier<List<T>> {
       return false;
     }
     try {
-      final keys = box!.keys.toList();
-      final index = keys.indexOf(key);
-      if (index == -1) {
+      if (!box!.containsKey(key)) {
         debugPrint('Key $key not found in box');
         return false;
       }
-      updateItem(index, item);
+
+      box!.put(key, item);
+
+      syncStateFromBox();
+
       onSuccess?.call();
       return true;
     } catch (e, stackTrace) {
@@ -130,13 +132,13 @@ mixin BoxCrudMixin<T> on StateNotifier<List<T>> {
       return false;
     }
     try {
-      final keys = box!.keys.toList();
-      final index = keys.indexOf(key);
-      if (index == -1) {
+      if (!box!.containsKey(key)) {
         debugPrint('Key $key not found in box');
         return false;
       }
-      deleteItem(index);
+
+      box!.delete(key);
+      syncStateFromBox();
       return true;
     } catch (e, stackTrace) {
       debugPrint('Error deleting item by key $key: $e');

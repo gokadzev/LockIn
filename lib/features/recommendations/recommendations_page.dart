@@ -213,7 +213,7 @@ class SuggestionsPage extends ConsumerWidget {
                                         habitNotifier.addHabit(newHabit);
 
                                         try {
-                                          final engagementTime = ref.watch(
+                                          final engagementTime = ref.read(
                                             engagementTimeProvider,
                                           );
 

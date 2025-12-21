@@ -45,6 +45,9 @@ jobs:
       # Get flutter dependencies.
       - run: flutter pub get
 
+      # Generate code with build_runner
+      - run: dart run build_runner build --delete-conflicting-outputs
+
       # Build universal apk.
       - run: flutter build apk --release
 

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lockin/constants/recommendations/goals.dart';
+import 'package:lockin/constants/recommendations/habits.dart';
+import 'package:lockin/constants/recommendations/tasks.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
-
 import 'package:lockin/core/notifications/habit_notification_manager.dart';
 import 'package:lockin/core/utils/category_icon.dart';
-import 'package:lockin/data/recommendations/goals.dart';
-import 'package:lockin/data/recommendations/habits.dart';
-import 'package:lockin/data/recommendations/tasks.dart';
 import 'package:lockin/features/goals/goal_provider.dart';
 import 'package:lockin/features/habits/habit_category_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';

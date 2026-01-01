@@ -14,8 +14,6 @@ Your Personal Habit & Productivity Companion
   <img src="https://github.com/user-attachments/assets/1c204507-d124-4b34-878b-96c39c9bb3f8"  alt="ko-fi badge" style="width: 150px;">
 </a>
 
-
-
 ---
 
 ## Features
@@ -33,13 +31,11 @@ Your Personal Habit & Productivity Companion
 ## Screenshots
 
 | ![Screenshot 1](fastlane/metadata/android/en-US/images/phoneScreenshots/01.jpg) | ![Screenshot 2](fastlane/metadata/android/en-US/images/phoneScreenshots/02.jpg) | ![Screenshot 3](fastlane/metadata/android/en-US/images/phoneScreenshots/03.jpg) | ![Screenshot 4](fastlane/metadata/android/en-US/images/phoneScreenshots/04.jpg) |
-|----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 
 ---
 
 ## Download
-
 
 [<img src="repository_files/get-it-on-github.png" alt="Get it on Github" height="80">](https://github.com/gokadzev/LockIn/releases/latest)
 
@@ -47,9 +43,8 @@ Your Personal Habit & Productivity Companion
 
 ## License
 
-
 ```
-Copyright © 2025 Valeri Gokadze
+Copyright © 2026 Valeri Gokadze
 
 LockIn is a free software licensed under GPL v3.0
 It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;

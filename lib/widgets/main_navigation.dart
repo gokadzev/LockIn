@@ -123,7 +123,7 @@ class MainNavigationState extends State<MainNavigation> {
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.timer),
-                    label: 'Sessions',
+                    label: 'Focus',
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.book),
@@ -168,7 +168,7 @@ class MainNavigationState extends State<MainNavigation> {
       case 3:
         return 'Goals';
       case 4:
-        return 'Sessions';
+        return 'Focus';
       case 5:
         return 'Journal';
       default:

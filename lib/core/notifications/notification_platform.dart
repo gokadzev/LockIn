@@ -48,7 +48,7 @@ class NotificationPlatform {
 
       final result = await _plugin.initialize(
         initSettings,
-        onDidReceiveNotificationResponse: _onNotificationTapped,
+        // onDidReceiveNotificationResponse: _onNotificationTapped,
       );
 
       if (result != true) {
@@ -316,9 +316,9 @@ class NotificationPlatform {
     );
   }
 
-  /// Handle notification taps
-  void _onNotificationTapped(NotificationResponse response) {
-    debugPrint('Notification tapped: ${response.payload}');
-    // TODO: Implement navigation based on payload
-  }
+  // /// Handle notification taps
+  // void _onNotificationTapped(NotificationResponse response) {
+  //   debugPrint('Notification tapped: ${response.payload}');
+  //   // Implement navigation based on payload
+  // }
 }

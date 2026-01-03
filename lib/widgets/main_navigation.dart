@@ -46,6 +46,9 @@ class MainNavigationState extends State<MainNavigation> {
       builder: (context, constraints) {
         final isTablet = constraints.maxWidth >= UIConstants.tabletBreakpoint;
         if (isTablet) {
+          final indicatorColor = Colors.white.withAlpha(
+            43,
+          ); // Theme.of(context).colorScheme.onSurface.withAlpha(43);
           // Tablet layout
           return Row(
             children: [
@@ -60,15 +63,54 @@ class MainNavigationState extends State<MainNavigation> {
                     ? NavigationRailLabelType.none
                     : NavigationRailLabelType.all,
                 destinations: [
-                  for (int i = 0; i < 6; i++)
-                    NavigationRailDestination(
-                      indicatorColor: Colors.white.withAlpha(43),
-                      indicatorShape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      icon: _navIcon(i),
-                      label: Text(_navLabel(i)),
+                  NavigationRailDestination(
+                    indicatorColor: indicatorColor,
+                    indicatorShape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
+                    icon: const Icon(Icons.dashboard),
+                    label: const Text('Dashboard'),
+                  ),
+                  NavigationRailDestination(
+                    indicatorColor: indicatorColor,
+                    indicatorShape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                    icon: const Icon(Icons.check_circle_outline),
+                    label: const Text('Tasks'),
+                  ),
+                  NavigationRailDestination(
+                    indicatorColor: indicatorColor,
+                    indicatorShape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                    icon: const Icon(Icons.repeat),
+                    label: const Text('Habits'),
+                  ),
+                  NavigationRailDestination(
+                    indicatorColor: indicatorColor,
+                    indicatorShape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                    icon: const Icon(Icons.flag),
+                    label: const Text('Goals'),
+                  ),
+                  NavigationRailDestination(
+                    indicatorColor: indicatorColor,
+                    indicatorShape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                    icon: const Icon(Icons.timer),
+                    label: const Text('Focus'),
+                  ),
+                  NavigationRailDestination(
+                    indicatorColor: indicatorColor,
+                    indicatorShape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                    icon: const Icon(Icons.book),
+                    label: const Text('Journal'),
+                  ),
                 ],
               ),
               // Main content
@@ -136,43 +178,5 @@ class MainNavigationState extends State<MainNavigation> {
         }
       },
     );
-  }
-
-  Icon _navIcon(int index) {
-    switch (index) {
-      case 0:
-        return const Icon(Icons.dashboard);
-      case 1:
-        return const Icon(Icons.check_circle_outline);
-      case 2:
-        return const Icon(Icons.repeat);
-      case 3:
-        return const Icon(Icons.flag);
-      case 4:
-        return const Icon(Icons.timer);
-      case 5:
-        return const Icon(Icons.book);
-      default:
-        return const Icon(Icons.circle);
-    }
-  }
-
-  String _navLabel(int index) {
-    switch (index) {
-      case 0:
-        return 'Dashboard';
-      case 1:
-        return 'Tasks';
-      case 2:
-        return 'Habits';
-      case 3:
-        return 'Goals';
-      case 4:
-        return 'Focus';
-      case 5:
-        return 'Journal';
-      default:
-        return '';
-    }
   }
 }

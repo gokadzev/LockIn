@@ -118,7 +118,7 @@ class NotificationService {
       id: _idManager.getHabitId(habitId),
       title: title,
       body: body,
-      scheduledTime: scheduledTime.toLocal(),
+      scheduledTime: scheduledTime,
       habitId: habitId,
       repeatInterval: repeatInterval,
       customWeekdays: customWeekdays,

@@ -35,6 +35,7 @@ class EngagementNotificationManager {
       final tzOk = await tzManager.initialize();
       if (!tzOk) {
         debugPrint('Timezone initialization failed in background');
+        return false;
       }
 
       // Initialize low-level notification platform

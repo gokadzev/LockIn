@@ -168,6 +168,8 @@ class NotificationIdManager {
       }
     }
 
+    _usedIds.add(id);
+
     return id;
   }
 

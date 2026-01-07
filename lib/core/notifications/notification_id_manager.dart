@@ -20,6 +20,7 @@ class NotificationIdManager {
   final Map<String, int> _habitIds = {};
   final Set<int> _usedIds = {};
   int _lastDynamicId = 6000; // For one-time/dynamic notifications
+  final Random _random = Random();
 
   /// Produce a deterministic id for a weekly instance.
   ///
@@ -148,13 +149,12 @@ class NotificationIdManager {
   }
 
   int _generateIdInRange(int start, int end) {
-    final random = Random();
     int id;
     var attempts = 0;
     const maxAttempts = 100;
 
     do {
-      id = start + random.nextInt(end - start + 1);
+      id = start + _random.nextInt(end - start + 1);
       attempts++;
     } while (_usedIds.contains(id) && attempts < maxAttempts);
 

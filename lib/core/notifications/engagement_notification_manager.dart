@@ -167,9 +167,18 @@ class EngagementNotificationManager {
     final tasksCompletedToday = analysis['tasksCompletedToday'] as int;
     final habitCompletionRate = analysis['habitCompletionRate'] as double;
 
-    // Don't spam if user is already doing well
+    // Don't spam if user is already doing well. However, allow
+    // celebratory notifications (high completion + some tasks done).
     if (habitCompletionRate >= 0.8 && tasksCompletedToday >= 3) {
-      return false;
+      // If the celebration criteria are met, allow sending the
+      // celebration message despite the general "don't spam" rule.
+      final isCelebration =
+          totalActiveHabits > 0 &&
+          (habitsCompletedToday >= totalActiveHabits * 0.7 &&
+              tasksCompletedToday >= 2);
+      if (!isCelebration) {
+        return false;
+      }
     }
 
     // Send if user has habits but hasn't completed any today

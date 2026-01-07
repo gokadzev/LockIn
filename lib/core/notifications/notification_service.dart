@@ -29,8 +29,9 @@ class NotificationService {
       final timezoneSuccess = await _timezoneManager.initialize();
       if (!timezoneSuccess) {
         debugPrint(
-          'Warning: Timezone initialization failed, notifications may not work correctly',
+          'Timezone initialization failed, aborting NotificationService initialization',
         );
+        return false;
       }
 
       // Check/request permissions

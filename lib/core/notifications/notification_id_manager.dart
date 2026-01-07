@@ -79,22 +79,29 @@ class NotificationIdManager {
   int getHabitWeekdayId(String habitId, int weekday) {
     final baseId = getHabitId(habitId);
     // Use deterministic weekly instance id mapping
-    return NotificationIdManager.weeklyInstanceId(baseId, weekday);
+    final instanceId = NotificationIdManager.weeklyInstanceId(baseId, weekday);
+    _usedIds.add(instanceId);
+    return instanceId;
   }
 
   /// Get a unique ID for Pomodoro notifications
   int getPomodoroId([String? sessionId]) {
     if (sessionId != null) {
       // Use a consistent ID for the same session
-      return _pomodoroIdStart + (sessionId.hashCode.abs() % _categoryRange);
+      final id = _pomodoroIdStart + (sessionId.hashCode.abs() % _categoryRange);
+      _usedIds.add(id);
+      return id;
     }
+    _usedIds.add(_pomodoroIdStart);
     return _pomodoroIdStart;
   }
 
   /// Get a unique ID for engagement notifications
   int getEngagementId([String? type]) {
     if (type != null) {
-      return _engagementIdStart + (type.hashCode.abs() % _categoryRange);
+      final id = _engagementIdStart + (type.hashCode.abs() % _categoryRange);
+      _usedIds.add(id);
+      return id;
     }
     return _generateIdInRange(
       _engagementIdStart,
@@ -104,13 +111,17 @@ class NotificationIdManager {
 
   /// Get a unique ID for achievement notifications
   int getAchievementId(String achievementId) {
-    return _achievementIdStart +
-        (achievementId.hashCode.abs() % _categoryRange);
+    final id =
+        _achievementIdStart + (achievementId.hashCode.abs() % _categoryRange);
+    _usedIds.add(id);
+    return id;
   }
 
   /// Get a unique ID for streak notifications
   int getStreakId(String streakType) {
-    return _streakIdStart + (streakType.hashCode.abs() % _categoryRange);
+    final id = _streakIdStart + (streakType.hashCode.abs() % _categoryRange);
+    _usedIds.add(id);
+    return id;
   }
 
   /// Generate a unique dynamic ID for one-time notifications
@@ -126,7 +137,11 @@ class NotificationIdManager {
   void removeHabitId(String habitId) {
     final id = _habitIds.remove(habitId);
     if (id != null) {
+      // Remove base id and any weekly instance ids derived from it
       _usedIds.remove(id);
+      for (var weekday = 1; weekday <= 7; weekday++) {
+        _usedIds.remove(NotificationIdManager.weeklyInstanceId(id, weekday));
+      }
     }
   }
 
@@ -134,6 +149,9 @@ class NotificationIdManager {
   void clearHabitIds() {
     for (final id in _habitIds.values) {
       _usedIds.remove(id);
+      for (var weekday = 1; weekday <= 7; weekday++) {
+        _usedIds.remove(NotificationIdManager.weeklyInstanceId(id, weekday));
+      }
     }
     _habitIds.clear();
   }

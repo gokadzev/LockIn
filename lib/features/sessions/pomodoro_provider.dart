@@ -68,7 +68,14 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     if (state.isRunning) return;
     _timer?.cancel();
     _sessionStart ??= DateTime.now();
-    _phaseStart ??= DateTime.now();
+    final phaseDuration = state.phase == PomodoroPhase.work
+        ? workSeconds
+        : breakSeconds;
+    final elapsedSoFar = (phaseDuration - state.secondsLeft).clamp(
+      0,
+      phaseDuration,
+    );
+    _phaseStart ??= DateTime.now().subtract(Duration(seconds: elapsedSoFar));
     var lastSecondDisplayed = state.secondsLeft;
     state = state.copyWith(isRunning: true);
 

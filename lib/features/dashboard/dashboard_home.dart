@@ -29,6 +29,7 @@ class DashboardHome extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(dashboardStatsProvider);
+    final weeklyStats = ref.watch(weeklyOverviewStatsProvider);
     final statsFull = stats;
     final xpState = ref.watch(xpNotifierProvider);
     final xpProfile = xpState.asData?.value.profile;
@@ -60,7 +61,7 @@ class DashboardHome extends ConsumerWidget {
             else
               QuickStatsCard(stats: stats),
             if (xpProfile != null) XPDashboardCard(xpProfile: xpProfile),
-            WeeklyOverviewChart(stats: stats),
+            WeeklyOverviewChart(stats: weeklyStats),
             MonthlyOverviewHeatmap(
               monthlyData: ref.watch(monthlyHeatmapProvider),
             ),

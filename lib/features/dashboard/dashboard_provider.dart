@@ -39,6 +39,18 @@ class DashboardStats {
   final String nudge;
 }
 
+class WeeklyOverviewStats {
+  WeeklyOverviewStats({
+    required this.tasksDone,
+    required this.habitsCompleted,
+    required this.focusSessions,
+  });
+
+  final int tasksDone;
+  final int habitsCompleted;
+  final int focusSessions;
+}
+
 final dashboardStatsProvider = Provider<DashboardStats>((ref) {
   final tasks = ref.watch(tasksListProvider);
   final habits = ref.watch(habitsListProvider);
@@ -79,6 +91,43 @@ final dashboardStatsProvider = Provider<DashboardStats>((ref) {
     fatigue: fatigue,
     heatmap: heatmap,
     nudge: nudge,
+  );
+});
+
+final weeklyOverviewStatsProvider = Provider<WeeklyOverviewStats>((ref) {
+  final tasks = ref.watch(tasksListProvider);
+  final habits = ref.watch(habitsListProvider);
+  final sessions = ref.watch(sessionsListProvider);
+
+  final now = DateTime.now();
+  final end = DateTime(now.year, now.month, now.day);
+  final start = end.subtract(const Duration(days: 6));
+
+  bool inWindow(DateTime date) {
+    final day = DateTime(date.year, date.month, date.day);
+    return !day.isBefore(start) && !day.isAfter(end);
+  }
+
+  final tasksDone = tasks
+      .where(
+        (t) =>
+            t.completed &&
+            t.completionTime != null &&
+            inWindow(t.completionTime!),
+      )
+      .length;
+
+  final habitsCompleted = habits.fold<int>(
+    0,
+    (sum, h) => sum + h.history.where((date) => inWindow(date)).length,
+  );
+
+  final focusSessions = sessions.where((s) => inWindow(s.startTime)).length;
+
+  return WeeklyOverviewStats(
+    tasksDone: tasksDone,
+    habitsCompleted: habitsCompleted,
+    focusSessions: focusSessions,
   );
 });
 

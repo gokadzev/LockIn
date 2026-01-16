@@ -9,7 +9,7 @@ import 'package:lockin/widgets/lockin_card.dart';
 class WeeklyOverviewChart extends StatelessWidget {
   const WeeklyOverviewChart({required this.stats, super.key});
 
-  final DashboardStats stats;
+  final WeeklyOverviewStats stats;
 
   @override
   Widget build(BuildContext context) {

@@ -85,8 +85,8 @@ class SuggestionsPage extends ConsumerWidget {
           title: const Text('Recommendations'),
           bottom: TabBar(
             tabs: const [
-              Tab(text: 'Habits', icon: Icon(Icons.self_improvement)),
-              Tab(text: 'Tasks', icon: Icon(Icons.checklist)),
+              Tab(text: 'Habits', icon: Icon(Icons.repeat)),
+              Tab(text: 'Tasks', icon: Icon(Icons.check_circle_outline)),
               Tab(text: 'Goals', icon: Icon(Icons.flag)),
             ],
             indicatorColor: Theme.of(context).colorScheme.primary,

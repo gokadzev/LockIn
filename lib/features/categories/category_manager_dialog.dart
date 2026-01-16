@@ -10,6 +10,7 @@ class CategoryManagerDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categories = ref.watch(habitCategoriesProvider);
+    final box = ref.watch(habitCategoriesBoxProvider);
     final notifier = ref.read(habitCategoriesProvider.notifier);
     return LockinDialog(
       title: const Text('Manage Categories'),
@@ -20,8 +21,9 @@ class CategoryManagerDialog extends ConsumerWidget {
           itemCount: categories.length,
           separatorBuilder: (_, _) => const Divider(),
           itemBuilder: (context, index) {
-            final cat = categories[index];
-            final controller = TextEditingController(text: cat.name);
+            final name = categories[index];
+            final key = box?.keyAt(index);
+            final controller = TextEditingController(text: name);
             return Row(
               children: [
                 Expanded(
@@ -39,8 +41,8 @@ class CategoryManagerDialog extends ConsumerWidget {
                       ),
                     ),
                     onSubmitted: (val) {
-                      if (val.trim().isNotEmpty) {
-                        notifier.editCategoryByKey(cat.key, val.trim());
+                      if (val.trim().isNotEmpty && key != null) {
+                        notifier.editCategoryByKey(key, val.trim());
                       }
                     },
                   ),
@@ -48,7 +50,9 @@ class CategoryManagerDialog extends ConsumerWidget {
                 IconButton(
                   icon: Icon(Icons.delete, color: scheme.onSurfaceVariant),
                   onPressed: () {
-                    notifier.deleteCategoryByKey(cat.key, ref: ref);
+                    if (key != null) {
+                      notifier.deleteCategoryByKey(key, ref: ref);
+                    }
                   },
                 ),
               ],

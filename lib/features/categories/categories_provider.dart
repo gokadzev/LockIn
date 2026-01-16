@@ -21,8 +21,8 @@ const List<String> _builtInCategories = [
 final categoriesProvider = Provider<List<String>>((ref) {
   final userCats = ref.watch(habitCategoriesProvider);
   final result = <String>[..._builtInCategories];
-  for (final uc in userCats) {
-    final name = uc.name.trim();
+  for (final nameRaw in userCats) {
+    final name = nameRaw.trim();
     if (name.isEmpty) continue;
     final exists = result.any((r) => r.toLowerCase() == name.toLowerCase());
     if (!exists) result.add(name);

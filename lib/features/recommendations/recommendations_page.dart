@@ -36,7 +36,8 @@ class SuggestionsPage extends ConsumerWidget {
     // Build a combined list of categories from existing app categories and suggestion items
     final catSet = <String>{};
     for (final c in categories) {
-      if (c.name.trim().isNotEmpty) catSet.add(c.name);
+      final name = c.trim();
+      if (name.isNotEmpty) catSet.add(name);
     }
     for (final s in habitSuggestionsDB) {
       catSet.add(s.category ?? 'General');
@@ -198,7 +199,7 @@ class SuggestionsPage extends ConsumerWidget {
                                             s.category ?? 'General';
                                         if (category.isNotEmpty &&
                                             !categories.any(
-                                              (c) => c.name == category,
+                                              (c) => c == category,
                                             )) {
                                           categoriesNotifier.addCategory(
                                             category,

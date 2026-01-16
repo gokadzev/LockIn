@@ -17,6 +17,8 @@ class ProductivityService {
         taskBox.values
             .where(
               (t) =>
+                  t.completed &&
+                  !t.abandoned &&
                   t.actualDuration != null &&
                   (tag == null || t.tags.contains(tag)),
             )
@@ -80,7 +82,11 @@ class ProductivityService {
   // 4. Estimate vs. actual accuracy
   double getEstimateAccuracy() {
     final tasks = taskBox.values.where(
-      (t) => t.estimatedDuration != null && t.actualDuration != null,
+      (t) =>
+          t.completed &&
+          !t.abandoned &&
+          t.estimatedDuration != null &&
+          t.actualDuration != null,
     );
     if (tasks.isEmpty) return 1;
     double sum = 0;

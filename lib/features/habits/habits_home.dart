@@ -351,7 +351,6 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                       Expanded(
                         child: CategoryDropdown(
                           value: selectedCategory,
-                          includeNone: false,
                           onChanged: (val) => setState(
                             () => selectedCategory = val ?? 'General',
                           ),

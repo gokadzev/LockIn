@@ -8,14 +8,12 @@ class CategoryDropdown extends ConsumerWidget {
   const CategoryDropdown({
     required this.value,
     required this.onChanged,
-    this.includeNone = true,
     this.hint,
     super.key,
   });
 
   final String? value;
   final ValueChanged<String?> onChanged;
-  final bool includeNone;
   final String? hint;
 
   @override
@@ -47,21 +45,14 @@ class CategoryDropdown extends ConsumerWidget {
       dropdownColor: scheme.surfaceContainerHighest,
       style: TextStyle(color: scheme.onSurface),
       onChanged: onChanged,
-      items: [
-        if (includeNone)
-          DropdownMenuItem<String?>(
-            child: Text(
-              'None',
-              style: TextStyle(color: scheme.onSurface.withValues(alpha: .75)),
+      items: categories
+          .map(
+            (c) => DropdownMenuItem<String?>(
+              value: c,
+              child: Text(c, style: TextStyle(color: scheme.onSurface)),
             ),
-          ),
-        ...categories.map(
-          (c) => DropdownMenuItem<String?>(
-            value: c,
-            child: Text(c, style: TextStyle(color: scheme.onSurface)),
-          ),
-        ),
-      ],
+          )
+          .toList(),
     );
   }
 }

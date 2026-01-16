@@ -130,7 +130,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
           final titleController = TextEditingController();
           final descController = TextEditingController();
           var priority = 2;
-          String? category;
+          String? category = 'General';
 
           final result = await showDialog<Map<String, dynamic>>(
             context: context,
@@ -194,7 +194,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                     'title': titleController.text,
                     'description': descController.text,
                     'priority': priority,
-                    'category': category,
+                    'category': category ?? 'General',
                   }),
                   child: const Text('Add'),
                 ),
@@ -206,9 +206,10 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
               ..title = result['title'] as String
               ..description = result['description'] as String?
               ..priority = result['priority'] as int;
-            if (result.containsKey('category') && result['category'] != null) {
-              t.tags = [result['category'] as String];
-            }
+            final category = (result['category'] as String?)?.trim();
+            t.tags = [
+              if (category == null || category.isEmpty) 'General' else category,
+            ];
             notifier.addTask(t);
           }
         },

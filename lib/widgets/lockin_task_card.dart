@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/core/models/task.dart';
 import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/core/utils/task_priority_utils.dart';
+import 'package:lockin/features/categories/categories_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
 import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/action_icon_button.dart';
@@ -35,6 +36,7 @@ class LockinTaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final categories = ref.watch(categoriesProvider);
     return LockinCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +114,10 @@ class LockinTaskCard extends StatelessWidget {
                       var priority = task.priority;
                       var selectedCategory = task.tags.isNotEmpty
                           ? task.tags.first
-                          : null;
+                          : 'General';
+                      if (!categories.contains(selectedCategory)) {
+                        selectedCategory = 'General';
+                      }
                       final result = await showDialog<Map<String, dynamic>>(
                         context: parentContext,
                         builder: (context) => LockinDialog(
@@ -139,8 +144,9 @@ class LockinTaskCard extends StatelessWidget {
                                 const SizedBox(height: 12),
                                 CategoryDropdown(
                                   value: selectedCategory,
-                                  onChanged: (val) =>
-                                      setState(() => selectedCategory = val),
+                                  onChanged: (val) => setState(
+                                    () => selectedCategory = val ?? 'General',
+                                  ),
                                 ),
                                 const SizedBox(height: 12),
                                 Wrap(
@@ -191,9 +197,14 @@ class LockinTaskCard extends StatelessWidget {
                           ..priority = result['priority'] as int
                           ..completed = task.completed
                           ..tags = List<String>.from(task.tags);
-                        if (result['category'] != null) {
-                          updated.tags = [result['category'] as String];
-                        }
+                        final category = (result['category'] as String?)
+                            ?.trim();
+                        updated.tags = [
+                          if (category == null || category.isEmpty)
+                            'General'
+                          else
+                            category,
+                        ];
                         notifier.updateTaskByKey(task.key, updated, null);
                       }
                     },

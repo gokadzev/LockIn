@@ -3,6 +3,7 @@ import 'package:lockin/features/habits/habit_category_provider.dart';
 
 /// Built-in default categories shown first.
 const List<String> _builtInCategories = [
+  'General',
   'Health',
   'Productivity',
   'Learning',

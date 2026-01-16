@@ -513,7 +513,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
 
           addMilestone();
           DateTime? selectedDeadline;
-          String? selectedCategory;
+          String? selectedCategory = 'General';
           final result = await showDialog<Map<String, dynamic>>(
             context: context,
             builder: (context) => LockinDialog(
@@ -698,7 +698,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                       'smart': smartController.text,
                       'milestones': milestoneObjs,
                       'deadline': selectedDeadline,
-                      'category': selectedCategory,
+                      'category': selectedCategory ?? 'General',
                     });
                   },
                   child: const Text('Add'),
@@ -707,13 +707,16 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
             ),
           );
           if (result != null && (result['title'] as String).isNotEmpty) {
+            final category = (result['category'] as String?)?.trim();
             await notifier.addGoal(
               Goal()
                 ..title = result['title'] as String
                 ..smart = result['smart'] as String?
                 ..milestones = (result['milestones'] as List<Milestone>)
                 ..deadline = result['deadline'] as DateTime?
-                ..category = result['category'] as String?,
+                ..category = (category == null || category.isEmpty)
+                    ? 'General'
+                    : category,
             );
           }
         },

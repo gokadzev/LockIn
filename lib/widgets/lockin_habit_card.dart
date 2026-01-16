@@ -23,7 +23,9 @@ class HabitCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final streak = habit.streak;
-    final lastDone = habit.history.isNotEmpty ? habit.history.last : null;
+    final lastDone = habit.history.isNotEmpty
+        ? habit.history.reduce((a, b) => a.isAfter(b) ? a : b)
+        : null;
 
     return LockinCard(
       child: Column(
@@ -112,11 +114,11 @@ class HabitCard extends StatelessWidget {
 }
 
 bool isDoneToday(Habit habit, DateTime? lastDone) {
-  if (habit.frequency == 'daily' && lastDone != null) {
+  if (habit.frequency == 'daily') {
     final now = DateTime.now();
-    return lastDone.day == now.day &&
-        lastDone.month == now.month &&
-        lastDone.year == now.year;
+    return habit.history.any(
+      (d) => d.year == now.year && d.month == now.month && d.day == now.day,
+    );
   }
   return false;
 }

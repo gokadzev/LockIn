@@ -325,8 +325,32 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                 color: scheme.onSurfaceVariant,
                                 size: 28,
                               ),
-                              onPressed: () =>
-                                  notifier.deleteJournalByKey(journal.key),
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => LockinDialog(
+                                    title: const Text('Delete entry'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this entry?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        child: const Text('Delete'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirm == true) {
+                                  notifier.deleteJournalByKey(journal.key);
+                                }
+                              },
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                             ),

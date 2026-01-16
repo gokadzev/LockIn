@@ -46,8 +46,11 @@ final advancedDashboardStatsProvider = Provider<DashboardStats>((ref) {
   final nudge = service.getNudge();
 
   return DashboardStats(
-    tasksDone: tasks.where((t) => t.completed).length,
-    habitsCompleted: habits.fold<int>(0, (sum, h) => sum + h.history.length),
+    tasksDone: tasks.where((t) => t.completed && !t.abandoned).length,
+    habitsCompleted: habits.fold<int>(
+      0,
+      (sum, h) => h.abandoned ? sum : sum + h.history.length,
+    ),
     goalsProgress: clampedProgress,
     focusSessions: sessions.length,
     journalEntries: journals.length,

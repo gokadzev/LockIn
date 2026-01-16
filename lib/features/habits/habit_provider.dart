@@ -42,12 +42,13 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
   ) {
     if (box == null) return;
     final now = DateTime.now();
+    final today = now.dateOnly;
     var streakSaverUsed = false;
     for (var i = 0; i < box!.length; i++) {
       final habit = box!.getAt(i);
       if (habit == null || habit.abandoned || habit.history.isEmpty) continue;
       final lastDone = habit.history.reduce((a, b) => a.isAfter(b) ? a : b);
-      final daysMissed = now.difference(lastDone).inDays;
+      final daysMissed = today.difference(lastDone.dateOnly).inDays;
       if (daysMissed > 1) {
         if (streakSaverAvailable && !streakSaverUsed && daysMissed <= 3) {
           streakSaverUsed = true;

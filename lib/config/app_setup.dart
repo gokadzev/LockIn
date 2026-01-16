@@ -35,7 +35,7 @@ Future<void> initializeApp() async {
   await Hive.openBox('settings');
 }
 
-// TODO: remove migration function after a few releases
+// TODO: remove migration function after a few releases (afa7169b9dbed6d8322e46219b54e4f6b6ea11f9)
 
 Future<void> _migrateHabitCategoriesBox() async {
   final box = await Hive.openBox('habit_categories');

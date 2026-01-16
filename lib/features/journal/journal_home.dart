@@ -19,15 +19,17 @@ class JournalHome extends ConsumerStatefulWidget {
 class _JournalHomeState extends ConsumerState<JournalHome> {
   late DateTime _selectedDay;
   late final PageController _weekController;
-  static final DateTime _weekRef = DateTime(1970, 1, 5); // Monday reference
+  static final DateTime _weekRef = DateTime(1970, 1, 5); // Reference date
   static const int _pageCenter = 20000;
+  static const int _daysPerPage = 3;
 
   @override
   void initState() {
     super.initState();
     _selectedDay = DateTime.now();
-    final weekIndex = _selectedDay.difference(_weekRef).inDays ~/ 7;
-    _weekController = PageController(initialPage: _pageCenter + weekIndex);
+    final dayIndex = _selectedDay.difference(_weekRef).inDays;
+    final pageIndex = dayIndex ~/ _daysPerPage;
+    _weekController = PageController(initialPage: _pageCenter + pageIndex);
   }
 
   @override
@@ -110,37 +112,30 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                         ],
                       ),
                     ),
-                    // Swipeable week strip (pages by week)
+                    // Swipeable day strip (pages by 3 days)
                     SizedBox(
                       height: 112,
                       child: PageView.builder(
                         controller: _weekController,
                         onPageChanged: (page) {
-                          final weekIndex = page - _pageCenter;
-                          final firstOfWeek = _weekRef.add(
-                            Duration(days: weekIndex * 7),
-                          );
-                          setState(() {
-                            _selectedDay = firstOfWeek;
-                          });
+                          // Keep the selected day unchanged when paging.
                         },
                         itemBuilder: (ctx, page) {
-                          final weekIndex = page - _pageCenter;
-                          final firstOfWeek = _weekRef.add(
-                            Duration(days: weekIndex * 7),
+                          final pageIndex = page - _pageCenter;
+                          final firstOfChunk = _weekRef.add(
+                            Duration(days: pageIndex * _daysPerPage),
                           );
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
+                          return Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 6,
                             ),
                             child: Row(
-                              children: List.generate(7, (i) {
+                              children: List.generate(_daysPerPage, (i) {
                                 final day = DateTime(
-                                  firstOfWeek.year,
-                                  firstOfWeek.month,
-                                  firstOfWeek.day + i,
+                                  firstOfChunk.year,
+                                  firstOfChunk.month,
+                                  firstOfChunk.day + i,
                                 );
                                 final isSelected = isSameDay(_selectedDay, day);
                                 final hasEntry =
@@ -151,10 +146,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                         )]
                                         ?.isNotEmpty ??
                                     false;
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
+                                return Expanded(
                                   child: GestureDetector(
                                     onTap: () {
                                       setState(() {
@@ -166,7 +158,9 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                       });
                                     },
                                     child: Container(
-                                      width: 84,
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: isSelected
                                             ? scheme.onSurface

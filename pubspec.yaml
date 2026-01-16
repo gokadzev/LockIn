@@ -4,7 +4,7 @@ description: 'Your Personal Habit & Productivity Companion'
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none'
 
-version: 1.0.0-beta.3+3
+version: 1.0.0-beta.4+4
 
 environment:
   sdk: ^3.9.0

@@ -353,6 +353,7 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
   final taskBox = Hive.box<Task>('tasks');
   final weekCompletions = <DateTime, int>{};
   for (final habit in habitBox.values) {
+    if (habit.abandoned) continue;
     for (final date in habit.history) {
       final weekStart = DateTime(
         date.year,
@@ -363,7 +364,7 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
     }
   }
   for (final task in taskBox.values) {
-    if (task.completed && task.completionTime != null) {
+    if (task.completed && !task.abandoned && task.completionTime != null) {
       final date = task.completionTime!;
       final weekStart = DateTime(
         date.year,
@@ -391,6 +392,7 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
   Habit? topHabit;
   var topHabitCount = 0;
   for (final habit in habitBox.values) {
+    if (habit.abandoned) continue;
     if (habit.history.length > topHabitCount) {
       topHabit = habit;
       topHabitCount = habit.history.length;
@@ -400,7 +402,7 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
   var topTaskCount = 0;
   final taskCounts = <String, int>{};
   for (final task in taskBox.values) {
-    if (task.completed) {
+    if (task.completed && !task.abandoned) {
       taskCounts[task.title] = (taskCounts[task.title] ?? 0) + 1;
     }
   }
@@ -409,7 +411,7 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
       (a, b) => a.value >= b.value ? a : b,
     );
     topTask = taskBox.values.firstWhere(
-      (task) => task.completed && task.title == topEntry.key,
+      (task) => task.completed && !task.abandoned && task.title == topEntry.key,
     );
     topTaskCount = topEntry.value;
   }

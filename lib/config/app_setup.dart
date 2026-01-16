@@ -23,6 +23,7 @@ Future<void> initializeApp() async {
     ..registerAdapter(RewardAdapter())
     ..registerAdapter(RewardTypeAdapter())
     ..registerAdapter(HabitCategoryAdapter());
+  await _migrateHabitCategoriesBox();
   await Hive.openBox<Task>('tasks');
   await Hive.openBox<Habit>('habits');
   await Hive.openBox<Goal>('goals');
@@ -30,6 +31,43 @@ Future<void> initializeApp() async {
   await Hive.openBox<Journal>('journals');
   await Hive.openBox<Rule>('rules');
   await Hive.openBox<XPProfile>('xp_profile');
-  await Hive.openBox<HabitCategory>('habit_categories');
+  await Hive.openBox<String>('habit_categories');
   await Hive.openBox('settings');
+}
+
+// TODO: remove migration function after a few releases
+
+Future<void> _migrateHabitCategoriesBox() async {
+  final box = await Hive.openBox('habit_categories');
+  var changed = false;
+
+  for (final key in box.keys.toList()) {
+    final value = box.get(key);
+    if (value is HabitCategory) {
+      final name = value.name.trim();
+      if (name.isEmpty) {
+        await box.delete(key);
+      } else {
+        await box.put(key, name);
+      }
+      changed = true;
+    } else if (value is String) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) {
+        await box.delete(key);
+        changed = true;
+      } else if (trimmed != value) {
+        await box.put(key, trimmed);
+        changed = true;
+      }
+    } else if (value == null) {
+      await box.delete(key);
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    await box.compact();
+  }
+  await box.close();
 }

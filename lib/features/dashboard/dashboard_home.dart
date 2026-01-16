@@ -5,14 +5,17 @@ import 'package:hive_ce/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/constants/gamification_constants.dart';
+import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/features/dashboard/dashboard_provider.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
+import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
-import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/average_mood_card.dart';
+import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/encouragement_card.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/lockin_card.dart';
@@ -31,9 +34,14 @@ class DashboardHome extends ConsumerWidget {
     final stats = ref.watch(dashboardStatsProvider);
     final weeklyStats = ref.watch(weeklyOverviewStatsProvider);
     final statsFull = stats;
+    final focusCategoryStats = _buildFocusCategoryStats(
+      ref.watch(sessionsListProvider),
+      Theme.of(context).colorScheme,
+    );
     final xpState = ref.watch(xpNotifierProvider);
     final xpProfile = xpState.asData?.value.profile;
     final userLevel = xpProfile?.level ?? 0;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: const LockinAppBar(title: 'Dashboard'),
@@ -62,6 +70,8 @@ class DashboardHome extends ConsumerWidget {
               QuickStatsCard(stats: stats),
             if (xpProfile != null) XPDashboardCard(xpProfile: xpProfile),
             WeeklyOverviewChart(stats: weeklyStats),
+            if (focusCategoryStats.isNotEmpty)
+              _buildFocusCategoryBreakdownCard(context, focusCategoryStats),
             MonthlyOverviewHeatmap(
               monthlyData: ref.watch(monthlyHeatmapProvider),
             ),
@@ -288,6 +298,169 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
     );
   }
   return items;
+}
+
+class _FocusCategoryStat {
+  const _FocusCategoryStat({
+    required this.name,
+    required this.count,
+    required this.percent,
+    required this.color,
+  });
+
+  final String name;
+  final int count;
+  final double percent;
+  final Color color;
+}
+
+List<_FocusCategoryStat> _buildFocusCategoryStats(
+  List<Session> sessions,
+  ColorScheme scheme,
+) {
+  if (sessions.isEmpty) return [];
+
+  String normalizeCategory(String? value) {
+    final trimmed = value?.trim() ?? '';
+    return trimmed.isEmpty ? 'Uncategorized' : trimmed;
+  }
+
+  final counts = <String, int>{};
+  for (final session in sessions) {
+    final category = normalizeCategory(session.category);
+    counts[category] = (counts[category] ?? 0) + 1;
+  }
+
+  final total = counts.values.fold<int>(0, (a, b) => a + b);
+  if (total == 0) return [];
+
+  final sorted = counts.entries.toList()
+    ..sort((a, b) => b.value.compareTo(a.value));
+
+  final palette = <Color>[
+    scheme.primary,
+    scheme.secondary,
+    scheme.tertiary,
+    scheme.error,
+    scheme.primaryContainer,
+    scheme.secondaryContainer,
+  ];
+
+  final stats = <_FocusCategoryStat>[];
+  for (var i = 0; i < sorted.length; i++) {
+    final entry = sorted[i];
+    stats.add(
+      _FocusCategoryStat(
+        name: entry.key,
+        count: entry.value,
+        percent: (entry.value / total) * 100,
+        color: palette[i % palette.length],
+      ),
+    );
+  }
+
+  return stats;
+}
+
+Widget _buildFocusCategoryBreakdownCard(
+  BuildContext context,
+  List<_FocusCategoryStat> stats,
+) {
+  final totalSessions = stats.fold<int>(0, (sum, s) => sum + s.count);
+  final top = stats.first;
+  final scheme = Theme.of(context).colorScheme;
+
+  return LockinCard(
+    padding: const EdgeInsets.all(UIConstants.largeSpacing),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CardHeader(
+          title: 'Focus Overview',
+          subtitle: '$totalSessions sessions',
+          icon: Icons.donut_large,
+          containerColor: scheme.secondaryContainer,
+          iconColor: scheme.onSecondaryContainer,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Most focused: ${top.name} — ${top.percent.toStringAsFixed(0)}% (${top.count})',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: scheme.onSurface.withValues(alpha: 0.85),
+          ),
+        ),
+        const SizedBox(height: 16),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: SizedBox(
+            height: 12,
+            child: Row(
+              children: [
+                for (final stat in stats)
+                  Expanded(
+                    flex: stat.count,
+                    child: Container(color: stat.color),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        ...stats.map(
+          (stat) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      categoryToIcon(
+                        stat.name == 'Uncategorized' ? null : stat.name,
+                      ),
+                      color: stat.color,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        stat.name,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${stat.percent.toStringAsFixed(0)}%',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${stat.count}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: LinearProgressIndicator(
+                    value: stat.percent / 100,
+                    minHeight: 6,
+                    backgroundColor: scheme.onSurface.withValues(alpha: 0.08),
+                    valueColor: AlwaysStoppedAnimation<Color>(stat.color),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 // Build items for stats card

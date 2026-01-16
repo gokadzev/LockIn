@@ -23,6 +23,8 @@ class Session extends HiveObject {
   int flowSessionDuration = 0; // in minutes
   @HiveField(9)
   int fatigueScore = 0; // 0-100
+  @HiveField(10)
+  String? category;
 
   Map<String, dynamic> toJson() => {
     'taskId': taskId,
@@ -35,6 +37,7 @@ class Session extends HiveObject {
     'consecutiveTaskIds': consecutiveTaskIds,
     'flowSessionDuration': flowSessionDuration,
     'fatigueScore': fatigueScore,
+    'category': category,
   };
 
   static Session fromJson(Map<String, dynamic> json) {
@@ -54,7 +57,8 @@ class Session extends HiveObject {
               .toList() ??
           []
       ..flowSessionDuration = json['flowSessionDuration'] ?? 0
-      ..fatigueScore = json['fatigueScore'] ?? 0;
+      ..fatigueScore = json['fatigueScore'] ?? 0
+      ..category = json['category'];
     return s;
   }
 }

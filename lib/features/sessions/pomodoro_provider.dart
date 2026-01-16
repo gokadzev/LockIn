@@ -172,6 +172,11 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     _timer?.cancel();
     if (_sessionStart != null && _pomodoroCount > 0) {
       final notifier = ref.read(sessionsListProvider.notifier);
+      final selectedCategory = ref.read(focusCategoryProvider);
+      final normalizedCategory =
+          (selectedCategory == null || selectedCategory.trim().isEmpty)
+          ? 'General'
+          : selectedCategory.trim();
       final start = _sessionStart!;
       final end = DateTime.now();
       final duration = _sessionDuration.inMinutes;
@@ -181,7 +186,8 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
           ..endTime = end
           ..duration = duration > 0 ? duration : 1
           ..pomodoroCount = _pomodoroCount
-          ..breakCount = _breakCount,
+          ..breakCount = _breakCount
+          ..category = normalizedCategory,
       );
       ref
           .read(xpNotifierProvider.future)
@@ -229,3 +235,6 @@ final pomodoroProvider = StateNotifierProvider<PomodoroNotifier, PomodoroState>(
     return PomodoroNotifier();
   },
 );
+
+/// Selected focus category for new sessions.
+final focusCategoryProvider = StateProvider<String?>((ref) => null);

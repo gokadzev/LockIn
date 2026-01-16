@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
+import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/features/sessions/_pomodoro_session_logger.dart';
 import 'package:lockin/features/sessions/pomodoro_timer.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
@@ -77,6 +78,21 @@ class SessionsHome extends ConsumerWidget {
                                     spacing: 12,
                                     runSpacing: 4,
                                     children: [
+                                      InfoChip(
+                                        icon: categoryToIcon(
+                                          (session.category ?? '')
+                                                  .trim()
+                                                  .isEmpty
+                                              ? null
+                                              : session.category,
+                                        ),
+                                        label:
+                                            (session.category ?? '')
+                                                .trim()
+                                                .isEmpty
+                                            ? 'Uncategorized'
+                                            : session.category!.trim(),
+                                      ),
                                       InfoChip(
                                         icon: Icons.check_circle,
                                         label: '${session.pomodoroCount}',

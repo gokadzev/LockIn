@@ -65,6 +65,8 @@ class ProductivityService {
       final day = now.subtract(Duration(days: i));
       final tasks = taskBox.values.where(
         (t) =>
+            t.completed &&
+            !t.abandoned &&
             t.completionTime != null &&
             t.completionTime!.year == day.year &&
             t.completionTime!.month == day.month &&
@@ -118,6 +120,8 @@ class ProductivityService {
       final day = today.subtract(Duration(days: i));
       final tasks = taskBox.values.where(
         (t) =>
+            t.completed &&
+            !t.abandoned &&
             t.completionTime != null &&
             t.completionTime!.year == day.year &&
             t.completionTime!.month == day.month &&
@@ -135,7 +139,9 @@ class ProductivityService {
   // 8. Heatmap data (hourly productivity)
   Map<int, int> getHourlyHeatmap() {
     final map = <int, int>{};
-    for (final t in taskBox.values.where((t) => t.completionTime != null)) {
+    for (final t in taskBox.values.where(
+      (t) => t.completed && !t.abandoned && t.completionTime != null,
+    )) {
       final hour = t.completionTime!.hour;
       map[hour] = (map[hour] ?? 0) + 1;
     }

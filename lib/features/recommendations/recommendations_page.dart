@@ -98,7 +98,7 @@ class SuggestionsPage extends ConsumerWidget {
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
               // Category filter chips for recommendations
@@ -185,74 +185,80 @@ class SuggestionsPage extends ConsumerWidget {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: filteredHabits
-                                  .map(
-                                    (s) => SuggestionCard(
-                                      title: s.title,
-                                      description: s.description,
-                                      category: s.category,
-                                      onAdd: () async {
-                                        final category =
-                                            s.category ?? 'General';
-                                        if (category.isNotEmpty &&
-                                            !categories.any(
-                                              (c) => c == category,
-                                            )) {
-                                          categoriesNotifier.addCategory(
-                                            category,
-                                          );
-                                        }
-                                        final newHabit = Habit()
-                                          ..title = s.title
-                                          ..frequency = s.frequency
-                                          ..category = category;
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: Wrap(
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: filteredHabits
+                                    .map(
+                                      (s) => SuggestionCard(
+                                        title: s.title,
+                                        description: s.description,
+                                        category: s.category,
+                                        onAdd: () async {
+                                          final category =
+                                              s.category ?? 'General';
+                                          if (category.isNotEmpty &&
+                                              !categories.any(
+                                                (c) => c == category,
+                                              )) {
+                                            categoriesNotifier.addCategory(
+                                              category,
+                                            );
+                                          }
+                                          final newHabit = Habit()
+                                            ..title = s.title
+                                            ..frequency = s.frequency
+                                            ..category = category;
 
-                                        habitNotifier.addHabit(newHabit);
+                                          habitNotifier.addHabit(newHabit);
 
-                                        try {
-                                          final engagementTime = ref.read(
-                                            engagementTimeProvider,
-                                          );
+                                          try {
+                                            final engagementTime = ref.read(
+                                              engagementTimeProvider,
+                                            );
 
-                                          final habitId =
-                                              newHabit.key?.toString() ??
-                                              DateTime.now()
-                                                  .millisecondsSinceEpoch
-                                                  .toString();
+                                            final habitId =
+                                                newHabit.key?.toString() ??
+                                                DateTime.now()
+                                                    .millisecondsSinceEpoch
+                                                    .toString();
 
-                                          await HabitNotificationManager()
-                                              .scheduleHabitReminder(
-                                                habitId: habitId,
-                                                habitTitle: s.title,
-                                                reminderTime: TimeOfDay(
-                                                  hour: engagementTime.hour,
-                                                  minute: engagementTime.minute,
+                                            await HabitNotificationManager()
+                                                .scheduleHabitReminder(
+                                                  habitId: habitId,
+                                                  habitTitle: s.title,
+                                                  reminderTime: TimeOfDay(
+                                                    hour: engagementTime.hour,
+                                                    minute:
+                                                        engagementTime.minute,
+                                                  ),
+                                                  frequency: s.frequency,
+                                                );
+                                          } catch (_) {
+                                            debugPrint(
+                                              'Failed to schedule notification for ${s.title}',
+                                            );
+                                          }
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Habit added: ${s.title}',
                                                 ),
-                                                frequency: s.frequency,
-                                              );
-                                        } catch (_) {
-                                          debugPrint(
-                                            'Failed to schedule notification for ${s.title}',
-                                          );
-                                        }
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Habit added: ${s.title}',
                                               ),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  )
-                                  .toList(),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
                             ),
                             const SizedBox(height: 32),
                           ],
@@ -281,39 +287,44 @@ class SuggestionsPage extends ConsumerWidget {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: filteredTasks
-                                  .map(
-                                    (s) => SuggestionCard(
-                                      title: s.title,
-                                      description: s.description,
-                                      category: s.category,
-                                      priority: s.priority,
-                                      onAdd: () {
-                                        tasksNotifier.addTask(
-                                          Task()
-                                            ..title = s.title
-                                            ..description = s.description
-                                            ..priority = s.priority
-                                            ..tags = s.category != null
-                                                ? [s.category!]
-                                                : [],
-                                        );
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Task added: ${s.title}',
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: Wrap(
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: filteredTasks
+                                    .map(
+                                      (s) => SuggestionCard(
+                                        title: s.title,
+                                        description: s.description,
+                                        category: s.category,
+                                        priority: s.priority,
+                                        onAdd: () {
+                                          tasksNotifier.addTask(
+                                            Task()
+                                              ..title = s.title
+                                              ..description = s.description
+                                              ..priority = s.priority
+                                              ..tags = s.category != null
+                                                  ? [s.category!]
+                                                  : [],
+                                          );
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Task added: ${s.title}',
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  )
-                                  .toList(),
+                                          );
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
                             ),
                             const SizedBox(height: 32),
                           ],
@@ -342,37 +353,42 @@ class SuggestionsPage extends ConsumerWidget {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: filteredGoals
-                                  .map(
-                                    (s) => SuggestionCard(
-                                      title: s.title,
-                                      description: s.description,
-                                      category: s.category,
-                                      onAdd: () {
-                                        final category =
-                                            s.category ?? 'General';
-                                        goalsNotifier.addGoal(
-                                          Goal()
-                                            ..title = s.title
-                                            ..smart = s.description
-                                            ..category = category,
-                                        );
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Goal added: ${s.title}',
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: Wrap(
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: filteredGoals
+                                    .map(
+                                      (s) => SuggestionCard(
+                                        title: s.title,
+                                        description: s.description,
+                                        category: s.category,
+                                        onAdd: () {
+                                          final category =
+                                              s.category ?? 'General';
+                                          goalsNotifier.addGoal(
+                                            Goal()
+                                              ..title = s.title
+                                              ..smart = s.description
+                                              ..category = category,
+                                          );
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Goal added: ${s.title}',
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  )
-                                  .toList(),
+                                          );
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
                             ),
                           ],
                         ],

@@ -336,11 +336,13 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
     );
   }
   if (statsFull.heatmap.isNotEmpty) {
+    final hourlyEntries = statsFull.heatmap.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
     items.add(
       DashboardItem(
         icon: Icons.grid_on,
         text:
-            'Hourly: ${statsFull.heatmap.entries.map((e) => '${e.key}:00→${e.value}').join(', ')}',
+            'Hourly: ${hourlyEntries.map((e) => '${e.key}:00→${e.value}').join(', ')}',
       ),
     );
   }

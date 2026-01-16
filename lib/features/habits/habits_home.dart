@@ -237,7 +237,9 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
           .where((e) => e != null)
           .cast<int>();
       for (final i in indices) {
-        customWeekdays[i] = true;
+        if (i >= 0 && i < customWeekdays.length) {
+          customWeekdays[i] = true;
+        }
       }
     }
     var selectedTime = TimeOfDay.now();

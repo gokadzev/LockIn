@@ -398,14 +398,20 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
   }
   Task? topTask;
   var topTaskCount = 0;
+  final taskCounts = <String, int>{};
   for (final task in taskBox.values) {
     if (task.completed) {
-      const count = 1; // Each completed task counts as 1
-      if (count > topTaskCount) {
-        topTask = task;
-        topTaskCount = count;
-      }
+      taskCounts[task.title] = (taskCounts[task.title] ?? 0) + 1;
     }
+  }
+  if (taskCounts.isNotEmpty) {
+    final topEntry = taskCounts.entries.reduce(
+      (a, b) => a.value >= b.value ? a : b,
+    );
+    topTask = taskBox.values.firstWhere(
+      (task) => task.completed && task.title == topEntry.key,
+    );
+    topTaskCount = topEntry.value;
   }
   if (topHabit != null || topTask != null) {
     var text = '';
@@ -414,7 +420,9 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
     }
     if (topTask != null) {
       if (text.isNotEmpty) text += '\n';
-      text += 'Most completed task: ${topTask.title}';
+      text +=
+          'Most completed task: ${topTask.title}'
+          '${topTaskCount > 1 ? ' ($topTaskCount times)' : ''}';
     }
     items.add(DashboardItem(icon: Icons.star, text: text));
   }

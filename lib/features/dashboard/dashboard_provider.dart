@@ -79,8 +79,11 @@ final dashboardStatsProvider = Provider<DashboardStats>((ref) {
   final nudge = service.getNudge();
 
   return DashboardStats(
-    tasksDone: tasks.where((t) => t.completed).length,
-    habitsCompleted: habits.fold<int>(0, (sum, h) => sum + h.history.length),
+    tasksDone: tasks.where((t) => t.completed && !t.abandoned).length,
+    habitsCompleted: habits.fold<int>(
+      0,
+      (sum, h) => h.abandoned ? sum : sum + h.history.length,
+    ),
     goalsProgress: clampedProgress,
     focusSessions: sessions.length,
     journalEntries: journals.length,
@@ -112,6 +115,7 @@ final weeklyOverviewStatsProvider = Provider<WeeklyOverviewStats>((ref) {
       .where(
         (t) =>
             t.completed &&
+            !t.abandoned &&
             t.completionTime != null &&
             inWindow(t.completionTime!),
       )
@@ -119,7 +123,9 @@ final weeklyOverviewStatsProvider = Provider<WeeklyOverviewStats>((ref) {
 
   final habitsCompleted = habits.fold<int>(
     0,
-    (sum, h) => sum + h.history.where((date) => inWindow(date)).length,
+    (sum, h) => h.abandoned
+        ? sum
+        : sum + h.history.where((date) => inWindow(date)).length,
   );
 
   final focusSessions = sessions.where((s) => inWindow(s.startTime)).length;
@@ -150,7 +156,7 @@ final monthlyHeatmapProvider = Provider<Map<DateTime, int>>((ref) {
 
   // Count completed tasks for each day
   for (final task in tasks) {
-    if (task.completed && task.completionTime != null) {
+    if (task.completed && !task.abandoned && task.completionTime != null) {
       final completedDate = DateTime(
         task.completionTime!.year,
         task.completionTime!.month,
@@ -164,6 +170,7 @@ final monthlyHeatmapProvider = Provider<Map<DateTime, int>>((ref) {
 
   // Count completed habits for each day
   for (final habit in habits) {
+    if (habit.abandoned) continue;
     for (final historyDate in habit.history) {
       if (historyDate.month == now.month && historyDate.year == now.year) {
         final date = DateTime(

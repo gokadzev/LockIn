@@ -98,8 +98,10 @@ class EngagementNotificationManager {
     List<Goal> goals,
     DateTime today,
   ) {
+    final activeHabits = habits.where((h) => !h.abandoned).toList();
+
     // Habits analysis
-    final habitsCompletedToday = habits
+    final habitsCompletedToday = activeHabits
         .where(
           (h) => h.history.any(
             (d) =>
@@ -110,10 +112,11 @@ class EngagementNotificationManager {
         )
         .length;
 
-    final totalActiveHabits = habits.where((h) => !h.abandoned).length;
-    final avgStreak = habits.isEmpty
+    final totalActiveHabits = activeHabits.length;
+    final avgStreak = activeHabits.isEmpty
         ? 0
-        : habits.map((h) => h.streak).reduce((a, b) => a + b) / habits.length;
+        : activeHabits.map((h) => h.streak).reduce((a, b) => a + b) /
+              activeHabits.length;
 
     // Tasks analysis
     final tasksCompletedToday = tasks

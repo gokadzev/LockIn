@@ -75,10 +75,11 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
       final remaining =
           (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
           elapsed;
+      final clampedRemaining = remaining < 0 ? 0 : remaining;
 
-      if (remaining != lastSecondDisplayed) {
-        lastSecondDisplayed = remaining;
-        state = state.copyWith(secondsLeft: remaining);
+      if (clampedRemaining != lastSecondDisplayed) {
+        lastSecondDisplayed = clampedRemaining;
+        state = state.copyWith(secondsLeft: clampedRemaining);
 
         if (state.phase == PomodoroPhase.work) {
           _sessionDuration = Duration(seconds: elapsed);
@@ -132,10 +133,11 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
       final remaining =
           (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
           elapsed;
+      final clampedRemaining = remaining < 0 ? 0 : remaining;
 
-      if (remaining != lastSecondDisplayed) {
-        lastSecondDisplayed = remaining;
-        state = state.copyWith(secondsLeft: remaining);
+      if (clampedRemaining != lastSecondDisplayed) {
+        lastSecondDisplayed = clampedRemaining;
+        state = state.copyWith(secondsLeft: clampedRemaining);
 
         if (state.phase == PomodoroPhase.work) {
           _sessionDuration = Duration(

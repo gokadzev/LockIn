@@ -112,9 +112,9 @@ class GoalsNotifier extends StateNotifier<List<Goal>> with BoxCrudMixin<Goal> {
       }
 
       // Persist using key-based update
-      updateItemByKey(key, goal, onSuccess: () {});
+      final success = updateItemByKey(key, goal);
 
-      if (xpDelta != 0) {
+      if (success && xpDelta != 0) {
         onXPChange?.call(xpDelta);
       }
     } catch (e, stackTrace) {

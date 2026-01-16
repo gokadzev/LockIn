@@ -101,7 +101,7 @@ mixin BoxCrudMixin<T> on StateNotifier<List<T>> {
   }
 
   /// Updates an item by its Hive key. Returns true if update succeeded.
-  bool updateItemByKey(dynamic key, T item, {VoidCallback? onSuccess}) {
+  bool updateItemByKey(dynamic key, T item) {
     if (box == null) {
       debugPrint('Cannot update item by key: box is null');
       return false;
@@ -116,7 +116,6 @@ mixin BoxCrudMixin<T> on StateNotifier<List<T>> {
 
       syncStateFromBox();
 
-      onSuccess?.call();
       return true;
     } catch (e, stackTrace) {
       debugPrint('Error updating item by key $key: $e');

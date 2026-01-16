@@ -130,13 +130,15 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
       habit.streak = HabitStreakCalculator.calculateStreak(habit.history);
 
       // Persist using key-based update
-      updateItemByKey(key, habit, onSuccess: () {});
+      final success = updateItemByKey(key, habit);
 
       // Award or remove XP if today's completion status changed.
-      if (!wasDoneToday && isDoneToday) {
-        onXPChange?.call(AppValues.habitCompletionXP);
-      } else if (wasDoneToday && !isDoneToday) {
-        onXPChange?.call(-AppValues.habitCompletionXP);
+      if (success) {
+        if (!wasDoneToday && isDoneToday) {
+          onXPChange?.call(AppValues.habitCompletionXP);
+        } else if (wasDoneToday && !isDoneToday) {
+          onXPChange?.call(-AppValues.habitCompletionXP);
+        }
       }
     } catch (e, stackTrace) {
       debugPrint('Error updating habit by key: $e');

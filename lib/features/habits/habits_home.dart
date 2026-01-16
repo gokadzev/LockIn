@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/models/habit.dart';
-import 'package:lockin/core/models/habit_category.dart';
 import 'package:lockin/core/notifications/habit_notification_manager.dart';
+import 'package:lockin/features/categories/categories_provider.dart';
 import 'package:lockin/features/categories/category_manager_dialog.dart';
 import 'package:lockin/features/habits/habit_category_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
@@ -63,12 +63,11 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
   Widget build(BuildContext context) {
     final habits = ref.watch(sortedHabitsProvider);
     final notifier = ref.read(habitsListProvider.notifier);
-    final categories = ref.watch(habitCategoriesProvider);
+    final categories = ref.watch(categoriesProvider);
     final categoriesNotifier = ref.read(habitCategoriesProvider.notifier);
 
     // Group habits by category, only for existing categories
-    final validCategories = categories.map((c) => c.name).toSet()
-      ..add('General');
+    final validCategories = categories.toSet()..add('General');
     final habitsByCategory = <String, List<Habit>>{};
     for (final habit in habits) {
       final cat =
@@ -225,7 +224,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
     required BuildContext context,
     Habit? habit,
     required Function(Map<String, dynamic>) onSave,
-    required List<HabitCategory> categories,
+    required List<String> categories,
     required HabitCategoriesNotifier categoriesNotifier,
   }) async {
     final titleController = TextEditingController(text: habit?.title ?? '');
@@ -244,7 +243,17 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
     var selectedTime = TimeOfDay.now();
     var selectedCategory =
         habit?.category ??
-        (categories.isNotEmpty ? categories.first.name : 'General');
+        (categories.isNotEmpty ? categories.first : 'General');
+    final categoryNames = {
+      if (categories.isNotEmpty) ...categories,
+      selectedCategory,
+    }.toList();
+    if (categoryNames.isEmpty) {
+      categoryNames.add('General');
+    }
+    if (!categoryNames.contains(selectedCategory)) {
+      selectedCategory = categoryNames.first;
+    }
 
     await showDialog<Map<String, dynamic>>(
       context: context,
@@ -360,11 +369,11 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                               borderSide: const BorderSide(color: Colors.white),
                             ),
                           ),
-                          items: categories
+                          items: categoryNames
                               .map(
-                                (cat) => DropdownMenuItem(
-                                  value: cat.name,
-                                  child: Text(cat.name),
+                                (name) => DropdownMenuItem(
+                                  value: name,
+                                  child: Text(name),
                                 ),
                               )
                               .toList(),
@@ -403,7 +412,12 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                           );
                           if (result != null && result.trim().isNotEmpty) {
                             categoriesNotifier.addCategory(result.trim());
-                            setState(() => selectedCategory = result.trim());
+                            setState(() {
+                              if (!categoryNames.contains(result.trim())) {
+                                categoryNames.add(result.trim());
+                              }
+                              selectedCategory = result.trim();
+                            });
                           }
                         },
                       ),

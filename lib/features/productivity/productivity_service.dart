@@ -53,11 +53,11 @@ class ProductivityService {
     // Simple clustering: split into k buckets
     final n = times.length ~/ k;
     if (n == 0) return [times.first];
-    final clusters = List.generate(
-      k,
-      (i) => times[min(i * n, times.length - 1)],
-    ).toSet().toList(); // ensure uniqueness
-    clusters.sort();
+    final clusters =
+        List.generate(k, (i) => times[min(i * n, times.length - 1)])
+            .toSet()
+            .toList() // ensure uniqueness
+          ..sort();
     return clusters;
   }
 

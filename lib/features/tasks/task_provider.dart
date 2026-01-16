@@ -96,13 +96,15 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
       }
 
       // Persist using key-based update
-      final success = updateItemByKey(key, task, onSuccess: () {});
+      final success = updateItemByKey(key, task);
 
-      // Manage XP
-      if (!prevTask.completed && task.completed) {
-        onXPChange?.call(AppValues.taskCompletionXP);
-      } else if (prevTask.completed && !task.completed) {
-        onXPChange?.call(-AppValues.taskCompletionXP);
+      // Manage XP only if update succeeded
+      if (success) {
+        if (!prevTask.completed && task.completed) {
+          onXPChange?.call(AppValues.taskCompletionXP);
+        } else if (prevTask.completed && !task.completed) {
+          onXPChange?.call(-AppValues.taskCompletionXP);
+        }
       }
 
       return success;

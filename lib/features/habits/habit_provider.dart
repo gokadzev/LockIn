@@ -45,7 +45,7 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
     for (var i = 0; i < box!.length; i++) {
       final habit = box!.getAt(i);
       if (habit == null || habit.history.isEmpty) continue;
-      final lastDone = habit.history.last;
+      final lastDone = habit.history.reduce((a, b) => a.isAfter(b) ? a : b);
       final daysMissed = now.difference(lastDone).inDays;
       if (daysMissed > 1) {
         if (streakSaverAvailable && daysMissed <= 3) {

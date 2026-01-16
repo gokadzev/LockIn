@@ -49,7 +49,7 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
 
       // If marking as completed, set completion time; if un-completing, clear it.
       if (prevTask != null && !prevTask.completed && task.completed) {
-        task.completionTime = DateTime.now();
+        task.completionTime ??= DateTime.now();
       } else if (prevTask != null && prevTask.completed && !task.completed) {
         task.completionTime = null;
       } else if (prevTask != null && prevTask.completed && task.completed) {
@@ -88,7 +88,7 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
 
       // Manage completion time
       if (!prevTask.completed && task.completed) {
-        task.completionTime = DateTime.now();
+        task.completionTime ??= DateTime.now();
       } else if (prevTask.completed && !task.completed) {
         task.completionTime = null;
       } else if (prevTask.completed && task.completed) {

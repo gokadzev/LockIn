@@ -52,6 +52,8 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
         task.completionTime = DateTime.now();
       } else if (prevTask != null && prevTask.completed && !task.completed) {
         task.completionTime = null;
+      } else if (prevTask != null && prevTask.completed && task.completed) {
+        task.completionTime ??= prevTask.completionTime;
       }
 
       updateItem(index, task);
@@ -89,6 +91,8 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
         task.completionTime = DateTime.now();
       } else if (prevTask.completed && !task.completed) {
         task.completionTime = null;
+      } else if (prevTask.completed && task.completed) {
+        task.completionTime ??= prevTask.completionTime;
       }
 
       // Persist using key-based update

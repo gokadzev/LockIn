@@ -53,6 +53,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
 
   // Session tracking
   DateTime? _sessionStart;
+  DateTime? _phaseStart;
   int _pomodoroCount = 0;
   int _breakCount = 0;
   Duration _sessionDuration = Duration.zero;
@@ -67,11 +68,12 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     if (state.isRunning) return;
     _timer?.cancel();
     _sessionStart ??= DateTime.now();
+    _phaseStart ??= DateTime.now();
     var lastSecondDisplayed = state.secondsLeft;
     state = state.copyWith(isRunning: true);
 
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      final elapsed = DateTime.now().difference(_sessionStart!).inSeconds;
+      final elapsed = DateTime.now().difference(_phaseStart!).inSeconds;
       final remaining =
           (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
           elapsed;
@@ -125,11 +127,11 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
 
   void _restartTimer() {
     _timer?.cancel();
+    _phaseStart = DateTime.now();
     var lastSecondDisplayed = state.secondsLeft;
-    final phaseStart = DateTime.now();
 
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      final elapsed = DateTime.now().difference(phaseStart).inSeconds;
+      final elapsed = DateTime.now().difference(_phaseStart!).inSeconds;
       final remaining =
           (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
           elapsed;
@@ -206,6 +208,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     );
     _cancelled = false;
     _sessionStart = null;
+    _phaseStart = null;
     _sessionDuration = Duration.zero;
     _pomodoroCount = 0;
     _breakCount = 0;
@@ -220,6 +223,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
       isRunning: false,
     );
     _sessionStart = null;
+    _phaseStart = null;
     _sessionDuration = Duration.zero;
     _pomodoroCount = 0;
     _breakCount = 0;

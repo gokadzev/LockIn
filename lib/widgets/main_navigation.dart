@@ -142,36 +142,74 @@ class MainNavigationState extends State<MainNavigation> {
                 splashFactory: NoSplash.splashFactory,
                 highlightColor: Colors.transparent,
               ),
-              child: BottomNavigationBar(
-                currentIndex: _selectedIndex,
-                onTap: (index) => setState(() => _selectedIndex = index),
-                type: BottomNavigationBarType.fixed,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.dashboard),
-                    label: 'Dashboard',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.check_circle_outline),
-                    label: 'Tasks',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.repeat),
-                    label: 'Habits',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.flag),
-                    label: 'Goals',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.timer),
-                    label: 'Focus',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.book),
-                    label: 'Journal',
-                  ),
-                ],
+              child: NavigationBarTheme(
+                data: NavigationBarThemeData(
+                  height: 72,
+                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                  indicatorShape: const StadiumBorder(),
+                  indicatorColor: Theme.of(
+                    context,
+                  ).colorScheme.secondaryContainer.withAlpha(140),
+                  labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                    final base = Theme.of(context).textTheme.labelSmall
+                        ?.copyWith(fontWeight: FontWeight.w600);
+                    if (states.contains(WidgetState.selected)) {
+                      return base?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      );
+                    }
+                    return base?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withAlpha(170),
+                    );
+                  }),
+                  iconTheme: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return IconThemeData(
+                        size: 24,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      );
+                    }
+                    return IconThemeData(
+                      size: 22,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withAlpha(170),
+                    );
+                  }),
+                ),
+                child: NavigationBar(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: (index) =>
+                      setState(() => _selectedIndex = index),
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.dashboard),
+                      label: 'Dashboard',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.check_circle_outline),
+                      label: 'Tasks',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.repeat),
+                      label: 'Habits',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.flag),
+                      label: 'Goals',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.timer),
+                      label: 'Focus',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.book),
+                      label: 'Journal',
+                    ),
+                  ],
+                ),
               ),
             ),
           );

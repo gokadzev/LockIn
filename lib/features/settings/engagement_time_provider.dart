@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_ce/hive.dart';
+import 'package:lockin/core/utils/hive_utils.dart';
 
 final engagementTimeProvider =
     StateNotifierProvider<EngagementTimeNotifier, TimeOfDay>((ref) {
@@ -13,7 +13,7 @@ class EngagementTimeNotifier extends StateNotifier<TimeOfDay> {
   static const _key = 'engagementTime';
 
   static TimeOfDay _loadInitialTime() {
-    final box = Hive.isBoxOpen(_boxName) ? Hive.box(_boxName) : null;
+    final box = openBoxIfAvailable(_boxName);
     if (box != null && box.containsKey(_key)) {
       final timeMap = box.get(_key) as Map?;
       if (timeMap != null &&
@@ -26,7 +26,7 @@ class EngagementTimeNotifier extends StateNotifier<TimeOfDay> {
   }
 
   void setTime(TimeOfDay time) {
-    final box = Hive.isBoxOpen(_boxName) ? Hive.box(_boxName) : null;
+    final box = openBoxIfAvailable(_boxName);
     if (box != null) {
       box.put(_key, {'hour': time.hour, 'minute': time.minute});
       state = time;

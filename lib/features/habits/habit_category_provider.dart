@@ -2,14 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/core/models/habit_category.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
+import 'package:lockin/core/utils/hive_utils.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
 
-final habitCategoriesBoxProvider = Provider<Box<HabitCategory>?>((ref) {
-  if (Hive.isBoxOpen('habit_categories')) {
-    return Hive.box<HabitCategory>('habit_categories');
-  }
-  return null;
-});
+final habitCategoriesBoxProvider = Provider<Box<HabitCategory>?>(
+  (ref) => openBoxIfAvailable<HabitCategory>('habit_categories'),
+);
 
 final habitCategoriesProvider =
     StateNotifierProvider<HabitCategoriesNotifier, List<HabitCategory>>((ref) {

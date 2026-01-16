@@ -2,14 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
+import 'package:lockin/core/utils/hive_utils.dart';
 
 /// Provides access to the Hive box for sessions.
 final sessionsBoxProvider = Provider<Box<Session>?>((ref) {
-  try {
-    return Hive.isBoxOpen('sessions') ? Hive.box<Session>('sessions') : null;
-  } catch (e) {
-    return null;
-  }
+  return openBoxIfAvailable<Session>('sessions');
 });
 
 /// Main provider for the list of sessions, using [SessionsNotifier].

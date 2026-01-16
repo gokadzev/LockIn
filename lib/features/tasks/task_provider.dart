@@ -4,16 +4,11 @@ import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_values.dart';
 import 'package:lockin/core/models/task.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
+import 'package:lockin/core/utils/hive_utils.dart';
 
 /// Provides access to the Hive box for tasks.
 final tasksBoxProvider = Provider<Box<Task>?>((ref) {
-  try {
-    return Hive.isBoxOpen('tasks') ? Hive.box<Task>('tasks') : null;
-  } catch (e, stackTrace) {
-    debugPrint('Error accessing tasks box: $e');
-    debugPrint('StackTrace: $stackTrace');
-    return null;
-  }
+  return openBoxIfAvailable<Task>('tasks');
 });
 
 /// Main provider for the list of tasks, using [TasksNotifier].

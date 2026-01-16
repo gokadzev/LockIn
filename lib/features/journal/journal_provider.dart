@@ -2,13 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/core/models/journal.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
+import 'package:lockin/core/utils/hive_utils.dart';
 
 final journalsBoxProvider = Provider<Box<Journal>?>((ref) {
-  try {
-    return Hive.isBoxOpen('journals') ? Hive.box<Journal>('journals') : null;
-  } catch (e) {
-    return null;
-  }
+  return openBoxIfAvailable<Journal>('journals');
 });
 
 final journalsListProvider =

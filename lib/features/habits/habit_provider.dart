@@ -5,17 +5,12 @@ import 'package:lockin/constants/app_values.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
 import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
+import 'package:lockin/core/utils/hive_utils.dart';
 import 'package:lockin/features/habits/habit_streak_calculator.dart';
 
 /// Provides access to the Hive box for habits.
 final habitsBoxProvider = Provider<Box<Habit>?>((ref) {
-  try {
-    return Hive.isBoxOpen('habits') ? Hive.box<Habit>('habits') : null;
-  } catch (e, stackTrace) {
-    debugPrint('Error accessing habits box: $e');
-    debugPrint('StackTrace: $stackTrace');
-    return null;
-  }
+  return openBoxIfAvailable<Habit>('habits');
 });
 
 /// Main provider for the list of habits, using [HabitsNotifier].

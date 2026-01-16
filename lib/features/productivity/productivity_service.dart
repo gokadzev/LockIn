@@ -13,9 +13,25 @@ class ProductivityService {
 
   // 1. Exponential moving average for task durations
   double getMovingAverageDuration({String? tag, double alpha = 0.5}) {
-    final tasks = taskBox.values.where(
-      (t) => t.actualDuration != null && (tag == null || t.tags.contains(tag)),
-    );
+    final tasks =
+        taskBox.values
+            .where(
+              (t) =>
+                  t.actualDuration != null &&
+                  (tag == null || t.tags.contains(tag)),
+            )
+            .toList()
+          ..sort((a, b) {
+            final aTime =
+                a.completionTime ??
+                a.startTime ??
+                DateTime.fromMillisecondsSinceEpoch(0);
+            final bTime =
+                b.completionTime ??
+                b.startTime ??
+                DateTime.fromMillisecondsSinceEpoch(0);
+            return aTime.compareTo(bTime);
+          });
     double avg = 0;
     for (final t in tasks) {
       avg = alpha * (t.actualDuration ?? 0) + (1 - alpha) * avg;

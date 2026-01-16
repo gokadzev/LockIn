@@ -53,10 +53,12 @@ class ProductivityService {
     // Simple clustering: split into k buckets
     final n = times.length ~/ k;
     if (n == 0) return [times.first];
-    return List.generate(
+    final clusters = List.generate(
       k,
       (i) => times[min(i * n, times.length - 1)],
     ).toSet().toList(); // ensure uniqueness
+    clusters.sort();
+    return clusters;
   }
 
   // 3. Sliding window productivity score (last 7 days)

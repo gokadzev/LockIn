@@ -80,7 +80,7 @@ final dashboardStatsProvider = Provider<DashboardStats>((ref) {
 
   return DashboardStats(
     tasksDone: tasks.where((t) => t.completed).length,
-    habitsCompleted: habits.fold<int>(0, (sum, h) => sum + h.streak),
+    habitsCompleted: habits.fold<int>(0, (sum, h) => sum + h.history.length),
     goalsProgress: clampedProgress,
     focusSessions: sessions.length,
     journalEntries: journals.length,

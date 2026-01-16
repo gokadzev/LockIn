@@ -10,6 +10,7 @@ import 'package:lockin/features/habits/habit_provider.dart';
 import 'package:lockin/features/habits/habits_sorted_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
 import 'package:lockin/themes/app_theme.dart';
+import 'package:lockin/widgets/category_dropdown.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/lockin_dialog.dart';
 import 'package:lockin/widgets/lockin_habit_card.dart';
@@ -347,38 +348,10 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Text('Category:'),
-                      const SizedBox(width: 8),
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: selectedCategory,
-                          isExpanded: true,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white12,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: const BorderSide(
-                                color: Colors.white24,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: const BorderSide(color: Colors.white),
-                            ),
-                          ),
-                          items: categoryNames
-                              .map(
-                                (name) => DropdownMenuItem(
-                                  value: name,
-                                  child: Text(name),
-                                ),
-                              )
-                              .toList(),
+                        child: CategoryDropdown(
+                          value: selectedCategory,
+                          includeNone: false,
                           onChanged: (val) => setState(
                             () => selectedCategory = val ?? 'General',
                           ),
@@ -414,12 +387,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                           );
                           if (result != null && result.trim().isNotEmpty) {
                             categoriesNotifier.addCategory(result.trim());
-                            setState(() {
-                              if (!categoryNames.contains(result.trim())) {
-                                categoryNames.add(result.trim());
-                              }
-                              selectedCategory = result.trim();
-                            });
+                            setState(() => selectedCategory = result.trim());
                           }
                         },
                       ),

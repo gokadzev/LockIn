@@ -84,7 +84,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                     )
                   else
                     ListView.builder(
-                      padding: AppConstants.sectionPadding,
+                      padding: AppConstants.listContentPadding,
                       itemCount: activeTasks.length,
                       itemBuilder: (context, idx) {
                         final task = activeTasks[idx];
@@ -107,7 +107,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                     )
                   else
                     ListView.builder(
-                      padding: AppConstants.sectionPadding,
+                      padding: AppConstants.listContentPadding,
                       itemCount: finishedTasks.length,
                       itemBuilder: (context, idx) {
                         final task = finishedTasks[idx];

@@ -83,7 +83,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                     )
                   else
                     ListView.builder(
-                      padding: AppConstants.sectionPadding,
+                      padding: AppConstants.listContentPadding,
                       itemCount: activeGoals.length,
                       itemBuilder: (context, idx) {
                         final goal = activeGoals[idx];
@@ -484,7 +484,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                     )
                   else
                     ListView.builder(
-                      padding: AppConstants.sectionPadding,
+                      padding: AppConstants.listContentPadding,
                       itemCount: finishedGoals.length,
                       itemBuilder: (context, idx) {
                         final goal = finishedGoals[idx];

@@ -120,7 +120,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                 ),
               )
             : ListView(
-                padding: AppConstants.sectionPadding,
+                padding: AppConstants.listContentPadding,
                 children: habits.map((habit) {
                   final habitKey = habit.key;
                   return Padding(

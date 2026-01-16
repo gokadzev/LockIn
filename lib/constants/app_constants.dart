@@ -8,4 +8,7 @@ class AppConstants {
     vertical: 16,
     horizontal: 12,
   );
+  static const EdgeInsets listContentPadding = EdgeInsets.symmetric(
+    vertical: 8,
+  );
 }

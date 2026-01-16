@@ -57,6 +57,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
   int _pomodoroCount = 0;
   int _breakCount = 0;
   Duration _sessionDuration = Duration.zero;
+  int _workAccumulatedSeconds = 0;
 
   bool get cancelled => _cancelled;
   int get pomodoroCount => _pomodoroCount;
@@ -91,7 +92,9 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
         state = state.copyWith(secondsLeft: clampedRemaining);
 
         if (state.phase == PomodoroPhase.work) {
-          _sessionDuration = Duration(seconds: elapsed);
+          _sessionDuration = Duration(
+            seconds: _workAccumulatedSeconds + elapsed,
+          );
         }
 
         if (remaining <= 0) {
@@ -105,6 +108,8 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
   void _handlePhaseTransition() {
     if (state.phase == PomodoroPhase.work) {
       _pomodoroCount++;
+      _workAccumulatedSeconds += workSeconds;
+      _sessionDuration = Duration(seconds: _workAccumulatedSeconds);
       _sendNotification(
         title: '⏱️ Pomodoro Finished',
         body: 'Time for a break!',
@@ -150,7 +155,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
 
         if (state.phase == PomodoroPhase.work) {
           _sessionDuration = Duration(
-            seconds: DateTime.now().difference(_sessionStart!).inSeconds,
+            seconds: _workAccumulatedSeconds + elapsed,
           );
         }
 
@@ -217,6 +222,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     _sessionStart = null;
     _phaseStart = null;
     _sessionDuration = Duration.zero;
+    _workAccumulatedSeconds = 0;
     _pomodoroCount = 0;
     _breakCount = 0;
   }
@@ -232,6 +238,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     _sessionStart = null;
     _phaseStart = null;
     _sessionDuration = Duration.zero;
+    _workAccumulatedSeconds = 0;
     _pomodoroCount = 0;
     _breakCount = 0;
   }

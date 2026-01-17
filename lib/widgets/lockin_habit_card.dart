@@ -114,13 +114,10 @@ class HabitCard extends StatelessWidget {
 }
 
 bool isDoneToday(Habit habit, DateTime? lastDone) {
-  if (habit.frequency == 'daily') {
-    final now = DateTime.now();
-    return habit.history.any(
-      (d) => d.year == now.year && d.month == now.month && d.day == now.day,
-    );
-  }
-  return false;
+  final now = DateTime.now();
+  return habit.history.any(
+    (d) => d.year == now.year && d.month == now.month && d.day == now.day,
+  );
 }
 
 String _weekdaysString(String cue) {

@@ -128,7 +128,8 @@ String _weekdaysString(String cue) {
       .split(',')
       .map((e) => int.tryParse(e))
       .where((e) => e != null)
-      .cast<int>();
+      .cast<int>()
+      .where((i) => i >= 0 && i < 7);
   const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   return days.map((i) => names[i]).join(', ');
 }

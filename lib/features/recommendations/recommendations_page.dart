@@ -307,9 +307,9 @@ class SuggestionsPage extends ConsumerWidget {
                                               ..title = s.title
                                               ..description = s.description
                                               ..priority = s.priority
-                                              ..tags = s.category != null
-                                                  ? [s.category!]
-                                                  : [],
+                                              ..tags = [
+                                                (s.category ?? 'General'),
+                                              ],
                                           );
                                           ScaffoldMessenger.of(
                                             context,

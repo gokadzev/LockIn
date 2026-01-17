@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/models/goal.dart';
+import 'package:lockin/features/categories/categories_provider.dart';
 import 'package:lockin/features/categories/category_manager_dialog.dart';
 import 'package:lockin/features/goals/goal_provider.dart';
 import 'package:lockin/features/goals/goals_sorted_provider.dart';
@@ -28,6 +29,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
     final goals = sorted.all;
     final activeGoals = sorted.active;
     final finishedGoals = sorted.finished;
+    final categories = ref.watch(categoriesProvider);
     final notifier = ref.read(goalsListProvider.notifier);
     return Scaffold(
       appBar: LockinAppBar(
@@ -114,6 +116,11 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                               milestonesFocusNodes.add(FocusNode());
                             }
                             var selectedDeadline = goalToEdit.deadline;
+                            var selectedCategory =
+                                goalToEdit.category ?? 'General';
+                            if (!categories.contains(selectedCategory)) {
+                              selectedCategory = 'General';
+                            }
                             final result = await showDialog<Map<String, dynamic>>(
                               context: context,
                               builder: (context) => LockinDialog(
@@ -148,9 +155,10 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                         const SizedBox(height: 12),
                                         // Category selector
                                         CategoryDropdown(
-                                          value: goalToEdit.category,
+                                          value: selectedCategory,
                                           onChanged: (v) => setState(
-                                            () => goalToEdit.category = v,
+                                            () => selectedCategory =
+                                                v ?? 'General',
                                           ),
                                         ),
                                         const SizedBox(height: 16),
@@ -357,7 +365,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                         'smart': smartController.text,
                                         'milestones': milestoneObjs,
                                         'deadline': selectedDeadline,
-                                        'category': goalToEdit.category,
+                                        'category': selectedCategory,
                                       });
                                     },
                                     child: const Text('Save'),
@@ -373,6 +381,12 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                 ..milestones =
                                     (result['milestones'] as List<Milestone>)
                                 ..deadline = result['deadline'] as DateTime?;
+                              final category = (result['category'] as String?)
+                                  ?.trim();
+                              updated.category =
+                                  (category == null || category.isEmpty)
+                                  ? 'General'
+                                  : category;
                               final key = goalToEdit.key;
                               notifier.updateGoalByKey(key, updated, null);
                             }

@@ -585,10 +585,15 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
     final topEntry = taskCounts.entries.reduce(
       (a, b) => a.value >= b.value ? a : b,
     );
-    topTask = taskBox.values.firstWhere(
-      (task) => task.completed && !task.abandoned && task.title == topEntry.key,
-    );
-    topTaskCount = topEntry.value;
+    for (final task in taskBox.values) {
+      if (task.completed && !task.abandoned && task.title == topEntry.key) {
+        topTask = task;
+        break;
+      }
+    }
+    if (topTask != null) {
+      topTaskCount = topEntry.value;
+    }
   }
   if (topHabit != null || topTask != null) {
     var text = '';

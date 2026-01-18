@@ -69,12 +69,7 @@ class AverageMoodCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CardHeader(
-            title: 'Average Mood',
-            icon: Icons.mood_rounded,
-            containerColor: scheme.secondaryContainer,
-            iconColor: scheme.onSecondaryContainer,
-          ),
+          const CardHeader(title: 'Average Mood', icon: Icons.mood_rounded),
           const SizedBox(height: 16),
           Row(
             children: [

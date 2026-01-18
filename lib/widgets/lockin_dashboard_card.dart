@@ -51,8 +51,6 @@ class LockinDashboardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return LockinCard(
       padding: const EdgeInsets.all(UIConstants.largeSpacing),
       child: Column(
@@ -61,8 +59,6 @@ class LockinDashboardCard extends StatelessWidget {
           CardHeader(
             title: title,
             icon: _getIconForTitle(title),
-            containerColor: colorScheme.secondaryContainer,
-            iconColor: colorScheme.onSecondaryContainer,
             trailing: trailing,
           ),
           const SizedBox(height: 10),

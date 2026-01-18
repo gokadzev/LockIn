@@ -70,8 +70,7 @@ class DashboardHome extends ConsumerWidget {
               QuickStatsCard(stats: stats),
             if (xpProfile != null) XPDashboardCard(xpProfile: xpProfile),
             WeeklyOverviewChart(stats: weeklyStats),
-            if (focusCategoryStats.isNotEmpty)
-              _buildFocusCategoryBreakdownCard(context, focusCategoryStats),
+            _buildFocusCategoryBreakdownCard(context, focusCategoryStats),
             MonthlyOverviewHeatmap(
               monthlyData: ref.watch(monthlyHeatmapProvider),
             ),
@@ -366,9 +365,56 @@ Widget _buildFocusCategoryBreakdownCard(
   BuildContext context,
   List<_FocusCategoryStat> stats,
 ) {
+  final scheme = Theme.of(context).colorScheme;
+  final textTheme = Theme.of(context).textTheme;
+
+  if (stats.isEmpty) {
+    return LockinCard(
+      padding: const EdgeInsets.all(UIConstants.largeSpacing),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const CardHeader(title: 'Focus Overview', icon: Icons.donut_large),
+          const SizedBox(height: UIConstants.largeSpacing),
+          Container(
+            height: 150,
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerHigh.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.donut_large,
+                    size: 48,
+                    color: scheme.onSurfaceVariant.withValues(alpha: 0.5),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'No focus sessions',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Start a focus session to track your productivity',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   final totalSessions = stats.fold<int>(0, (sum, s) => sum + s.count);
   final top = stats.first;
-  final scheme = Theme.of(context).colorScheme;
 
   return LockinCard(
     padding: const EdgeInsets.all(UIConstants.largeSpacing),

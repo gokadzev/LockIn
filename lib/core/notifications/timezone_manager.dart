@@ -185,9 +185,10 @@ class TimezoneManager {
     final now = tz.TZDateTime.now(tz.local);
     final offset = now.timeZoneOffset;
 
-    final hours = offset.inHours;
-    final minutes = offset.inMinutes.remainder(60).abs();
-    final sign = hours >= 0 ? '+' : '-';
+    final totalMinutes = offset.inMinutes.abs();
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes.remainder(60);
+    final sign = offset.isNegative ? '-' : '+';
 
     return '$sign${hours.abs().toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
   }

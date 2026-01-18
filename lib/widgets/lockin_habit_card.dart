@@ -1,8 +1,24 @@
+/*
+ *     Copyright (C) 2026 Valeri Gokadze
+ *
+ *     LockIn is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     LockIn is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/features/habits/habits_home.dart';
-import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/action_icon_button.dart';
 import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/lockin_card.dart';
@@ -22,6 +38,7 @@ class HabitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final streak = habit.streak;
     final lastDone = habit.history.isNotEmpty
         ? habit.history.reduce((a, b) => a.isAfter(b) ? a : b)

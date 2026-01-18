@@ -1,9 +1,25 @@
+/*
+ *     Copyright (C) 2026 Valeri Gokadze
+ *
+ *     LockIn is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     LockIn is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/features/xp/xp_models.dart';
 import 'package:lockin/features/xp/xp_service.dart';
-import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 
@@ -35,8 +51,8 @@ class XPDashboardCard extends ConsumerWidget {
               icon: const Icon(Icons.analytics),
               label: const Text('View XP'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: scheme.primary,
-                foregroundColor: scheme.onPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2026 Valeri Gokadze
+ *
+ *     LockIn is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     LockIn is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/core/models/task.dart';
@@ -5,7 +22,6 @@ import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/core/utils/task_priority_utils.dart';
 import 'package:lockin/features/categories/categories_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
-import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/action_icon_button.dart';
 import 'package:lockin/widgets/category_dropdown.dart';
 import 'package:lockin/widgets/icon_badge.dart';
@@ -35,6 +51,7 @@ class LockinTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final categories = ref.watch(categoriesProvider);
     return LockinCard(
@@ -155,6 +172,7 @@ class LockinTaskCard extends StatelessWidget {
                                   runSpacing: 8,
                                   children:
                                       TaskPriorityUtils.buildPriorityChips(
+                                        context: context,
                                         selectedPriority: priority,
                                         onPrioritySelected: (newPriority) =>
                                             setState(

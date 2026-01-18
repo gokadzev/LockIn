@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2026 Valeri Gokadze
+ *
+ *     LockIn is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     LockIn is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/recommendations/goals.dart';
@@ -13,7 +30,6 @@ import 'package:lockin/features/habits/habit_category_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
 import 'package:lockin/features/settings/engagement_time_provider.dart';
 import 'package:lockin/features/tasks/task_provider.dart';
-import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 
 // Selected category for filtering recommendations. null == All
@@ -94,7 +110,9 @@ class SuggestionsPage extends ConsumerWidget {
             // Make the active label light (onSurface) so it contrasts with the dark background
             labelColor: Theme.of(context).colorScheme.onSurface,
             // Use a muted grey for unselected labels
-            unselectedLabelColor: scheme.onSurfaceVariant,
+            unselectedLabelColor: Theme.of(
+              context,
+            ).colorScheme.onSurfaceVariant,
           ),
         ),
         body: Padding(
@@ -119,22 +137,30 @@ class SuggestionsPage extends ConsumerWidget {
                         label: Text(cat),
                         selected: selected,
                         selectedColor: Theme.of(context).colorScheme.primary,
-                        backgroundColor: scheme.surfaceContainerHighest,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         avatar: CircleAvatar(
                           radius: 10,
                           backgroundColor: selected
-                              ? scheme.surfaceContainerHighest
+                              ? Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest
                               : Colors.transparent,
                           child: selected
                               ? Icon(
                                   Icons.check,
                                   size: 14,
-                                  color: scheme.onPrimary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
                                 )
                               : Icon(
                                   categoryToIcon(cat),
                                   size: 14,
-                                  color: scheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                         ),
                         labelStyle: Theme.of(context).textTheme.bodySmall

@@ -1,3 +1,20 @@
+/*
+ *     Copyright (C) 2026 Valeri Gokadze
+ *
+ *     LockIn is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     LockIn is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -10,9 +27,9 @@ import 'package:lockin/features/habits/habit_provider.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/settings/backup_restore_util.dart';
+import 'package:lockin/features/settings/dynamic_color_provider.dart';
 import 'package:lockin/features/settings/engagement_time_provider.dart';
 import 'package:lockin/features/tasks/task_provider.dart';
-import 'package:lockin/themes/app_theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SettingsHome extends ConsumerStatefulWidget {
@@ -68,6 +85,8 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
   @override
   Widget build(BuildContext context) {
     final engagementTime = ref.watch(engagementTimeProvider);
+    final dynamicColorEnabled = ref.watch(dynamicColorEnabledProvider);
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Settings'), elevation: 0),
       body: SafeArea(
@@ -95,7 +114,58 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
                 const SizedBox(height: 12),
 
-                // --- Engagement ---
+                // --- Appearance ---
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 4,
+                  ),
+                  child: Text(
+                    'Appearance',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: scheme.onSurface.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+
+                // Dynamic Color Toggle
+                Card(
+                  elevation: 0,
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  child: ListTile(
+                    leading: const Icon(Icons.palette),
+                    title: const Text('Dynamic Colors'),
+                    subtitle: const Text(
+                      'Use device theme colors (Material You)',
+                    ),
+                    trailing: Switch(
+                      value: dynamicColorEnabled,
+                      onChanged: (value) {
+                        ref
+                            .read(dynamicColorEnabledProvider.notifier)
+                            .set(value);
+                      },
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 4,
+                  ),
+                  child: Text(
+                    'Notifications',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: scheme.onSurface.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+
+                // Engagement Notification Time
                 Card(
                   elevation: 0,
                   margin: const EdgeInsets.symmetric(vertical: 6),

@@ -1,7 +1,23 @@
+/*
+ *     Copyright (C) 2026 Valeri Gokadze
+ *
+ *     LockIn is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     LockIn is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/utils/category_icon.dart';
-import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/action_icon_button.dart';
 import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/lockin_card.dart';
@@ -30,6 +46,7 @@ class GoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final mainColor = isFinished ? scheme.onSurfaceVariant : scheme.onSurface;
     final secondaryColor = isFinished
         ? scheme.onSurface.withValues(alpha: 0.6)
@@ -127,7 +144,7 @@ class GoalCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: boxDecorationColor,
+                color: scheme.onSurface.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -156,13 +173,17 @@ class GoalCard extends StatelessWidget {
                       if (daysLeft > 0) {
                         leftText =
                             '$daysLeft day${daysLeft == 1 ? '' : 's'} left';
-                        textColor = scheme.onSurfaceVariant;
+                        textColor = Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant;
                       } else if (daysLeft == 0) {
                         leftText = 'Due today';
-                        textColor = scheme.onSurface.withValues(alpha: 0.85);
+                        textColor = Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.85);
                       } else {
                         leftText = 'Past due';
-                        textColor = scheme.error;
+                        textColor = Theme.of(context).colorScheme.error;
                       }
                       return Text(
                         leftText,
@@ -187,6 +208,7 @@ class GoalCard extends StatelessWidget {
   Widget _buildMilestoneRow(BuildContext context) {
     if (goal.milestones.isEmpty) return const SizedBox.shrink();
 
+    final scheme = Theme.of(context).colorScheme;
     final completed = goal.milestones.where((m) => m.completed).length;
     final total = goal.milestones.length;
 
@@ -206,7 +228,7 @@ class GoalCard extends StatelessWidget {
                 margin: const EdgeInsets.only(left: 6),
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: boxDecorationColor,
+                  color: scheme.onSurface.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: GestureDetector(
@@ -219,7 +241,7 @@ class GoalCard extends StatelessWidget {
                 margin: const EdgeInsets.only(left: 8),
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: boxDecorationColor,
+                  color: scheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: GestureDetector(
@@ -237,9 +259,7 @@ class GoalCard extends StatelessWidget {
             value: total > 0 ? completed / total : 0,
             minHeight: 4,
             backgroundColor: scheme.onSurface.withValues(alpha: 0.08),
-            valueColor: AlwaysStoppedAnimation<Color>(
-              scheme.primary.withValues(),
-            ),
+            valueColor: AlwaysStoppedAnimation<Color>(scheme.primary),
           ),
         ),
         const SizedBox(height: 8),
@@ -248,7 +268,9 @@ class GoalCard extends StatelessWidget {
           runSpacing: 8,
           children: goal.milestones.map((milestone) {
             final isCompleted = milestone.completed;
-            final bg = isCompleted ? scheme.onSurface : boxDecorationColor;
+            final bg = isCompleted
+                ? scheme.onSurface
+                : scheme.surfaceContainerHighest;
             final textColor = isCompleted
                 ? scheme.onPrimary
                 : scheme.onSurfaceVariant;

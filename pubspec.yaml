@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
 
   # Core dependencies
+  dynamic_color: ^1.8.1
   fl_chart: ^1.1.1
   flutter_local_notifications: ^19.5.0
   flutter_riverpod: ^2.6.1

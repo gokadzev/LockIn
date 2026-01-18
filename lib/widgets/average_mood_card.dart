@@ -1,9 +1,25 @@
+/*
+ *     Copyright (C) 2026 Valeri Gokadze
+ *
+ *     LockIn is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     LockIn is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
-import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 
@@ -20,6 +36,8 @@ class AverageMoodCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final journals = ref.watch(journalsListProvider);
     final now = DateTime.now();
     final weekAgo = now.subtract(const Duration(days: 6));
@@ -45,8 +63,6 @@ class AverageMoodCard extends ConsumerWidget {
         color = scheme.onSurface.withValues(alpha: 0.6);
       }
     }
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return LockinCard(
       padding: const EdgeInsets.all(UIConstants.largeSpacing),
@@ -56,8 +72,8 @@ class AverageMoodCard extends ConsumerWidget {
           CardHeader(
             title: 'Average Mood',
             icon: Icons.mood_rounded,
-            containerColor: colorScheme.secondaryContainer,
-            iconColor: colorScheme.onSecondaryContainer,
+            containerColor: scheme.secondaryContainer,
+            iconColor: scheme.onSecondaryContainer,
           ),
           const SizedBox(height: 16),
           Row(

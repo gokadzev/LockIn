@@ -30,7 +30,6 @@ class XPDashboardCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
     final xp = xpProfile.xp;
     final level = xpProfile.level;
     final nextLevelXP = XPService(xpProfile).xpForLevel(level + 1);
@@ -45,8 +44,6 @@ class XPDashboardCard extends ConsumerWidget {
           CardHeader(
             title: 'XP & Level',
             icon: Icons.stars_rounded,
-            containerColor: colorScheme.tertiaryContainer,
-            iconColor: colorScheme.onTertiaryContainer,
             trailing: ElevatedButton.icon(
               icon: const Icon(Icons.analytics),
               label: const Text('View XP'),

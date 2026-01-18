@@ -14,8 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
@@ -30,11 +28,10 @@ import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
 import 'package:lockin/widgets/average_mood_card.dart';
-import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/encouragement_card.dart';
 import 'package:lockin/widgets/focus_overview_card.dart';
+import 'package:lockin/widgets/goal_progress_card.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
-import 'package:lockin/widgets/lockin_card.dart';
 import 'package:lockin/widgets/lockin_dashboard_card.dart';
 import 'package:lockin/widgets/main_navigation.dart';
 import 'package:lockin/widgets/monthly_overview_heatmap.dart';
@@ -54,7 +51,6 @@ class DashboardHome extends ConsumerWidget {
     final xpState = ref.watch(xpNotifierProvider);
     final xpProfile = xpState.asData?.value.profile;
     final userLevel = xpProfile?.level ?? 0;
-    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: const LockinAppBar(title: 'Dashboard'),
@@ -87,111 +83,7 @@ class DashboardHome extends ConsumerWidget {
             MonthlyOverviewHeatmap(
               monthlyData: ref.watch(monthlyHeatmapProvider),
             ),
-            LockinCard(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CardHeader(title: 'Goal Progress', icon: Icons.flag),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    height: 180,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        PieChart(
-                          PieChartData(
-                            sections: [
-                              PieChartSectionData(
-                                value: stats.goalsProgress * 100,
-                                color: scheme.onSurface,
-                                title: '',
-                                radius: 40,
-                                borderSide: BorderSide.none,
-                              ),
-                              PieChartSectionData(
-                                value: 100 - (stats.goalsProgress * 100),
-                                color: scheme.surfaceContainerHigh,
-                                title: '',
-                                radius: 40,
-                                borderSide: BorderSide.none,
-                              ),
-                            ],
-                            sectionsSpace: 0,
-                            centerSpaceRadius: 55,
-                            startDegreeOffset: -90,
-                          ),
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '${(stats.goalsProgress * 100).toStringAsFixed(0)}%',
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                                letterSpacing: -1,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Complete',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[400],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Completed',
-                        style: TextStyle(
-                          color: Colors.grey[300],
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withValues(alpha: 0.3),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Remaining',
-                        style: TextStyle(
-                          color: Colors.grey[300],
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            GoalProgressCard(progress: stats.goalsProgress),
             const SizedBox(height: 24),
           ],
         ),

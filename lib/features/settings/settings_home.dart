@@ -39,11 +39,16 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
         type: FileType.custom,
         allowedExtensions: ['json'],
       );
-      if (result == null || result.files.single.path == null) {
+      if (result == null || result.files.isEmpty) {
         setState(() => _status = (text: 'No file selected.', success: false));
         return;
       }
-      final file = File(result.files.single.path!);
+      final filePath = result.files.first.path;
+      if (filePath == null) {
+        setState(() => _status = (text: 'Invalid file path.', success: false));
+        return;
+      }
+      final file = File(filePath);
       final data = await BackupRestoreUtil.importBackupFile(file);
       await BackupRestoreUtil.restoreAllData(data);
       // Invalidate all major providers to refresh UI

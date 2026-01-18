@@ -26,6 +26,7 @@ class TaskPriorityUtils {
           ),
           selected: selected,
           selectedColor: selectedColor,
+          checkmarkColor: labelColor,
           backgroundColor: bgColor,
           shape: StadiumBorder(
             side: BorderSide(

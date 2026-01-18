@@ -84,10 +84,7 @@ class FocusOverviewCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const CardHeader(
-              title: 'Focus Overview',
-              icon: Icons.donut_large,
-            ),
+            const CardHeader(title: 'Focus Overview', icon: Icons.donut_large),
             const SizedBox(height: UIConstants.largeSpacing),
             Container(
               height: 150,
@@ -127,8 +124,7 @@ class FocusOverviewCard extends StatelessWidget {
       );
     }
 
-    final totalSessions =
-        stats.fold<int>(0, (sum, s) => sum + s.count);
+    final totalSessions = stats.fold<int>(0, (sum, s) => sum + s.count);
     final top = stats.first;
 
     return LockinCard(
@@ -211,10 +207,8 @@ class FocusOverviewCard extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: stat.percent / 100,
                       minHeight: 6,
-                      backgroundColor:
-                          scheme.onSurface.withValues(alpha: 0.08),
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(stat.color),
+                      backgroundColor: scheme.onSurface.withValues(alpha: 0.08),
+                      valueColor: AlwaysStoppedAnimation<Color>(stat.color),
                     ),
                   ),
                 ],

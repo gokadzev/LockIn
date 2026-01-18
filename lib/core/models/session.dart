@@ -70,7 +70,8 @@ class Session extends HiveObject {
       ..breakCount = json['breakCount'] ?? 0
       ..consecutiveTaskIds =
           (json['consecutiveTaskIds'] as List?)
-              ?.map((e) => int.parse(e.toString()))
+              ?.map((e) => int.tryParse(e.toString()))
+              .whereType<int>()
               .toList() ??
           []
       ..flowSessionDuration = json['flowSessionDuration'] ?? 0

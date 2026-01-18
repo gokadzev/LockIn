@@ -244,6 +244,11 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                                     milliseconds: 100,
                                                   ),
                                                   () {
+                                                    if (!mounted ||
+                                                        milestonesFocusNodes
+                                                            .isEmpty) {
+                                                      return;
+                                                    }
                                                     milestonesFocusNodes.last
                                                         .requestFocus();
                                                   },
@@ -318,6 +323,11 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                                                     100,
                                                               ),
                                                               () {
+                                                                if (!mounted ||
+                                                                    milestonesFocusNodes
+                                                                        .isEmpty) {
+                                                                  return;
+                                                                }
                                                                 milestonesFocusNodes
                                                                     .last
                                                                     .requestFocus();
@@ -627,9 +637,11 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                               Future.delayed(
                                 const Duration(milliseconds: 100),
                                 () {
-                                  if (milestonesFocusNodes.isNotEmpty) {
-                                    milestonesFocusNodes.last.requestFocus();
+                                  if (!mounted ||
+                                      milestonesFocusNodes.isEmpty) {
+                                    return;
                                   }
+                                  milestonesFocusNodes.last.requestFocus();
                                 },
                               );
                             },
@@ -677,6 +689,11 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                           Future.delayed(
                                             const Duration(milliseconds: 100),
                                             () {
+                                              if (!mounted ||
+                                                  milestonesFocusNodes
+                                                      .isEmpty) {
+                                                return;
+                                              }
                                               milestonesFocusNodes.last
                                                   .requestFocus();
                                             },

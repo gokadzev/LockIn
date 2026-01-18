@@ -60,9 +60,11 @@ class Session extends HiveObject {
   static Session fromJson(Map<String, dynamic> json) {
     final s = Session()
       ..taskId = json['taskId']
-      ..startTime = DateTime.parse(json['startTime'])
+      ..startTime =
+          DateTime.tryParse(json['startTime'] ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0)
       ..endTime = json['endTime'] != null
-          ? DateTime.parse(json['endTime'])
+          ? DateTime.tryParse(json['endTime'])
           : null
       ..duration = json['duration'] ?? 0
       ..rating = json['rating']

@@ -38,7 +38,9 @@ class Journal extends HiveObject {
 
   static Journal fromJson(Map<String, dynamic> json) {
     final j = Journal()
-      ..date = DateTime.parse(json['date'])
+      ..date =
+          DateTime.tryParse(json['date'] ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0)
       ..mood = json['mood'] ?? 0
       ..prompts =
           (json['prompts'] as List?)?.map((e) => e.toString()).toList() ?? []

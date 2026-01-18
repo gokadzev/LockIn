@@ -90,16 +90,16 @@ class Task extends HiveObject {
       ..description = json['description']
       ..priority = json['priority'] ?? 0
       ..dueDate = json['dueDate'] != null
-          ? DateTime.parse(json['dueDate'])
+          ? DateTime.tryParse(json['dueDate'])
           : null
       ..tags = (json['tags'] as List?)?.map((e) => e.toString()).toList() ?? []
       ..completed = json['completed'] ?? false
       ..linkedGoalId = json['linkedGoalId']
       ..startTime = json['startTime'] != null
-          ? DateTime.parse(json['startTime'])
+          ? DateTime.tryParse(json['startTime'])
           : null
       ..completionTime = json['completionTime'] != null
-          ? DateTime.parse(json['completionTime'])
+          ? DateTime.tryParse(json['completionTime'])
           : null
       ..estimatedDuration = json['estimatedDuration']
       ..actualDuration = json['actualDuration']

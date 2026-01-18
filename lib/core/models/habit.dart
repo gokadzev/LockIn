@@ -91,7 +91,10 @@ class Habit extends HiveObject {
       ..reward = json['reward']
       ..streak = json['streak'] ?? 0
       ..history =
-          (json['history'] as List?)?.map((d) => DateTime.parse(d)).toList() ??
+          (json['history'] as List?)
+              ?.map((d) => DateTime.tryParse(d.toString()))
+              .whereType<DateTime>()
+              .toList() ??
           []
       ..skipped = json['skipped'] ?? false
       ..rescheduled = json['rescheduled'] ?? false

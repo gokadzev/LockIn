@@ -51,7 +51,9 @@ class DashboardHome extends ConsumerWidget {
     final xpState = ref.watch(xpNotifierProvider);
     final xpProfile = xpState.asData?.value.profile;
     final userLevel = xpProfile?.level ?? 0;
-    final statsItems = _buildStats(statsFull);
+    final statsItems = userLevel >= GamificationConstants.advancedLevel
+        ? _buildStats(statsFull)
+        : const <DashboardItem>[];
 
     return Scaffold(
       appBar: const LockinAppBar(title: 'Dashboard'),
@@ -73,8 +75,7 @@ class DashboardHome extends ConsumerWidget {
                 },
               ),
             ),
-            if (userLevel >= GamificationConstants.advancedLevel &&
-                statsItems.isNotEmpty)
+            if (statsItems.isNotEmpty)
               LockinDashboardCard(title: 'Stats', items: statsItems)
             else
               QuickStatsCard(stats: stats),

@@ -87,7 +87,11 @@ class Goal extends HiveObject {
           []
       ..progress = (json['progress'] ?? 0.0).toDouble()
       ..linkedTasks =
-          (json['linkedTasks'] as List?)?.map((e) => e as int).toList() ?? []
+          (json['linkedTasks'] as List?)
+              ?.map((e) => int.tryParse(e.toString()))
+              .whereType<int>()
+              .toList() ??
+          []
       ..deadline = json['deadline'] != null
           ? DateTime.tryParse(json['deadline'])
           : null

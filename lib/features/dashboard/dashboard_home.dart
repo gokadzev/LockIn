@@ -30,6 +30,7 @@ import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
 import 'package:lockin/widgets/average_mood_card.dart';
+import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/encouragement_card.dart';
 import 'package:lockin/widgets/focus_overview_card.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
@@ -87,116 +88,108 @@ class DashboardHome extends ConsumerWidget {
               monthlyData: ref.watch(monthlyHeatmapProvider),
             ),
             LockinCard(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Goal Progress',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      height: 180,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          PieChart(
-                            PieChartData(
-                              sections: [
-                                PieChartSectionData(
-                                  value: stats.goalsProgress * 100,
-                                  color: scheme.onSurface,
-                                  title: '',
-                                  radius: 40,
-                                  borderSide: BorderSide.none,
-                                ),
-                                PieChartSectionData(
-                                  value: 100 - (stats.goalsProgress * 100),
-                                  color: scheme.surfaceContainerHigh,
-                                  title: '',
-                                  radius: 40,
-                                  borderSide: BorderSide.none,
-                                ),
-                              ],
-                              sectionsSpace: 0,
-                              centerSpaceRadius: 55,
-                              startDegreeOffset: -90,
-                            ),
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '${(stats.goalsProgress * 100).toStringAsFixed(0)}%',
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                  letterSpacing: -1,
-                                ),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CardHeader(title: 'Goal Progress', icon: Icons.flag),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    height: 180,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        PieChart(
+                          PieChartData(
+                            sections: [
+                              PieChartSectionData(
+                                value: stats.goalsProgress * 100,
+                                color: scheme.onSurface,
+                                title: '',
+                                radius: 40,
+                                borderSide: BorderSide.none,
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Complete',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey[400],
-                                ),
+                              PieChartSectionData(
+                                value: 100 - (stats.goalsProgress * 100),
+                                color: scheme.surfaceContainerHigh,
+                                title: '',
+                                radius: 40,
+                                borderSide: BorderSide.none,
                               ),
                             ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
+                            sectionsSpace: 0,
+                            centerSpaceRadius: 55,
+                            startDegreeOffset: -90,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Completed',
-                          style: TextStyle(
-                            color: Colors.grey[300],
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withValues(alpha: 0.3),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Remaining',
-                          style: TextStyle(
-                            color: Colors.grey[300],
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${(stats.goalsProgress * 100).toStringAsFixed(0)}%',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                                letterSpacing: -1,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Complete',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Completed',
+                        style: TextStyle(
+                          color: Colors.grey[300],
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withValues(alpha: 0.3),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Remaining',
+                        style: TextStyle(
+                          color: Colors.grey[300],
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 24),

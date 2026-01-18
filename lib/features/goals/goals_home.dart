@@ -608,7 +608,9 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                               Future.delayed(
                                 const Duration(milliseconds: 100),
                                 () {
-                                  milestonesFocusNodes.last.requestFocus();
+                                  if (milestonesFocusNodes.isNotEmpty) {
+                                    milestonesFocusNodes.last.requestFocus();
+                                  }
                                 },
                               );
                             },

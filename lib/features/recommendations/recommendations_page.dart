@@ -30,7 +30,7 @@ import 'package:lockin/features/habits/habit_category_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
 import 'package:lockin/features/settings/engagement_time_provider.dart';
 import 'package:lockin/features/tasks/task_provider.dart';
-import 'package:lockin/widgets/lockin_card.dart';
+import 'package:lockin/widgets/recommendation_card.dart';
 
 // Selected category for filtering recommendations. null == All
 final suggestionsCategoryProvider = StateProvider<String?>((ref) => null);
@@ -220,7 +220,7 @@ class SuggestionsPage extends ConsumerWidget {
                                 runSpacing: 6,
                                 children: filteredHabits
                                     .map(
-                                      (s) => SuggestionCard(
+                                      (s) => RecommendationCard(
                                         title: s.title,
                                         description: s.description,
                                         category: s.category,
@@ -322,7 +322,7 @@ class SuggestionsPage extends ConsumerWidget {
                                 runSpacing: 6,
                                 children: filteredTasks
                                     .map(
-                                      (s) => SuggestionCard(
+                                      (s) => RecommendationCard(
                                         title: s.title,
                                         description: s.description,
                                         category: s.category,
@@ -388,7 +388,7 @@ class SuggestionsPage extends ConsumerWidget {
                                 runSpacing: 6,
                                 children: filteredGoals
                                     .map(
-                                      (s) => SuggestionCard(
+                                      (s) => RecommendationCard(
                                         title: s.title,
                                         description: s.description,
                                         category: s.category,
@@ -422,100 +422,6 @@ class SuggestionsPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class SuggestionCard extends StatelessWidget {
-  const SuggestionCard({
-    super.key,
-    required this.title,
-    this.description,
-    this.category,
-    this.priority,
-    required this.onAdd,
-  });
-  final String title;
-  final String? description;
-  final String? category;
-  final int? priority;
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return LockinCard(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onAdd,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (priority != null) ...[
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 4),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: scheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: scheme.outlineVariant),
-                        ),
-                        child: Text(
-                          {3: 'High', 2: 'Medium', 1: 'Low'}[priority!] ?? '',
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: scheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                      ),
-                    ],
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (category != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        category!,
-                        style: Theme.of(context).textTheme.labelSmall,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    if (description != null) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        description!,
-                        style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              IconButton.filledTonal(
-                iconSize: 20,
-                onPressed: onAdd,
-                icon: const Icon(Icons.add),
               ),
             ],
           ),

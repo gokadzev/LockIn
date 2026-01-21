@@ -75,8 +75,3 @@ flutter:
         - asset: assets/fonts/Lato/Lato-ThinItalic.ttf
           weight: 100
           style: italic
-  assets:
-    - assets/emoji/happy.png
-    - assets/emoji/smile.png
-    - assets/emoji/neutral.png
-    - assets/emoji/sad.png

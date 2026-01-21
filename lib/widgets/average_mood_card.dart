@@ -26,12 +26,12 @@ import 'package:lockin/widgets/lockin_card.dart';
 class AverageMoodCard extends ConsumerWidget {
   const AverageMoodCard({super.key});
 
-  String _emojiAsset(double? moodAvg) {
-    if (moodAvg == null) return 'assets/emoji/neutral.png';
-    if (moodAvg >= 8) return 'assets/emoji/happy.png';
-    if (moodAvg >= 6) return 'assets/emoji/smile.png';
-    if (moodAvg >= 4) return 'assets/emoji/neutral.png';
-    return 'assets/emoji/sad.png';
+  IconData _moodIcon(double? moodAvg) {
+    if (moodAvg == null) return Icons.sentiment_neutral;
+    if (moodAvg >= 8) return Icons.sentiment_very_satisfied;
+    if (moodAvg >= 6) return Icons.sentiment_satisfied;
+    if (moodAvg >= 4) return Icons.sentiment_neutral;
+    return Icons.sentiment_very_dissatisfied;
   }
 
   @override
@@ -75,15 +75,10 @@ class AverageMoodCard extends ConsumerWidget {
             children: [
               CircleAvatar(
                 radius: 40,
-                backgroundColor: color.withValues(alpha: 0.15),
                 child: CircleAvatar(
                   radius: 36,
-                  backgroundColor: scheme.onSurface,
-                  child: Image.asset(
-                    _emojiAsset(moodAvg),
-                    width: 48,
-                    height: 48,
-                  ),
+                  backgroundColor: color.withValues(alpha: 0.15),
+                  child: Icon(_moodIcon(moodAvg), size: 44, color: color),
                 ),
               ),
               const SizedBox(width: 16),

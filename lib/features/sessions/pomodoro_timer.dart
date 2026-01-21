@@ -163,11 +163,9 @@ class PomodoroTimer extends ConsumerWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHighest,
+                  color: scheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: scheme.onSurface.withValues(alpha: 0.12),
-                  ),
+                  border: Border.all(color: scheme.outlineVariant),
                 ),
                 child: Row(
                   children: [

@@ -68,11 +68,27 @@ class DashboardHome extends ConsumerWidget {
             LockinDashboardCard(
               title: 'Recommendations',
               items: _buildRecommendations(context, ref),
-              trailing: IconButton(
-                icon: const Icon(Icons.arrow_forward, color: Colors.white),
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/recommendations');
-                },
+              trailing: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/recommendations');
+                  },
+                  child: Container(
+                    height: 36,
+                    width: 36,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      size: 20,
+                    ),
+                  ),
+                ),
               ),
             ),
             if (statsItems.isNotEmpty)

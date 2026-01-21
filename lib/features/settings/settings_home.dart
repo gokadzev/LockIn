@@ -245,21 +245,27 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
 
                 // Battery optimization
-                const Card(
+                Card(
                   elevation: 0,
-                  margin: EdgeInsets.symmetric(vertical: 6),
+                  margin: const EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
-                    leading: Icon(Icons.battery_alert),
-                    title: Text('Battery Optimization'),
-                    subtitle: Text(
+                    leading: const Icon(Icons.battery_alert),
+                    title: const Text('Battery Optimization'),
+                    subtitle: const Text(
                       'Disable optimizations to ensure background tasks run reliably',
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.open_in_new),
-                          onPressed: openAppSettings,
+                          icon: const Icon(Icons.open_in_new),
+                          onPressed: () async {
+                            try {
+                              await BatteryOptimizationHelper.requestIgnoreBatteryOptimizations();
+                            } catch (_) {
+                              await openAppSettings();
+                            }
+                          },
                         ),
                       ],
                     ),

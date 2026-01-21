@@ -30,4 +30,9 @@ class BatteryOptimizationHelper {
     if (result is bool) return result;
     throw Exception('Invalid battery optimization status: $result');
   }
+
+  /// Requests ignoring battery optimizations for this app (Android only).
+  static Future<void> requestIgnoreBatteryOptimizations() async {
+    await _channel.invokeMethod('requestIgnoreBatteryOptimizations');
+  }
 }

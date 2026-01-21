@@ -303,26 +303,51 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                           return;
                         }
                         final permGranted = result['permissionGranted'] == true;
-                        final perm = permGranted ? 'Granted' : 'Not granted';
                         final pending = result['pendingCount'] ?? 0;
-                        final tzInit = result['tzInitialized'] == true
-                            ? 'OK'
-                            : 'No';
+                        final tzInitialized = result['tzInitialized'] == true;
                         var batteryStatus = 'Unknown';
-                        if (Platform.isAndroid) {
-                          try {
-                            final ignoring =
-                                await BatteryOptimizationHelper.isIgnoringBatteryOptimizations();
-                            batteryStatus = ignoring ? 'Disabled' : 'Enabled';
-                          } catch (_) {
-                            batteryStatus = 'Unknown';
-                          }
+                        var batteryOk = true;
+
+                        try {
+                          final ignoring =
+                              await BatteryOptimizationHelper.isIgnoringBatteryOptimizations();
+                          batteryStatus = ignoring ? 'Disabled' : 'Enabled';
+                          batteryOk = ignoring;
+                        } catch (_) {
+                          batteryStatus = 'Unknown';
+                          batteryOk = false;
                         }
+
+                        final criteria = <String, bool>{
+                          'Notification permission granted': permGranted,
+                          'Pending notifications exist': pending > 0,
+                          'Timezone initialized': tzInitialized,
+                          'Battery optimization disabled': batteryOk,
+                        };
+
+                        final missing = criteria.entries
+                            .where((entry) => !entry.value)
+                            .map((entry) => entry.key)
+                            .toList();
+
+                        final details = <String>[
+                          'Permission: ${permGranted ? 'OK' : 'Missing'}',
+                          'Pending: ${pending > 0 ? 'OK' : 'Missing'}',
+                          'Timezone: ${tzInitialized ? 'OK' : 'Missing'}',
+                          'Battery optimization: ${batteryOk ? 'OK' : batteryStatus}',
+                        ];
+
+                        final statusText = <String>[
+                          'Criteria:',
+                          ...details.map((d) => '- $d'),
+                          if (missing.isNotEmpty)
+                            'Missing: ${missing.join(', ')}',
+                        ].join('\n');
+
                         setState(
                           () => _status = (
-                            text:
-                                'Permission: $perm • Pending: $pending • TimeZone: $tzInit • Battery opt: $batteryStatus',
-                            success: permGranted,
+                            text: statusText,
+                            success: missing.isEmpty,
                           ),
                         );
                       },

@@ -253,6 +253,7 @@ class NotificationService {
         'permission': _permissionManager.getStatusMessage(permissionStatus),
         'permissionGranted': permissionStatus == PermissionStatus.granted,
         'pendingCount': pendingNotifications.length,
+        'tzInitialized': _timezoneManager.isInitialized,
         'timezone': _timezoneManager.getDebugInfo(),
         'idManager': _idManager.getDebugInfo(),
         'error': null,

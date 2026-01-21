@@ -510,9 +510,10 @@ class SuggestionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Align(
-                alignment: Alignment.topRight,
-                child: Icon(Icons.add_circle, color: Colors.white, size: 32),
+              IconButton.filledTonal(
+                iconSize: 20,
+                onPressed: onAdd,
+                icon: const Icon(Icons.add),
               ),
             ],
           ),

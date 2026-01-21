@@ -52,7 +52,11 @@ class HabitCard extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: IconBadge(icon: categoryToIcon(habit.category)),
+                child: IconBadge(
+                  icon: categoryToIcon(habit.category),
+                  backgroundColor: scheme.primaryContainer,
+                  color: scheme.onPrimaryContainer,
+                ),
               ),
               Expanded(
                 child: Text(

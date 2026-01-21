@@ -22,12 +22,14 @@ class IconBadge extends StatelessWidget {
     super.key,
     required this.icon,
     this.color,
+    this.backgroundColor,
     this.size = 36,
     this.iconSize = 18,
   });
 
   final IconData icon;
   final Color? color;
+  final Color? backgroundColor;
   final double size;
   final double iconSize;
 
@@ -38,7 +40,7 @@ class IconBadge extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: scheme.onSurface.withValues(alpha: 0.1),
+        color: backgroundColor ?? scheme.onSurface.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(

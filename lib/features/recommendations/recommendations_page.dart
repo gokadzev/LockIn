@@ -33,17 +33,17 @@ import 'package:lockin/features/tasks/task_provider.dart';
 import 'package:lockin/widgets/recommendation_card.dart';
 
 // Selected category for filtering recommendations. null == All
-final suggestionsCategoryProvider = StateProvider<String?>((ref) => null);
+final recommendationsCategoryProvider = StateProvider<String?>((ref) => null);
 
-class SuggestionsPage extends ConsumerWidget {
-  const SuggestionsPage({super.key});
+class RecommendationsPage extends ConsumerWidget {
+  const RecommendationsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final habitNotifier = ref.read(habitsListProvider.notifier);
     final categories = ref.watch(habitCategoriesProvider);
     final categoriesNotifier = ref.read(habitCategoriesProvider.notifier);
-    final selectedCategory = ref.watch(suggestionsCategoryProvider);
+    final selectedCategory = ref.watch(recommendationsCategoryProvider);
     final goalsNotifier = ref.read(goalsListProvider.notifier);
     final tasksNotifier = ref.read(tasksListProvider.notifier);
     final tasks = ref.watch(tasksListProvider);
@@ -172,8 +172,11 @@ class SuggestionsPage extends ConsumerWidget {
                                     ).textTheme.bodySmall?.color,
                             ),
                         onSelected: (v) {
-                          ref.read(suggestionsCategoryProvider.notifier).state =
-                              isAll ? null : (v ? cat : null);
+                          ref
+                              .read(recommendationsCategoryProvider.notifier)
+                              .state = isAll
+                              ? null
+                              : (v ? cat : null);
                         },
                       ),
                     );

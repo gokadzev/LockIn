@@ -31,7 +31,7 @@ class AppRouter {
       case '/xp':
         return MaterialPageRoute(builder: (_) => const XPTabScreen());
       case '/recommendations':
-        return MaterialPageRoute(builder: (_) => const SuggestionsPage());
+        return MaterialPageRoute(builder: (_) => const RecommendationsPage());
       default:
         return MaterialPageRoute(
           builder: (_) =>

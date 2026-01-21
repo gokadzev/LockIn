@@ -122,14 +122,9 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
-                    TextButton.icon(
+                    FilledButton.icon(
                       icon: const Icon(Icons.lightbulb_outline),
                       label: const Text('See examples'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Theme.of(
-                          context,
-                        ).colorScheme.onSurface,
-                      ),
                       onPressed: () {
                         Navigator.of(context).pushNamed('/recommendations');
                       },

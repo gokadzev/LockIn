@@ -448,6 +448,7 @@ class SuggestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return LockinCard(
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -469,16 +470,17 @@ class SuggestionCard extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: scheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: scheme.outlineVariant),
                         ),
                         child: Text(
                           {3: 'High', 2: 'Medium', 1: 'Low'}[priority!] ?? '',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: scheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ),
                     ],

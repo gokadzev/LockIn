@@ -21,6 +21,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
+import 'package:lockin/core/utils/battery_optimization_helper.dart';
 import 'package:lockin/features/dashboard/dashboard_provider.dart';
 import 'package:lockin/features/goals/goal_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
@@ -253,9 +254,14 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                     subtitle: Text(
                       'Disable optimizations to ensure background tasks run reliably',
                     ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.open_in_new),
-                      onPressed: openAppSettings,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.open_in_new),
+                          onPressed: openAppSettings,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -296,10 +302,20 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                         final tzInit = result['tzInitialized'] == true
                             ? 'OK'
                             : 'No';
+                        var batteryStatus = 'Unknown';
+                        if (Platform.isAndroid) {
+                          try {
+                            final ignoring =
+                                await BatteryOptimizationHelper.isIgnoringBatteryOptimizations();
+                            batteryStatus = ignoring ? 'Disabled' : 'Enabled';
+                          } catch (_) {
+                            batteryStatus = 'Unknown';
+                          }
+                        }
                         setState(
                           () => _status = (
                             text:
-                                'Permission: $perm • Pending: $pending • TimeZone: $tzInit',
+                                'Permission: $perm • Pending: $pending • TimeZone: $tzInit • Battery opt: $batteryStatus',
                             success: permGranted,
                           ),
                         );

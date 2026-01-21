@@ -61,6 +61,9 @@ ThemeData getAppTheme({
     labelLarge: appTextTheme.labelLarge?.copyWith(
       color: effectiveScheme.onPrimary,
     ),
+    labelSmall: appTextTheme.labelSmall?.copyWith(
+      color: effectiveScheme.onSurface,
+    ),
   );
 
   return ThemeData(
@@ -99,6 +102,32 @@ ThemeData getAppTheme({
       selectedItemColor: effectiveScheme.primary,
       unselectedItemColor: effectiveScheme.onSurfaceVariant,
       showUnselectedLabels: true,
+    ),
+    splashFactory: NoSplash.splashFactory,
+    highlightColor: Colors.transparent,
+    navigationBarTheme: NavigationBarThemeData(
+      height: 72,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      indicatorShape: const StadiumBorder(),
+      indicatorColor: effectiveScheme.secondaryContainer.withAlpha(140),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        return effectiveTextTheme.labelSmall?.copyWith(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w600,
+          color: states.contains(WidgetState.selected)
+              ? effectiveScheme.onSurface
+              : effectiveScheme.onSurface.withAlpha(170),
+        );
+      }),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return IconThemeData(size: 24, color: effectiveScheme.onSurface);
+        }
+        return IconThemeData(
+          size: 22,
+          color: effectiveScheme.onSurface.withAlpha(170),
+        );
+      }),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

@@ -440,14 +440,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.0"
-  json_serializable:
-    dependency: "direct main"
-    description:
-      name: json_serializable
-      sha256: "5b89c1e32ae3840bb20a1b3434e3a590173ad3cb605896fb0f60487ce2f8104e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.11.4"
   leak_tracker:
     dependency: transitive
     description:

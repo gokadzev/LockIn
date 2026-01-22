@@ -90,9 +90,9 @@ class EncouragementCard extends StatelessWidget {
               color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.emoji_events,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               size: 24,
             ),
           ),

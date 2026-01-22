@@ -212,9 +212,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                 ..cue = result['frequency'] == 'custom'
                     ? (result['weekdays'] as List<int>).join(',')
                     : null
-                ..reminderMinutes = reminder != null
-                    ? reminder.hour * 60 + reminder.minute
-                    : null
+                ..reminderMinutes = _timeToMinutes(reminder)
                 ..category = result['category'] ?? 'General';
               notifier.addHabit(habit);
               // Schedule notification
@@ -261,9 +259,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
     }
     // Initialize selectedTime with the habit's reminder time if available
     final reminderMinutes = habit?.reminderMinutes;
-    final initialReminderTime = reminderMinutes != null
-        ? TimeOfDay(hour: reminderMinutes ~/ 60, minute: reminderMinutes % 60)
-        : null;
+    final initialReminderTime = _minutesToTime(reminderMinutes);
     var selectedTime = initialReminderTime ?? TimeOfDay.now();
     var selectedCategory =
         habit?.category ??
@@ -423,7 +419,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context, {
+                  final result = {
                     'title': titleController.text,
                     'frequency': frequency,
                     'weekdays': List<int>.generate(
@@ -435,20 +431,9 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                       minute: selectedTime.minute,
                     ),
                     'category': selectedCategory,
-                  });
-                  onSave({
-                    'title': titleController.text,
-                    'frequency': frequency,
-                    'weekdays': List<int>.generate(
-                      7,
-                      (i) => customWeekdays[i] ? i : -1,
-                    ).where((i) => i != -1).toList(),
-                    'reminder': TimeOfDay(
-                      hour: selectedTime.hour,
-                      minute: selectedTime.minute,
-                    ),
-                    'category': selectedCategory,
-                  });
+                  };
+                  Navigator.pop(context, result);
+                  onSave(result);
                 },
                 child: Text(habit == null ? 'Add' : 'Save'),
               ),
@@ -555,10 +540,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       ..reward = habit.reward
       ..streak = habit.streak
       ..history = List<DateTime>.from(habit.history)
-      ..reminderMinutes = (() {
-        final reminder = result['reminder'] as TimeOfDay?;
-        return reminder != null ? reminder.hour * 60 + reminder.minute : null;
-      })()
+      ..reminderMinutes = _timeToMinutes(result['reminder'] as TimeOfDay?)
       ..category = result['category'] ?? 'General';
 
     final notifier = ref.read(habitsListProvider.notifier);
@@ -586,5 +568,15 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
         message: 'Failed to update habit: $e',
       );
     }
+  }
+
+  int? _timeToMinutes(TimeOfDay? time) {
+    if (time == null) return null;
+    return time.hour * 60 + time.minute;
+  }
+
+  TimeOfDay? _minutesToTime(int? minutes) {
+    if (minutes == null) return null;
+    return TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
   }
 }

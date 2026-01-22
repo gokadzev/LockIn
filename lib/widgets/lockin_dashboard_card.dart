@@ -51,6 +51,9 @@ class LockinDashboardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final iconColor = scheme.onSurfaceVariant;
+    final textColor = scheme.onSurface;
     return LockinCard(
       padding: const EdgeInsets.all(UIConstants.largeSpacing),
       child: Column(
@@ -70,7 +73,7 @@ class LockinDashboardCard extends StatelessWidget {
                 onTap: item.onTap,
                 child: Row(
                   children: [
-                    Icon(item.icon, color: Colors.white, size: 24),
+                    Icon(item.icon, color: iconColor, size: 24),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -78,7 +81,7 @@ class LockinDashboardCard extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: Colors.white70,
+                          color: textColor,
                         ),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,

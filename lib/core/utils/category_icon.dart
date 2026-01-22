@@ -47,26 +47,3 @@ IconData categoryToIcon(String? category) {
       return Icons.label_outline;
   }
 }
-
-/// Try to detect a category present in free text and return an icon.
-IconData guessCategoryIcon(String? text) {
-  if (text == null) return Icons.label_outline;
-  final lower = text.toLowerCase();
-  final candidates = [
-    'health',
-    'productivity',
-    'learning',
-    'wellness',
-    'fitness',
-    'mindfulness',
-    'finance',
-    'planning',
-    'career',
-    'social',
-    'personal',
-  ];
-  for (final c in candidates) {
-    if (lower.contains(c)) return categoryToIcon(c);
-  }
-  return Icons.label_outline;
-}

@@ -98,7 +98,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       appBar: LockinAppBar(
         title: 'Habits',
         actions: [
-          IconButton(
+          IconButton.filledTonal(
             icon: const Icon(Icons.category),
             tooltip: 'Manage Categories',
             onPressed: () async {

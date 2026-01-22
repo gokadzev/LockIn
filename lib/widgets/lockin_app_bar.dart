@@ -25,7 +25,7 @@ class LockinAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final defaultActions = [
-      IconButton(
+      IconButton.filledTonal(
         icon: const Icon(Icons.settings),
         onPressed: () => Navigator.of(context).pushNamed('/settings'),
       ),

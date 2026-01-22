@@ -51,7 +51,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
       appBar: LockinAppBar(
         title: 'Goals',
         actions: [
-          IconButton(
+          IconButton.filledTonal(
             icon: const Icon(Icons.category),
             tooltip: 'Manage Categories',
             onPressed: () async {

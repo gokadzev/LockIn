@@ -50,7 +50,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
       appBar: LockinAppBar(
         title: 'Tasks',
         actions: [
-          IconButton(
+          IconButton.filledTonal(
             icon: const Icon(Icons.category),
             tooltip: 'Manage Categories',
             onPressed: () async {

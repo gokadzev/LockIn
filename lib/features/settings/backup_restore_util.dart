@@ -20,6 +20,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/journal.dart';
@@ -28,11 +29,11 @@ import 'package:lockin/core/models/task.dart';
 
 class BackupRestoreUtil {
   static Future<String> exportAllData() async {
-    final tasks = Hive.box<Task>('tasks').values.toList();
-    final goals = Hive.box<Goal>('goals').values.toList();
-    final journals = Hive.box<Journal>('journals').values.toList();
-    final habits = Hive.box<Habit>('habits').values.toList();
-    final sessions = Hive.box<Session>('sessions').values.toList();
+    final tasks = Hive.box<Task>(HiveBoxes.tasks).values.toList();
+    final goals = Hive.box<Goal>(HiveBoxes.goals).values.toList();
+    final journals = Hive.box<Journal>(HiveBoxes.journals).values.toList();
+    final habits = Hive.box<Habit>(HiveBoxes.habits).values.toList();
+    final sessions = Hive.box<Session>(HiveBoxes.sessions).values.toList();
 
     final data = {
       'tasks': tasks.map((t) => t.toJson()).toList(),
@@ -68,11 +69,11 @@ class BackupRestoreUtil {
   }
 
   static Future<void> restoreAllData(Map<String, dynamic> data) async {
-    final tasksBox = Hive.box<Task>('tasks');
-    final goalsBox = Hive.box<Goal>('goals');
-    final journalsBox = Hive.box<Journal>('journals');
-    final habitsBox = Hive.box<Habit>('habits');
-    final sessionsBox = Hive.box<Session>('sessions');
+    final tasksBox = Hive.box<Task>(HiveBoxes.tasks);
+    final goalsBox = Hive.box<Goal>(HiveBoxes.goals);
+    final journalsBox = Hive.box<Journal>(HiveBoxes.journals);
+    final habitsBox = Hive.box<Habit>(HiveBoxes.habits);
+    final sessionsBox = Hive.box<Session>(HiveBoxes.sessions);
 
     await tasksBox.clear();
     await goalsBox.clear();

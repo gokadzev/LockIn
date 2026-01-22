@@ -19,6 +19,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_values.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
 import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
@@ -27,7 +28,7 @@ import 'package:lockin/features/habits/habit_streak_calculator.dart';
 
 /// Provides access to the Hive box for habits.
 final habitsBoxProvider = Provider<Box<Habit>?>((ref) {
-  return openBoxIfAvailable<Habit>('habits');
+  return openBoxIfAvailable<Habit>(HiveBoxes.habits);
 });
 
 /// Main provider for the list of habits, using [HabitsNotifier].

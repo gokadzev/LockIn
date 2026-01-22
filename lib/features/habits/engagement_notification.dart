@@ -17,6 +17,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
@@ -28,10 +29,14 @@ Future<void> sendDailyEngagementNotifications(TimeOfDay preferredTime) async {
   try {
     // Ensure boxes are opened in background isolate
     final habitBox =
-        openBoxIfAvailable<Habit>('habits') ??
-        await Hive.openBox<Habit>('habits');
-    final taskBox = openBoxIfAvailable('tasks') ?? await Hive.openBox('tasks');
-    final goalBox = openBoxIfAvailable('goals') ?? await Hive.openBox('goals');
+        openBoxIfAvailable<Habit>(HiveBoxes.habits) ??
+        await Hive.openBox<Habit>(HiveBoxes.habits);
+    final taskBox =
+        openBoxIfAvailable(HiveBoxes.tasks) ??
+        await Hive.openBox(HiveBoxes.tasks);
+    final goalBox =
+        openBoxIfAvailable(HiveBoxes.goals) ??
+        await Hive.openBox(HiveBoxes.goals);
 
     final manager = EngagementNotificationManager();
 

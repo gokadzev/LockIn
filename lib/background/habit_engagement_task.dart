@@ -17,6 +17,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
@@ -47,12 +48,12 @@ void habitEngagementCallbackDispatcher() {
       }
 
       // Load preferred time from Hive settings
-      final box = Hive.isBoxOpen('settings')
-          ? Hive.box('settings')
-          : await Hive.openBox('settings');
+      final box = Hive.isBoxOpen(HiveBoxes.settings)
+          ? Hive.box(HiveBoxes.settings)
+          : await Hive.openBox(HiveBoxes.settings);
       var preferredTime = const TimeOfDay(hour: 9, minute: 0);
-      if (box.containsKey('engagementTime')) {
-        final timeMap = box.get('engagementTime') as Map?;
+      if (box.containsKey(HiveKeys.engagementTime)) {
+        final timeMap = box.get(HiveKeys.engagementTime) as Map?;
         if (timeMap != null &&
             timeMap['hour'] != null &&
             timeMap['minute'] != null) {

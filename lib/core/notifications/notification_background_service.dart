@@ -17,6 +17,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
@@ -74,10 +75,10 @@ Future<void> _registerHiveAdapters() async {
 Future<bool> _handleEngagementTask() async {
   try {
     // Open necessary boxes
-    final habitBox = await _openBox<Habit>('habits');
-    final taskBox = await _openBox<Task>('tasks');
-    final goalBox = await _openBox<Goal>('goals');
-    final settingsBox = await _openBox('settings');
+    final habitBox = await _openBox<Habit>(HiveBoxes.habits);
+    final taskBox = await _openBox<Task>(HiveBoxes.tasks);
+    final goalBox = await _openBox<Goal>(HiveBoxes.goals);
+    final settingsBox = await _openBox(HiveBoxes.settings);
 
     // Get preferred notification time
     final preferredTime = _getPreferredTime(settingsBox);
@@ -141,12 +142,13 @@ Future<Box<T>?> _openBox<T>(String boxName) async {
 TimeOfDay _getPreferredTime(Box? settingsBox) {
   const defaultTime = TimeOfDay(hour: 9, minute: 0);
 
-  if (settingsBox == null || !settingsBox.containsKey('engagementTime')) {
+  if (settingsBox == null ||
+      !settingsBox.containsKey(HiveKeys.engagementTime)) {
     return defaultTime;
   }
 
   try {
-    final timeMap = settingsBox.get('engagementTime') as Map?;
+    final timeMap = settingsBox.get(HiveKeys.engagementTime) as Map?;
     if (timeMap != null &&
         timeMap['hour'] != null &&
         timeMap['minute'] != null) {

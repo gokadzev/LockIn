@@ -17,26 +17,27 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:lockin/constants/hive_constants.dart';
 
 final dynamicColorEnabledProvider =
     StateNotifierProvider<DynamicColorEnabledNotifier, bool>((ref) {
-      final box = Hive.box<dynamic>('app_settings');
+      final box = Hive.box<dynamic>(HiveBoxes.appSettings);
       return DynamicColorEnabledNotifier(box);
     });
 
 class DynamicColorEnabledNotifier extends StateNotifier<bool> {
   DynamicColorEnabledNotifier(this.box)
-    : super(box.get('dynamicColorEnabled', defaultValue: true) as bool);
+    : super(box.get(HiveKeys.dynamicColorEnabled, defaultValue: true) as bool);
 
   final Box<dynamic> box;
 
   void toggle() {
     state = !state;
-    box.put('dynamicColorEnabled', state);
+    box.put(HiveKeys.dynamicColorEnabled, state);
   }
 
   void set(bool value) {
     state = value;
-    box.put('dynamicColorEnabled', value);
+    box.put(HiveKeys.dynamicColorEnabled, value);
   }
 }

@@ -17,6 +17,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
@@ -34,9 +35,9 @@ final advancedDashboardStatsProvider = Provider<DashboardStats>((ref) {
   final goals = ref.watch(goalsListProvider);
   final sessions = ref.watch(sessionsListProvider);
   final journals = ref.watch(journalsListProvider);
-  final taskBox = Hive.box<Task>('tasks');
-  final habitBox = Hive.box<Habit>('habits');
-  final sessionBox = Hive.box<Session>('sessions');
+  final taskBox = Hive.box<Task>(HiveBoxes.tasks);
+  final habitBox = Hive.box<Habit>(HiveBoxes.habits);
+  final sessionBox = Hive.box<Session>(HiveBoxes.sessions);
   final service = ProductivityService(taskBox, habitBox, sessionBox);
 
   final milestoneProgresses = goals

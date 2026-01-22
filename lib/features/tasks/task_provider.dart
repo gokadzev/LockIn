@@ -19,13 +19,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_values.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/task.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
 import 'package:lockin/core/utils/hive_utils.dart';
 
 /// Provides access to the Hive box for tasks.
 final tasksBoxProvider = Provider<Box<Task>?>((ref) {
-  return openBoxIfAvailable<Task>('tasks');
+  return openBoxIfAvailable<Task>(HiveBoxes.tasks);
 });
 
 /// Main provider for the list of tasks, using [TasksNotifier].

@@ -16,6 +16,7 @@
  */
 
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/habit_category.dart';
@@ -41,22 +42,23 @@ Future<void> initializeApp() async {
     ..registerAdapter(RewardTypeAdapter())
     ..registerAdapter(HabitCategoryAdapter());
   await _migrateHabitCategoriesBox();
-  await Hive.openBox<Task>('tasks');
-  await Hive.openBox<Habit>('habits');
-  await Hive.openBox<Goal>('goals');
-  await Hive.openBox<Session>('sessions');
-  await Hive.openBox<Journal>('journals');
-  await Hive.openBox<Rule>('rules');
-  await Hive.openBox<XPProfile>('xp_profile');
-  await Hive.openBox<String>('habit_categories');
-  await Hive.openBox<dynamic>('app_settings');
-  await Hive.openBox('settings');
+  await Hive.openBox<Task>(HiveBoxes.tasks);
+  await Hive.openBox<Habit>(HiveBoxes.habits);
+  await Hive.openBox<Goal>(HiveBoxes.goals);
+  await Hive.openBox<Session>(HiveBoxes.sessions);
+  await Hive.openBox<Journal>(HiveBoxes.journals);
+  await Hive.openBox<Rule>(HiveBoxes.rules);
+  await Hive.openBox<XPProfile>(HiveBoxes.xpProfile);
+  await Hive.openBox<String>(HiveBoxes.habitCategories);
+  await Hive.openBox<dynamic>(HiveBoxes.appSettings);
+  await Hive.openBox(HiveBoxes.settings);
+  await Hive.openBox<int>(HiveBoxes.userActivity);
 }
 
 // TODO: remove migration function after a few releases (afa7169b9dbed6d8322e46219b54e4f6b6ea11f9)
 
 Future<void> _migrateHabitCategoriesBox() async {
-  final box = await Hive.openBox('habit_categories');
+  final box = await Hive.openBox(HiveBoxes.habitCategories);
   var changed = false;
 
   for (final key in box.keys.toList()) {

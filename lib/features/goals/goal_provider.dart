@@ -19,13 +19,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_values.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
 import 'package:lockin/core/utils/hive_utils.dart';
 
 /// Provides access to the Hive box for goals.
 final goalsBoxProvider = Provider<Box<Goal>?>((ref) {
-  return openBoxIfAvailable<Goal>('goals');
+  return openBoxIfAvailable<Goal>(HiveBoxes.goals);
 });
 
 /// Main provider for the list of goals, using [GoalsNotifier].

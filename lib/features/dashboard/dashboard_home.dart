@@ -20,6 +20,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/constants/gamification_constants.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
@@ -111,9 +112,9 @@ class DashboardHome extends ConsumerWidget {
 }
 
 List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
-  final taskBox = Hive.box<Task>('tasks');
-  final habitBox = Hive.box<Habit>('habits');
-  final sessionBox = Hive.box<Session>('sessions');
+  final taskBox = Hive.box<Task>(HiveBoxes.tasks);
+  final habitBox = Hive.box<Habit>(HiveBoxes.habits);
+  final sessionBox = Hive.box<Session>(HiveBoxes.sessions);
   final journals = ref.watch(journalsListProvider);
   final items = <DashboardItem>[];
   void navTo(int index) {
@@ -275,8 +276,8 @@ List<DashboardItem> _buildStats(DashboardStats statsFull) {
     items.add(DashboardItem(icon: Icons.lightbulb, text: statsFull.nudge));
   }
 
-  final habitBox = Hive.box<Habit>('habits');
-  final taskBox = Hive.box<Task>('tasks');
+  final habitBox = Hive.box<Habit>(HiveBoxes.habits);
+  final taskBox = Hive.box<Task>(HiveBoxes.tasks);
   final weekCompletions = <DateTime, int>{};
   for (final habit in habitBox.values) {
     if (habit.abandoned) continue;

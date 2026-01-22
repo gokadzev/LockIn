@@ -17,6 +17,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/utils/hive_utils.dart';
 
 final engagementTimeProvider =
@@ -26,13 +27,11 @@ final engagementTimeProvider =
 
 class EngagementTimeNotifier extends StateNotifier<TimeOfDay> {
   EngagementTimeNotifier() : super(_loadInitialTime());
-  static const _boxName = 'settings';
-  static const _key = 'engagementTime';
 
   static TimeOfDay _loadInitialTime() {
-    final box = openBoxIfAvailable(_boxName);
-    if (box != null && box.containsKey(_key)) {
-      final timeMap = box.get(_key) as Map?;
+    final box = openBoxIfAvailable(HiveBoxes.settings);
+    if (box != null && box.containsKey(HiveKeys.engagementTime)) {
+      final timeMap = box.get(HiveKeys.engagementTime) as Map?;
       if (timeMap != null &&
           timeMap['hour'] != null &&
           timeMap['minute'] != null) {
@@ -43,9 +42,12 @@ class EngagementTimeNotifier extends StateNotifier<TimeOfDay> {
   }
 
   void setTime(TimeOfDay time) {
-    final box = openBoxIfAvailable(_boxName);
+    final box = openBoxIfAvailable(HiveBoxes.settings);
     if (box != null) {
-      box.put(_key, {'hour': time.hour, 'minute': time.minute});
+      box.put(HiveKeys.engagementTime, {
+        'hour': time.hour,
+        'minute': time.minute,
+      });
       state = time;
     }
   }

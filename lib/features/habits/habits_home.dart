@@ -205,21 +205,24 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
           await _showHabitDialog(
             context: context,
             onSave: (result) async {
+              final reminder = result['reminder'] as TimeOfDay?;
               final habit = Habit()
                 ..title = result['title']
                 ..frequency = result['frequency']
                 ..cue = result['frequency'] == 'custom'
                     ? (result['weekdays'] as List<int>).join(',')
                     : null
+                ..reminderMinutes = reminder != null
+                    ? reminder.hour * 60 + reminder.minute
+                    : null
                 ..category = result['category'] ?? 'General';
               notifier.addHabit(habit);
               // Schedule notification
-              final time = result['reminder'] as TimeOfDay?;
-              if (time != null) {
+              if (reminder != null) {
                 await _scheduleHabitNotification(
                   habit.key.toString(),
                   habit.title,
-                  time,
+                  reminder,
                   habit.frequency,
                   habit.cue,
                 );
@@ -256,7 +259,12 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
         }
       }
     }
-    var selectedTime = TimeOfDay.now();
+    // Initialize selectedTime with the habit's reminder time if available
+    final reminderMinutes = habit?.reminderMinutes;
+    final initialReminderTime = reminderMinutes != null
+        ? TimeOfDay(hour: reminderMinutes ~/ 60, minute: reminderMinutes % 60)
+        : null;
+    var selectedTime = initialReminderTime ?? TimeOfDay.now();
     var selectedCategory =
         habit?.category ??
         (categories.isNotEmpty ? categories.first : 'General');
@@ -547,6 +555,10 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       ..reward = habit.reward
       ..streak = habit.streak
       ..history = List<DateTime>.from(habit.history)
+      ..reminderMinutes = (() {
+        final reminder = result['reminder'] as TimeOfDay?;
+        return reminder != null ? reminder.hour * 60 + reminder.minute : null;
+      })()
       ..category = result['category'] ?? 'General';
 
     final notifier = ref.read(habitsListProvider.notifier);

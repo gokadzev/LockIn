@@ -43,7 +43,8 @@ class Habit extends HiveObject {
       ..rescheduled = rescheduled
       ..abandoned = abandoned
       ..fatigueScore = fatigueScore
-      ..category = category;
+      ..category = category
+      ..reminderMinutes = reminderMinutes;
   }
 
   @HiveField(0)
@@ -68,6 +69,8 @@ class Habit extends HiveObject {
   int fatigueScore = 0; // 0-100
   @HiveField(10)
   String category = 'General';
+  @HiveField(13)
+  int? reminderMinutes; // Minutes since midnight (0-1439)
 
   Map<String, dynamic> toJson() => {
     'title': title,
@@ -81,6 +84,7 @@ class Habit extends HiveObject {
     'abandoned': abandoned,
     'fatigueScore': fatigueScore,
     'category': category,
+    'reminderMinutes': reminderMinutes,
   };
 
   static Habit fromJson(Map<String, dynamic> json) {
@@ -100,7 +104,8 @@ class Habit extends HiveObject {
       ..rescheduled = json['rescheduled'] ?? false
       ..abandoned = json['abandoned'] ?? false
       ..fatigueScore = json['fatigueScore'] ?? 0
-      ..category = json['category'] ?? 'General';
+      ..category = json['category'] ?? 'General'
+      ..reminderMinutes = json['reminderMinutes'];
     return h;
   }
 }

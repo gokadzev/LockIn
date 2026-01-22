@@ -87,12 +87,12 @@ class EncouragementCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: Theme.of(context).colorScheme.secondaryContainer,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               Icons.emoji_events,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
               size: 24,
             ),
           ),

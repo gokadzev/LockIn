@@ -180,7 +180,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? scheme.primaryContainer
+                                            ? scheme.secondaryContainer
                                             : null,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -196,7 +196,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                             DateFormat.E().format(day),
                                             style: TextStyle(
                                               color: isSelected
-                                                  ? scheme.onPrimaryContainer
+                                                  ? scheme.onSecondaryContainer
                                                   : scheme.onSurface,
                                               fontWeight: FontWeight.w600,
                                             ),
@@ -207,7 +207,8 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                               '${day.day}',
                                               style: TextStyle(
                                                 color: isSelected
-                                                    ? scheme.onPrimaryContainer
+                                                    ? scheme
+                                                          .onSecondaryContainer
                                                     : scheme.onSurface,
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
@@ -220,8 +221,9 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                               height: 8,
                                               decoration: BoxDecoration(
                                                 color: isSelected
-                                                    ? scheme.onPrimaryContainer
-                                                    : scheme.primary,
+                                                    ? scheme
+                                                          .onSecondaryContainer
+                                                    : scheme.secondary,
                                                 shape: BoxShape.circle,
                                               ),
                                             ),

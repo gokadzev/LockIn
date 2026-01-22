@@ -67,8 +67,8 @@ class LockinTaskCard extends StatelessWidget {
                     icon: task.tags.length > 1
                         ? Icons.view_module_outlined
                         : categoryToIcon(task.tags.first),
-                    backgroundColor: scheme.primaryContainer,
-                    color: scheme.onPrimaryContainer,
+                    backgroundColor: scheme.secondaryContainer,
+                    color: scheme.onSecondaryContainer,
                   ),
                 ),
               Expanded(

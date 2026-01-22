@@ -51,16 +51,16 @@ class AverageMoodCard extends ConsumerWidget {
     final moodAvg = recent.isNotEmpty
         ? (recent.map((j) => j.mood).reduce((a, b) => a + b) / recent.length)
         : null;
-    var color = scheme.onSurfaceVariant;
+    var color = scheme.onSecondaryContainer;
     if (moodAvg != null) {
       if (moodAvg >= 8) {
-        color = scheme.onSurface;
+        color = scheme.onSecondaryContainer;
       } else if (moodAvg >= 6) {
-        color = scheme.onSurface.withValues(alpha: 0.85);
+        color = scheme.onSecondaryContainer.withValues(alpha: 0.85);
       } else if (moodAvg >= 4) {
-        color = scheme.onSurfaceVariant;
+        color = scheme.onSecondaryContainer.withValues(alpha: 0.7);
       } else {
-        color = scheme.onSurface.withValues(alpha: 0.6);
+        color = scheme.onSecondaryContainer.withValues(alpha: 0.6);
       }
     }
 
@@ -73,12 +73,21 @@ class AverageMoodCard extends ConsumerWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              CircleAvatar(
-                radius: 40,
-                child: CircleAvatar(
-                  radius: 36,
-                  backgroundColor: color.withValues(alpha: 0.15),
-                  child: Icon(_moodIcon(moodAvg), size: 44, color: color),
+              Container(
+                width: 84,
+                height: 84,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: SizedBox(
+                    width: 72,
+                    height: 72,
+                    child: Center(
+                      child: Icon(_moodIcon(moodAvg), size: 44, color: color),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 16),

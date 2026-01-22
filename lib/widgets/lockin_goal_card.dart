@@ -62,8 +62,8 @@ class GoalCard extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 8),
                 child: IconBadge(
                   icon: categoryToIcon(goal.category),
-                  backgroundColor: scheme.primaryContainer,
-                  color: scheme.onPrimaryContainer,
+                  backgroundColor: scheme.secondaryContainer,
+                  color: scheme.onSecondaryContainer,
                 ),
               ),
               // Title and subtitle

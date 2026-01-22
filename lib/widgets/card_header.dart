@@ -46,12 +46,12 @@ class CardHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: containerColor ?? colorScheme.primaryContainer,
+            color: containerColor ?? colorScheme.secondaryContainer,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
-            color: iconColor ?? colorScheme.onPrimaryContainer,
+            color: iconColor ?? colorScheme.onSecondaryContainer,
             size: 24,
           ),
         ),

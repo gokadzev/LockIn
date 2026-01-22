@@ -80,12 +80,12 @@ class DashboardHome extends ConsumerWidget {
                     height: 36,
                     width: 36,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primaryContainer,
+                      color: Theme.of(context).colorScheme.secondaryContainer,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.arrow_forward,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
                       size: 20,
                     ),
                   ),

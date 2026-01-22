@@ -30,8 +30,16 @@ class HabitStreakCalculator {
 
     final normalizedHistory = _normalizeAndSort(history);
     final today = _normalizeDate(DateTime.now());
+    if (normalizedHistory.any((d) => _isSameDay(d, today))) {
+      return _countConsecutiveDays(normalizedHistory, today);
+    }
 
-    return _countConsecutiveDays(normalizedHistory, today);
+    final yesterday = today.subtract(const Duration(days: 1));
+    if (normalizedHistory.any((d) => _isSameDay(d, yesterday))) {
+      return _countConsecutiveDays(normalizedHistory, yesterday);
+    }
+
+    return 0;
   }
 
   /// Normalizes all history dates to date-only (removing time component)

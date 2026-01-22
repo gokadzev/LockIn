@@ -26,25 +26,28 @@ class XPService {
 
   void addXP(int amount) {
     final newXP = (profile.xp + amount).clamp(0, 1000000); // Arbitrary max
-    var newLevel = profile.level;
-    final tempXP = newXP;
-    while (tempXP >= xpForLevel(newLevel + 1)) {
+    var newLevel = 1;
+    while (newXP >= xpForLevel(newLevel + 1)) {
       newLevel++;
     }
     // Unlock all rewards for levels <= newLevel
     final newUnlocked = List<Reward>.from(profile.unlockedRewards);
+    var streakSaverAvailable = profile.streakSaverAvailable;
     for (final reward in XPData.rewards.where(
       (r) => r.unlockLevel <= newLevel,
     )) {
       if (!newUnlocked.any((ur) => ur.id == reward.id)) {
         newUnlocked.add(reward);
+        if (reward.id == 'streak_saver') {
+          streakSaverAvailable = true;
+        }
       }
     }
     profile = XPProfile(
       xp: newXP,
       level: newLevel,
       unlockedRewards: newUnlocked,
-      streakSaverAvailable: profile.streakSaverAvailable,
+      streakSaverAvailable: streakSaverAvailable,
     );
   }
 

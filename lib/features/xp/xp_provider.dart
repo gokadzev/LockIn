@@ -45,11 +45,11 @@ class XPNotifier extends StateNotifier<XPProfile> {
   }
 
   Future<void> consumeStreakSaver(int xpLoss) async {
-    final profile = state;
+    service.addXP(-xpLoss);
     final updatedProfile = XPProfile(
-      xp: (profile.xp - xpLoss).clamp(0, 1000000),
-      level: profile.level,
-      unlockedRewards: profile.unlockedRewards,
+      xp: service.profile.xp,
+      level: service.profile.level,
+      unlockedRewards: service.profile.unlockedRewards,
     );
     service.profile = updatedProfile;
     state = updatedProfile;

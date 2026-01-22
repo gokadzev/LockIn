@@ -16,6 +16,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:lockin/core/utils/task_priority_utils.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 
 class RecommendationCard extends StatelessWidget {
@@ -36,7 +37,6 @@ class RecommendationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return LockinCard(
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -51,24 +51,11 @@ class RecommendationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (priority != null) ...[
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 4),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: scheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: scheme.outlineVariant),
-                        ),
-                        child: Text(
-                          {3: 'High', 2: 'Medium', 1: 'Low'}[priority!] ?? '',
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: scheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w600,
-                              ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: TaskPriorityUtils.buildPriorityContainer(
+                          context,
+                          priority!,
                         ),
                       ),
                     ],

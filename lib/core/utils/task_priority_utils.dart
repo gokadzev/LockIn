@@ -29,9 +29,10 @@ class TaskPriorityUtils {
     final scheme = Theme.of(context).colorScheme;
     return AppValues.taskPriorities.entries.map((e) {
       final selected = selectedPriority == e.key;
-      final labelColor = selected ? scheme.onPrimary : scheme.onSurface;
+      final indicator = getPriorityColor(context, e.key);
+      final labelColor = selected ? Colors.white : scheme.onSurface;
       final selectedColor = selected
-          ? scheme.primary
+          ? indicator
           : scheme.surfaceContainerHighest;
       final bgColor = scheme.surfaceContainerHighest;
 
@@ -48,7 +49,7 @@ class TaskPriorityUtils {
           backgroundColor: bgColor,
           shape: StadiumBorder(
             side: BorderSide(
-              color: selected ? scheme.onPrimary : Colors.transparent,
+              color: selected ? Colors.white : Colors.transparent,
               width: 2,
             ),
           ),
@@ -65,34 +66,46 @@ class TaskPriorityUtils {
 
   /// Get priority color from priority value
   static Color getPriorityColor(BuildContext context, int priority) {
-    final scheme = Theme.of(context).colorScheme;
     switch (priority) {
       case 3:
-        return scheme.primary;
+        return const Color(0xFFFF6B6B); // accent red
       case 2:
-        return scheme.surfaceContainerHighest;
+        return const Color(0xFFF4B400); // accent amber
       case 1:
       default:
-        return scheme.surface;
+        return const Color(0xFF06D6A0); // accent teal
     }
   }
 
   /// Build priority container widget (theme-aware)
   static Widget buildPriorityContainer(BuildContext context, int priority) {
     final scheme = Theme.of(context).colorScheme;
+    final indicator = getPriorityColor(context, priority);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: scheme.surface,
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: indicator.withValues(alpha: 0.35)),
       ),
-      child: Text(
-        getPriorityText(priority),
-        style: TextStyle(
-          color: scheme.onSurface,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: indicator, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            getPriorityText(priority),
+            style: TextStyle(
+              color: scheme.onSurface,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -147,6 +147,12 @@ String _weekdaysString(String cue) {
       .map((e) => int.tryParse(e))
       .where((e) => e != null)
       .cast<int>()
+      .map((i) {
+        if (i >= 1 && i <= 7) return i - 1;
+        if (i >= 0 && i < 7) return i;
+        return null;
+      })
+      .whereType<int>()
       .where((i) => i >= 0 && i < 7);
   const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   return days.map((i) => names[i]).join(', ');

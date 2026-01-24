@@ -122,6 +122,7 @@ class HabitNotificationManager {
     try {
       NotificationRepeatInterval repeatInterval;
       List<int>? weekdays;
+      DateTime? scheduledTime;
 
       // Parse frequency and weekdays
       switch (frequency.toLowerCase()) {
@@ -130,6 +131,10 @@ class HabitNotificationManager {
           break;
         case 'weekly':
           repeatInterval = NotificationRepeatInterval.weekly;
+          if (_notificationService.timezoneManager.isInitialized) {
+            scheduledTime = _notificationService.timezoneManager
+                .getNextWeekdayOccurrence(reminderTime, DateTime.now().weekday);
+          }
           break;
         case 'custom':
           repeatInterval = NotificationRepeatInterval.custom;
@@ -147,6 +152,7 @@ class HabitNotificationManager {
         repeatInterval: repeatInterval,
         customWeekdays: weekdays,
         payload: 'habit:$habitId',
+        scheduledTime: scheduledTime,
       );
 
       if (result.success) {
@@ -269,8 +275,14 @@ class HabitNotificationManager {
       return weekdaysString
           .split(',')
           .map((s) => int.tryParse(s.trim()))
-          .where((i) => i != null && i >= 1 && i <= 7)
-          .cast<int>()
+          .where((i) => i != null)
+          .map((i) {
+            final value = i!;
+            if (value >= 1 && value <= 7) return value;
+            if (value >= 0 && value <= 6) return value + 1;
+            return null;
+          })
+          .whereType<int>()
           .toList();
     } catch (e) {
       debugPrint('Error parsing weekdays: $e');

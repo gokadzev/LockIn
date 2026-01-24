@@ -183,9 +183,9 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                             unawaited(
                               _habitNotificationManager
                                   .skipTodayReminderIfCompleted(
-                                habit: updated,
-                                completedAt: today,
-                              ),
+                                    habit: updated,
+                                    completedAt: today,
+                                  ),
                             );
                           }
                         } catch (e) {
@@ -263,8 +263,14 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
           .where((e) => e != null)
           .cast<int>();
       for (final i in indices) {
-        if (i >= 0 && i < customWeekdays.length) {
-          customWeekdays[i] = true;
+        int? index;
+        if (i >= 1 && i <= 7) {
+          index = i - 1;
+        } else if (i >= 0 && i < 7) {
+          index = i;
+        }
+        if (index != null && index >= 0 && index < customWeekdays.length) {
+          customWeekdays[index] = true;
         }
       }
     }
@@ -435,7 +441,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                     'frequency': frequency,
                     'weekdays': List<int>.generate(
                       7,
-                      (i) => customWeekdays[i] ? i : -1,
+                      (i) => customWeekdays[i] ? i + 1 : -1,
                     ).where((i) => i != -1).toList(),
                     'reminder': TimeOfDay(
                       hour: selectedTime.hour,

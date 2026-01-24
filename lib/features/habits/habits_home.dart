@@ -546,7 +546,20 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
           message: 'Habit deleted',
           onUndo: () {
             try {
-              notifier.addHabit(deletedHabit.copy());
+              final restored = deletedHabit.copy();
+              notifier.addHabit(restored);
+              final reminderTime = _minutesToTime(restored.reminderMinutes);
+              if (reminderTime != null) {
+                unawaited(
+                  _scheduleHabitNotification(
+                    restored.key.toString(),
+                    restored.title,
+                    reminderTime,
+                    restored.frequency,
+                    restored.cue,
+                  ),
+                );
+              }
             } catch (e) {
               if (mounted) {
                 LockinSnackBar.showSimple(
@@ -630,7 +643,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       final time = result['reminder'] as TimeOfDay?;
       if (time != null) {
         await _scheduleHabitNotification(
-          updated.key.toString(),
+          habitKey.toString(),
           updated.title,
           time,
           updated.frequency,

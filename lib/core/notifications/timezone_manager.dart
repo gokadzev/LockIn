@@ -184,6 +184,55 @@ class TimezoneManager {
     return scheduled;
   }
 
+  /// Get the next occurrence of a specific day-of-month and time
+  tz.TZDateTime getNextMonthOccurrenceForDay(
+    TimeOfDay time,
+    int day, {
+    DateTime? from,
+  }) {
+    if (!_initialized) {
+      throw StateError('TimezoneManager not initialized');
+    }
+
+    final base = from != null
+        ? tz.TZDateTime.from(from, tz.local)
+        : tz.TZDateTime.now(tz.local);
+
+    final safeDay = day < 1 ? 1 : day;
+    final daysInCurrentMonth = _daysInMonth(base.year, base.month);
+    final targetDay = safeDay <= daysInCurrentMonth
+        ? safeDay
+        : daysInCurrentMonth;
+
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      base.year,
+      base.month,
+      targetDay,
+      time.hour,
+      time.minute,
+    );
+
+    if (scheduled.isBefore(base)) {
+      final nextMonth = base.month == 12 ? 1 : base.month + 1;
+      final nextYear = base.month == 12 ? base.year + 1 : base.year;
+      final daysInTargetMonth = _daysInMonth(nextYear, nextMonth);
+      final nextTargetDay = safeDay <= daysInTargetMonth
+          ? safeDay
+          : daysInTargetMonth;
+      scheduled = tz.TZDateTime(
+        tz.local,
+        nextYear,
+        nextMonth,
+        nextTargetDay,
+        time.hour,
+        time.minute,
+      );
+    }
+
+    return scheduled;
+  }
+
   int _daysInMonth(int year, int month) {
     final beginningNextMonth = month == 12
         ? DateTime(year + 1)

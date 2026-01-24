@@ -239,6 +239,8 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                   ? (result['weekdays'] as List<int>).join(',')
                   : frequency == 'weekly'
                   ? DateTime.now().weekday.toString()
+                  : frequency == 'monthly'
+                  ? DateTime.now().day.toString()
                   : null;
               final habit = Habit()
                 ..title = result['title']
@@ -591,6 +593,16 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       weeklyCue ??= DateTime.now().weekday.toString();
     }
 
+    String? monthlyCue;
+    if (result['frequency'] == 'monthly') {
+      final existingCue = habit.frequency == 'monthly' ? habit.cue : null;
+      final parsed = int.tryParse(existingCue ?? '');
+      if (parsed != null && parsed >= 1 && parsed <= 31) {
+        monthlyCue = parsed.toString();
+      }
+      monthlyCue ??= DateTime.now().day.toString();
+    }
+
     final updated = Habit()
       ..title = result['title']
       ..frequency = result['frequency']
@@ -598,6 +610,8 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
           ? (result['weekdays'] as List<int>).join(',')
           : result['frequency'] == 'weekly'
           ? weeklyCue
+          : result['frequency'] == 'monthly'
+          ? monthlyCue
           : null
       ..reward = habit.reward
       ..streak = habit.streak

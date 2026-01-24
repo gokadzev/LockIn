@@ -93,10 +93,12 @@ class HabitNotificationManager {
         scheduledFrom = reminderDateTime.add(const Duration(days: 7));
         break;
       case 'monthly':
+        final monthDay = _parseMonthDay(habit.cue) ?? reminderDateTime.day;
         if (_notificationService.timezoneManager.isInitialized) {
           scheduledFrom = _notificationService.timezoneManager
-              .getNextMonthOccurrence(
+              .getNextMonthOccurrenceForDay(
                 reminderTime,
+                monthDay,
                 from: reminderDateTime.add(const Duration(minutes: 1)),
               );
         } else {
@@ -154,8 +156,10 @@ class HabitNotificationManager {
         case 'monthly':
           repeatInterval = NotificationRepeatInterval.monthly;
           if (_notificationService.timezoneManager.isInitialized) {
+            final monthDay =
+                _parseMonthDay(customWeekdays) ?? DateTime.now().day;
             scheduledTime = _notificationService.timezoneManager
-                .getNextMonthOccurrence(reminderTime);
+                .getNextMonthOccurrenceForDay(reminderTime, monthDay);
           }
           break;
         case 'custom':
@@ -327,6 +331,13 @@ class HabitNotificationManager {
       if (weeklyDay == null) return false;
       return weeklyDay == date.weekday;
     }
+    if (frequency == 'monthly') {
+      final monthDay = _parseMonthDay(habit.cue);
+      if (monthDay == null) return false;
+      final daysInMonth = DateTime(date.year, date.month + 1, 0).day;
+      final targetDay = monthDay <= daysInMonth ? monthDay : daysInMonth;
+      return date.day == targetDay;
+    }
     if (frequency != 'custom') return true;
 
     final weekdays = _parseCustomWeekdays(habit.cue);
@@ -341,6 +352,14 @@ class HabitNotificationManager {
     if (value >= 1 && value <= 7) return value;
     if (value >= 0 && value <= 6) return value + 1;
     return null;
+  }
+
+  int? _parseMonthDay(String? dayString) {
+    if (dayString == null || dayString.isEmpty) return null;
+    final value = int.tryParse(dayString.trim());
+    if (value == null) return null;
+    if (value < 1 || value > 31) return null;
+    return value;
   }
 
   /// Convert weekday list to readable string

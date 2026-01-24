@@ -577,13 +577,27 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       customWeekdays: habit.cue,
     );
 
+    String? weeklyCue;
+    if (result['frequency'] == 'weekly') {
+      final existingCue = habit.frequency == 'weekly' ? habit.cue : null;
+      final parsed = int.tryParse(existingCue ?? '');
+      if (parsed != null) {
+        if (parsed >= 1 && parsed <= 7) {
+          weeklyCue = parsed.toString();
+        } else if (parsed >= 0 && parsed <= 6) {
+          weeklyCue = (parsed + 1).toString();
+        }
+      }
+      weeklyCue ??= DateTime.now().weekday.toString();
+    }
+
     final updated = Habit()
       ..title = result['title']
       ..frequency = result['frequency']
       ..cue = result['frequency'] == 'custom'
           ? (result['weekdays'] as List<int>).join(',')
           : result['frequency'] == 'weekly'
-          ? (habit.cue ?? DateTime.now().weekday.toString())
+          ? weeklyCue
           : null
       ..reward = habit.reward
       ..streak = habit.streak

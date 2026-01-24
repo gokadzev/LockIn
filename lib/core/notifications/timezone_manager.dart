@@ -186,8 +186,8 @@ class TimezoneManager {
 
   int _daysInMonth(int year, int month) {
     final beginningNextMonth = month == 12
-        ? DateTime(year + 1, 1, 1)
-        : DateTime(year, month + 1, 1);
+        ? DateTime(year + 1)
+        : DateTime(year, month + 1);
     final lastDay = beginningNextMonth.subtract(const Duration(days: 1));
     return lastDay.day;
   }

@@ -308,8 +308,8 @@ class HabitNotificationManager {
           })
           .whereType<int>()
           .toSet()
-          .toList();
-      normalized.sort();
+          .toList()
+      ..sort();
       return normalized;
     } catch (e) {
       debugPrint('Error parsing weekdays: $e');

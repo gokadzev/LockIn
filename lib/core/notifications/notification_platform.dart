@@ -160,6 +160,19 @@ class NotificationPlatform {
           );
           break;
 
+        case NotificationRepeatInterval.monthly:
+          await _plugin.zonedSchedule(
+            data.id,
+            data.title,
+            data.body,
+            scheduledDate,
+            details,
+            payload: data.payload,
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+            matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
+          );
+          break;
+
         case NotificationRepeatInterval.custom:
           if (data.customWeekdays != null) {
             // Schedule for each selected weekday

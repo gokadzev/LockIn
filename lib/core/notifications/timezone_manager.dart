@@ -146,6 +146,52 @@ class TimezoneManager {
     );
   }
 
+  /// Get the next occurrence of a specific day-of-month and time
+  tz.TZDateTime getNextMonthOccurrence(TimeOfDay time, {DateTime? from}) {
+    if (!_initialized) {
+      throw StateError('TimezoneManager not initialized');
+    }
+
+    final base = from != null
+        ? tz.TZDateTime.from(from, tz.local)
+        : tz.TZDateTime.now(tz.local);
+
+    final day = base.day;
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      base.year,
+      base.month,
+      day,
+      time.hour,
+      time.minute,
+    );
+
+    if (scheduled.isBefore(base)) {
+      final nextMonth = base.month == 12 ? 1 : base.month + 1;
+      final nextYear = base.month == 12 ? base.year + 1 : base.year;
+      final daysInTargetMonth = _daysInMonth(nextYear, nextMonth);
+      final targetDay = day <= daysInTargetMonth ? day : daysInTargetMonth;
+      scheduled = tz.TZDateTime(
+        tz.local,
+        nextYear,
+        nextMonth,
+        targetDay,
+        time.hour,
+        time.minute,
+      );
+    }
+
+    return scheduled;
+  }
+
+  int _daysInMonth(int year, int month) {
+    final beginningNextMonth = month == 12
+        ? DateTime(year + 1, 1, 1)
+        : DateTime(year, month + 1, 1);
+    final lastDay = beginningNextMonth.subtract(const Duration(days: 1));
+    return lastDay.day;
+  }
+
   /// Convert DateTime to TZDateTime
   tz.TZDateTime toTZDateTime(DateTime dateTime) {
     if (!_initialized) {

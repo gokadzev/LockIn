@@ -71,6 +71,9 @@ class HabitNotificationManager {
       case 'weekly':
         repeatInterval = NotificationRepeatInterval.weekly;
         break;
+      case 'monthly':
+        repeatInterval = NotificationRepeatInterval.monthly;
+        break;
       case 'custom':
         repeatInterval = NotificationRepeatInterval.custom;
         weekdays = _parseCustomWeekdays(habit.cue);
@@ -88,6 +91,17 @@ class HabitNotificationManager {
       case 'weekly':
         // Schedule for same day next week
         scheduledFrom = reminderDateTime.add(const Duration(days: 7));
+        break;
+      case 'monthly':
+        if (_notificationService.timezoneManager.isInitialized) {
+          scheduledFrom = _notificationService.timezoneManager
+              .getNextMonthOccurrence(
+                reminderTime,
+                from: reminderDateTime.add(const Duration(minutes: 1)),
+              );
+        } else {
+          scheduledFrom = reminderDateTime.add(const Duration(days: 30));
+        }
         break;
       case 'custom':
         // Use small offset to ensure we skip today's occurrence
@@ -133,6 +147,13 @@ class HabitNotificationManager {
           if (_notificationService.timezoneManager.isInitialized) {
             scheduledTime = _notificationService.timezoneManager
                 .getNextWeekdayOccurrence(reminderTime, DateTime.now().weekday);
+          }
+          break;
+        case 'monthly':
+          repeatInterval = NotificationRepeatInterval.monthly;
+          if (_notificationService.timezoneManager.isInitialized) {
+            scheduledTime = _notificationService.timezoneManager
+                .getNextMonthOccurrence(reminderTime);
           }
           break;
         case 'custom':

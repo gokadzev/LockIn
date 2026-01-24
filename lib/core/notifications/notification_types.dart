@@ -52,7 +52,7 @@ enum NotificationChannel {
 
 enum NotificationPriority { low, normal, high, urgent }
 
-enum NotificationRepeatInterval { none, daily, weekly, custom }
+enum NotificationRepeatInterval { none, daily, weekly, monthly, custom }
 
 /// Base class for all notification data
 abstract class NotificationData {

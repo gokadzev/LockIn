@@ -83,7 +83,12 @@ class HabitNotificationManager {
     }
 
     // Cancel existing reminders, then reschedule from next occurrence
-    await cancelHabitReminders(habitId, customWeekdays: habit.cue);
+    await cancelHabitReminders(
+      habitId,
+      customWeekdays: habit.frequency.toLowerCase() == 'custom'
+          ? habit.cue
+          : null,
+    );
 
     // Calculate when to reschedule based on frequency
     final DateTime scheduledFrom;

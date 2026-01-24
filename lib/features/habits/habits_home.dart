@@ -534,7 +534,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       // Cancel the habit's notifications before deleting
       await _habitNotificationManager.cancelHabitReminders(
         habit.key.toString(),
-        customWeekdays: habit.cue,
+        customWeekdays: habit.frequency == 'custom' ? habit.cue : null,
       );
 
       try {
@@ -589,7 +589,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
     // Cancel old notifications first
     await _habitNotificationManager.cancelHabitReminders(
       habit.key.toString(),
-      customWeekdays: habit.cue,
+      customWeekdays: habit.frequency == 'custom' ? habit.cue : null,
     );
 
     String? weeklyCue;

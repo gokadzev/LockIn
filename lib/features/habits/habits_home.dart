@@ -453,6 +453,14 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  if (frequency == 'custom' &&
+                      !customWeekdays.any((day) => day)) {
+                    LockinSnackBar.showSimple(
+                      context: context,
+                      message: 'Select at least one day for custom frequency.',
+                    );
+                    return;
+                  }
                   final result = {
                     'title': titleController.text,
                     'frequency': frequency,

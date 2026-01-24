@@ -159,6 +159,10 @@ class HabitNotificationManager {
         case 'custom':
           repeatInterval = NotificationRepeatInterval.custom;
           weekdays = _parseCustomWeekdays(customWeekdays);
+          if (weekdays == null || weekdays.isEmpty) {
+            debugPrint('Custom frequency requires at least one weekday');
+            return false;
+          }
           break;
         default:
           repeatInterval = NotificationRepeatInterval.daily;

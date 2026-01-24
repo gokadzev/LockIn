@@ -145,8 +145,10 @@ class HabitNotificationManager {
         case 'weekly':
           repeatInterval = NotificationRepeatInterval.weekly;
           if (_notificationService.timezoneManager.isInitialized) {
+            final weeklyDay =
+                _parseWeekday(customWeekdays) ?? DateTime.now().weekday;
             scheduledTime = _notificationService.timezoneManager
-                .getNextWeekdayOccurrence(reminderTime, DateTime.now().weekday);
+                .getNextWeekdayOccurrence(reminderTime, weeklyDay);
           }
           break;
         case 'monthly':
@@ -296,20 +298,21 @@ class HabitNotificationManager {
     }
 
     try {
-      final normalized = weekdaysString
-          .split(',')
-          .map((s) => int.tryParse(s.trim()))
-          .where((i) => i != null)
-          .map((i) {
-            final value = i!;
-            if (value >= 1 && value <= 7) return value;
-            if (value >= 0 && value <= 6) return value + 1;
-            return null;
-          })
-          .whereType<int>()
-          .toSet()
-          .toList()
-      ..sort();
+      final normalized =
+          weekdaysString
+              .split(',')
+              .map((s) => int.tryParse(s.trim()))
+              .where((i) => i != null)
+              .map((i) {
+                final value = i!;
+                if (value >= 1 && value <= 7) return value;
+                if (value >= 0 && value <= 6) return value + 1;
+                return null;
+              })
+              .whereType<int>()
+              .toSet()
+              .toList()
+            ..sort();
       return normalized;
     } catch (e) {
       debugPrint('Error parsing weekdays: $e');
@@ -319,11 +322,25 @@ class HabitNotificationManager {
 
   bool _isScheduledForToday(Habit habit, DateTime date) {
     final frequency = habit.frequency.toLowerCase();
+    if (frequency == 'weekly') {
+      final weeklyDay = _parseWeekday(habit.cue);
+      if (weeklyDay == null) return false;
+      return weeklyDay == date.weekday;
+    }
     if (frequency != 'custom') return true;
 
     final weekdays = _parseCustomWeekdays(habit.cue);
     if (weekdays == null || weekdays.isEmpty) return false;
     return weekdays.contains(date.weekday);
+  }
+
+  int? _parseWeekday(String? weekdayString) {
+    if (weekdayString == null || weekdayString.isEmpty) return null;
+    final value = int.tryParse(weekdayString.trim());
+    if (value == null) return null;
+    if (value >= 1 && value <= 7) return value;
+    if (value >= 0 && value <= 6) return value + 1;
+    return null;
   }
 
   /// Convert weekday list to readable string

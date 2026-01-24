@@ -234,12 +234,16 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
             context: context,
             onSave: (result) async {
               final reminder = result['reminder'] as TimeOfDay?;
+              final frequency = result['frequency'] as String;
+              final cue = frequency == 'custom'
+                  ? (result['weekdays'] as List<int>).join(',')
+                  : frequency == 'weekly'
+                  ? DateTime.now().weekday.toString()
+                  : null;
               final habit = Habit()
                 ..title = result['title']
-                ..frequency = result['frequency']
-                ..cue = result['frequency'] == 'custom'
-                    ? (result['weekdays'] as List<int>).join(',')
-                    : null
+                ..frequency = frequency
+                ..cue = cue
                 ..reminderMinutes = _timeToMinutes(reminder)
                 ..category = result['category'] ?? 'General';
               notifier.addHabit(habit);
@@ -578,6 +582,8 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       ..frequency = result['frequency']
       ..cue = result['frequency'] == 'custom'
           ? (result['weekdays'] as List<int>).join(',')
+          : result['frequency'] == 'weekly'
+          ? (habit.cue ?? DateTime.now().weekday.toString())
           : null
       ..reward = habit.reward
       ..streak = habit.streak

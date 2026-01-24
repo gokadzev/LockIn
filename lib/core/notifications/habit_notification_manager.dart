@@ -352,19 +352,26 @@ class HabitNotificationManager {
 
   int? _parseWeekday(String? weekdayString) {
     if (weekdayString == null || weekdayString.isEmpty) return null;
-    final value = int.tryParse(weekdayString.trim());
-    if (value == null) return null;
-    if (value >= 1 && value <= 7) return value;
-    if (value >= 0 && value <= 6) return value + 1;
+    final parts = weekdayString.split(',');
+    for (final part in parts) {
+      final value = int.tryParse(part.trim());
+      if (value == null) continue;
+      if (value >= 1 && value <= 7) return value;
+      if (value >= 0 && value <= 6) return value + 1;
+    }
     return null;
   }
 
   int? _parseMonthDay(String? dayString) {
     if (dayString == null || dayString.isEmpty) return null;
-    final value = int.tryParse(dayString.trim());
-    if (value == null) return null;
-    if (value < 1 || value > 31) return null;
-    return value;
+    final parts = dayString.split(',');
+    for (final part in parts) {
+      final value = int.tryParse(part.trim());
+      if (value == null) continue;
+      if (value < 1 || value > 31) continue;
+      return value;
+    }
+    return null;
   }
 
   /// Convert weekday list to readable string

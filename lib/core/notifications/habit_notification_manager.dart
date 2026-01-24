@@ -104,8 +104,8 @@ class HabitNotificationManager {
         }
         break;
       case 'custom':
-        // Use small offset to ensure we skip today's occurrence
-        scheduledFrom = reminderDateTime.add(const Duration(minutes: 1));
+        // Skip today's occurrence while keeping the reminder time unchanged
+        scheduledFrom = reminderDateTime.add(const Duration(days: 1));
         break;
       default: // daily
         // Schedule for tomorrow
@@ -296,7 +296,7 @@ class HabitNotificationManager {
     }
 
     try {
-      return weekdaysString
+      final normalized = weekdaysString
           .split(',')
           .map((s) => int.tryParse(s.trim()))
           .where((i) => i != null)
@@ -307,7 +307,10 @@ class HabitNotificationManager {
             return null;
           })
           .whereType<int>()
+          .toSet()
           .toList();
+      normalized.sort();
+      return normalized;
     } catch (e) {
       debugPrint('Error parsing weekdays: $e');
       return null;

@@ -25,6 +25,7 @@ import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/core/notifications/notification_types.dart';
 import 'package:lockin/core/notifications/timezone_manager.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Manages engagement and motivational notifications
 class EngagementNotificationManager {
@@ -46,6 +47,13 @@ class EngagementNotificationManager {
     try {
       // Avoid spamming active users
       if (isUserActive) return true;
+
+      // Skip scheduling if notification permission is not granted
+      final permissionStatus = await Permission.notification.status;
+      if (!permissionStatus.isGranted) {
+        debugPrint('Notification permission not granted; skipping engagement');
+        return true;
+      }
 
       // Initialize timezone db for scheduling
       final tzManager = TimezoneManager();

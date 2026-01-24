@@ -184,9 +184,26 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                               _habitNotificationManager
                                   .skipTodayReminderIfCompleted(
                                     habit: updated,
+                                    habitId: habitKey.toString(),
                                     completedAt: today,
                                   ),
                             );
+                          } else {
+                            final reminderTime = _minutesToTime(
+                              updated.reminderMinutes,
+                            );
+                            if (reminderTime != null) {
+                              unawaited(
+                                _habitNotificationManager
+                                    .rescheduleHabitReminder(
+                                      habitId: habitKey.toString(),
+                                      habitTitle: updated.title,
+                                      reminderTime: reminderTime,
+                                      frequency: updated.frequency,
+                                      customWeekdays: updated.cue,
+                                    ),
+                              );
+                            }
                           }
                         } catch (e) {
                           LockinSnackBar.showSimple(

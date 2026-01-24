@@ -32,6 +32,7 @@ class HabitNotificationManager {
   /// Skip today's reminder if the habit was completed before reminder time
   Future<void> skipTodayReminderIfCompleted({
     required Habit habit,
+    required String habitId,
     DateTime? completedAt,
   }) async {
     final reminderMinutes = habit.reminderMinutes;
@@ -59,8 +60,6 @@ class HabitNotificationManager {
     if (!_isScheduledForToday(habit, completionTime)) {
       return;
     }
-
-    final habitId = habit.key.toString();
 
     NotificationRepeatInterval repeatInterval;
     List<int>? weekdays;

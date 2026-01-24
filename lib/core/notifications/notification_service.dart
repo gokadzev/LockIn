@@ -120,6 +120,7 @@ class NotificationService {
         NotificationRepeatInterval.daily,
     List<int>? customWeekdays,
     String? payload,
+    DateTime? scheduledTime,
   }) async {
     if (!_initialized) {
       return NotificationResult.failure('Service not initialized');
@@ -130,12 +131,13 @@ class NotificationService {
       return NotificationResult.failure('No notification permission');
     }
 
-    final scheduledTime = _timezoneManager.getNextOccurrence(time);
+    final resolvedScheduledTime =
+        scheduledTime ?? _timezoneManager.getNextOccurrence(time);
     final data = HabitNotificationData(
       id: _idManager.getHabitId(habitId),
       title: title,
       body: body,
-      scheduledTime: scheduledTime,
+      scheduledTime: resolvedScheduledTime,
       habitId: habitId,
       repeatInterval: repeatInterval,
       customWeekdays: customWeekdays,

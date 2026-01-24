@@ -15,6 +15,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
@@ -177,6 +179,15 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                                   : '${-xpChange} XP removed.',
                             );
                           });
+                          if (!wasDoneToday) {
+                            unawaited(
+                              _habitNotificationManager
+                                  .skipTodayReminderIfCompleted(
+                                habit: updated,
+                                completedAt: today,
+                              ),
+                            );
+                          }
                         } catch (e) {
                           LockinSnackBar.showSimple(
                             context: context,

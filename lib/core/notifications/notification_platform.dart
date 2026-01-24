@@ -301,28 +301,28 @@ class NotificationPlatform {
 
   /// Calculate next occurrence of a specific weekday
   tz.TZDateTime _getNextWeekdaySchedule(DateTime baseTime, int weekday) {
-    final now = tz.TZDateTime.now(tz.local);
-    final currentWeekday = now.weekday;
+    final reference = tz.TZDateTime.from(baseTime, tz.local);
+    final currentWeekday = reference.weekday;
 
     var daysUntilTarget = (weekday - currentWeekday) % 7;
     if (daysUntilTarget == 0) {
       // Same weekday - check if time has passed
       final todayAtTime = tz.TZDateTime(
         tz.local,
-        now.year,
-        now.month,
-        now.day,
+        reference.year,
+        reference.month,
+        reference.day,
         baseTime.hour,
         baseTime.minute,
       );
-      if (todayAtTime.isAfter(now)) {
+      if (todayAtTime.isAfter(reference)) {
         return todayAtTime;
       } else {
         daysUntilTarget = 7; // Schedule for next week
       }
     }
 
-    final targetDate = now.add(Duration(days: daysUntilTarget));
+    final targetDate = reference.add(Duration(days: daysUntilTarget));
     return tz.TZDateTime(
       tz.local,
       targetDate.year,

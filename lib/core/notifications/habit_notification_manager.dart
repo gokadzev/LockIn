@@ -29,6 +29,88 @@ class HabitNotificationManager {
 
   final NotificationService _notificationService = NotificationService();
 
+  /// Skip today's reminder if the habit was completed before reminder time
+  Future<void> skipTodayReminderIfCompleted({
+    required Habit habit,
+    DateTime? completedAt,
+  }) async {
+    final reminderMinutes = habit.reminderMinutes;
+    if (reminderMinutes == null) return;
+
+    final completionTime = completedAt ?? DateTime.now();
+    final reminderTime = TimeOfDay(
+      hour: reminderMinutes ~/ 60,
+      minute: reminderMinutes % 60,
+    );
+    final reminderDateTime = DateTime(
+      completionTime.year,
+      completionTime.month,
+      completionTime.day,
+      reminderTime.hour,
+      reminderTime.minute,
+    );
+
+    // Only skip if completion happened before today's reminder time
+    if (!completionTime.isBefore(reminderDateTime)) {
+      return;
+    }
+
+    // Skip only if this habit is scheduled for today
+    if (!_isScheduledForToday(habit, completionTime)) {
+      return;
+    }
+
+    final habitId = habit.key.toString();
+
+    NotificationRepeatInterval repeatInterval;
+    List<int>? weekdays;
+    final frequency = habit.frequency.toLowerCase();
+    switch (frequency) {
+      case 'daily':
+        repeatInterval = NotificationRepeatInterval.daily;
+        break;
+      case 'weekly':
+        repeatInterval = NotificationRepeatInterval.weekly;
+        break;
+      case 'custom':
+        repeatInterval = NotificationRepeatInterval.custom;
+        weekdays = _parseCustomWeekdays(habit.cue);
+        break;
+      default:
+        repeatInterval = NotificationRepeatInterval.daily;
+    }
+
+    // Cancel existing reminders, then reschedule from next occurrence
+    await cancelHabitReminders(habitId, customWeekdays: habit.cue);
+
+    // Calculate when to reschedule based on frequency
+    final DateTime scheduledFrom;
+    switch (frequency) {
+      case 'weekly':
+        // Schedule for same day next week
+        scheduledFrom = reminderDateTime.add(const Duration(days: 7));
+        break;
+      case 'custom':
+        // Use small offset to ensure we skip today's occurrence
+        scheduledFrom = reminderDateTime.add(const Duration(minutes: 1));
+        break;
+      default: // daily
+        // Schedule for tomorrow
+        scheduledFrom = reminderDateTime.add(const Duration(days: 1));
+    }
+
+    await _notificationService.scheduleHabitNotification(
+      habitId: habitId,
+      title: 'Habit Reminder',
+      body: habit.title,
+      time: reminderTime,
+      repeatInterval: repeatInterval,
+      customWeekdays: weekdays,
+      payload: 'habit:$habitId',
+      scheduledTime: scheduledFrom,
+    );
+  }
+
   /// Schedule notifications for a habit
   Future<bool> scheduleHabitReminder({
     required String habitId,
@@ -68,7 +150,6 @@ class HabitNotificationManager {
       );
 
       if (result.success) {
-        debugPrint('Scheduled habit notification for $habitTitle');
         return true;
       } else {
         debugPrint('Failed to schedule habit notification: ${result.error}');
@@ -93,7 +174,6 @@ class HabitNotificationManager {
       );
 
       if (result.success) {
-        debugPrint('Cancelled habit notifications for $habitId');
         return true;
       } else {
         debugPrint('Failed to cancel habit notifications: ${result.error}');
@@ -196,6 +276,15 @@ class HabitNotificationManager {
       debugPrint('Error parsing weekdays: $e');
       return null;
     }
+  }
+
+  bool _isScheduledForToday(Habit habit, DateTime date) {
+    final frequency = habit.frequency.toLowerCase();
+    if (frequency != 'custom') return true;
+
+    final weekdays = _parseCustomWeekdays(habit.cue);
+    if (weekdays == null || weekdays.isEmpty) return false;
+    return weekdays.contains(date.weekday);
   }
 
   /// Convert weekday list to readable string

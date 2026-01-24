@@ -73,7 +73,7 @@ class NotificationIdManager {
 
     // Prefer a deterministic mapping so IDs remain consistent across restarts.
     final deterministic =
-        _habitIdStart + (habitId.hashCode.abs() % _categoryRange);
+        _habitIdStart + (_stableHash(habitId) % _categoryRange);
 
     // If deterministic id is free or already associated with this habit, use it.
     if (!_usedIds.contains(deterministic)) {
@@ -105,7 +105,7 @@ class NotificationIdManager {
   int getPomodoroId([String? sessionId]) {
     if (sessionId != null) {
       // Use a consistent ID for the same session
-      final id = _pomodoroIdStart + (sessionId.hashCode.abs() % _categoryRange);
+      final id = _pomodoroIdStart + (_stableHash(sessionId) % _categoryRange);
       _usedIds.add(id);
       return id;
     }
@@ -116,7 +116,7 @@ class NotificationIdManager {
   /// Get a unique ID for engagement notifications
   int getEngagementId([String? type]) {
     if (type != null) {
-      final id = _engagementIdStart + (type.hashCode.abs() % _categoryRange);
+      final id = _engagementIdStart + (_stableHash(type) % _categoryRange);
       _usedIds.add(id);
       return id;
     }
@@ -129,14 +129,14 @@ class NotificationIdManager {
   /// Get a unique ID for achievement notifications
   int getAchievementId(String achievementId) {
     final id =
-        _achievementIdStart + (achievementId.hashCode.abs() % _categoryRange);
+        _achievementIdStart + (_stableHash(achievementId) % _categoryRange);
     _usedIds.add(id);
     return id;
   }
 
   /// Get a unique ID for streak notifications
   int getStreakId(String streakType) {
-    final id = _streakIdStart + (streakType.hashCode.abs() % _categoryRange);
+    final id = _streakIdStart + (_stableHash(streakType) % _categoryRange);
     _usedIds.add(id);
     return id;
   }
@@ -206,6 +206,17 @@ class NotificationIdManager {
     _usedIds.add(id);
 
     return id;
+  }
+
+  /// Stable string hash (FNV-1a 32-bit) for deterministic ids across app runs.
+  int _stableHash(String value) {
+    const fnvPrime = 16777619;
+    var hash = 0x811c9dc5;
+    for (final codeUnit in value.codeUnits) {
+      hash ^= codeUnit;
+      hash = (hash * fnvPrime) & 0x7fffffff;
+    }
+    return hash;
   }
 
   /// Debug method to get current state

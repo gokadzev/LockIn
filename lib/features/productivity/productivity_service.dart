@@ -177,7 +177,7 @@ class ProductivityService {
   String getNudge() {
     final clusters = getFocusTimeClusters();
     if (clusters.isNotEmpty) {
-      return "You're fastest at deep work at ${clusters.first}:00";
+      return 'You often complete tasks around ${clusters.first}:00.';
     }
     return 'Keep up the good work!';
   }

@@ -36,7 +36,7 @@ dev_dependencies:
 
   # For code generation
   hive_ce_generator: ^1.11.0
-  build_runner: ^2.10.4
+  build_runner: ^2.11.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

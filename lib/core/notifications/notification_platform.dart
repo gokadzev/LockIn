@@ -64,7 +64,7 @@ class NotificationPlatform {
       const initSettings = InitializationSettings(android: androidSettings);
 
       final result = await _plugin.initialize(
-        initSettings,
+        settings: initSettings,
         // onDidReceiveNotificationResponse: _onNotificationTapped,
       );
 
@@ -96,10 +96,10 @@ class NotificationPlatform {
     try {
       final details = _buildNotificationDetails(data.channel, data.priority);
       await _plugin.show(
-        data.id,
-        data.title,
-        data.body,
-        details,
+        id: data.id,
+        title: data.title,
+        body: data.body,
+        notificationDetails: details,
         payload: data.payload,
       );
       return NotificationResult.success(data.id);
@@ -124,11 +124,11 @@ class NotificationPlatform {
       switch (data.repeatInterval) {
         case NotificationRepeatInterval.none:
           await _plugin.zonedSchedule(
-            data.id,
-            data.title,
-            data.body,
-            scheduledDate,
-            details,
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            scheduledDate: scheduledDate,
+            notificationDetails: details,
             payload: data.payload,
             androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           );
@@ -136,11 +136,11 @@ class NotificationPlatform {
 
         case NotificationRepeatInterval.daily:
           await _plugin.zonedSchedule(
-            data.id,
-            data.title,
-            data.body,
-            scheduledDate,
-            details,
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            scheduledDate: scheduledDate,
+            notificationDetails: details,
             payload: data.payload,
             androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
             matchDateTimeComponents: DateTimeComponents.time,
@@ -149,11 +149,11 @@ class NotificationPlatform {
 
         case NotificationRepeatInterval.weekly:
           await _plugin.zonedSchedule(
-            data.id,
-            data.title,
-            data.body,
-            scheduledDate,
-            details,
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            scheduledDate: scheduledDate,
+            notificationDetails: details,
             payload: data.payload,
             androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
             matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
@@ -162,11 +162,11 @@ class NotificationPlatform {
 
         case NotificationRepeatInterval.monthly:
           await _plugin.zonedSchedule(
-            data.id,
-            data.title,
-            data.body,
-            scheduledDate,
-            details,
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            scheduledDate: scheduledDate,
+            notificationDetails: details,
             payload: data.payload,
             androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
             matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
@@ -186,11 +186,11 @@ class NotificationPlatform {
                 weekday,
               );
               await _plugin.zonedSchedule(
-                instanceId,
-                data.title,
-                data.body,
-                weekdayScheduled,
-                details,
+                id: instanceId,
+                title: data.title,
+                body: data.body,
+                scheduledDate: weekdayScheduled,
+                notificationDetails: details,
                 payload: data.payload,
                 androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
                 matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
@@ -209,7 +209,7 @@ class NotificationPlatform {
   /// Cancel a notification
   Future<NotificationResult> cancelNotification(int id) async {
     try {
-      await _plugin.cancel(id);
+      await _plugin.cancel(id: id);
       return NotificationResult.success(id);
     } catch (e) {
       return NotificationResult.failure('Failed to cancel notification: $e');
@@ -220,7 +220,7 @@ class NotificationPlatform {
   Future<NotificationResult> cancelNotifications(List<int> ids) async {
     try {
       for (final id in ids) {
-        await _plugin.cancel(id);
+        await _plugin.cancel(id: id);
       }
       return NotificationResult.success();
     } catch (e) {

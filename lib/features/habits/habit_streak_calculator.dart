@@ -112,8 +112,7 @@ class HabitStreakCalculator {
 
   /// Counts consecutive months with at least one completion.
   static int _countMonthlyStreak(List<DateTime> sortedHistory, DateTime today) {
-    final monthKeys = sortedHistory.map((d) => _monthKey(d)).toSet().toList()
-      ..sort();
+    final monthKeys = sortedHistory.map((d) => _monthKey(d)).toSet();
     final currentKey = _monthKey(today);
     int? cursor;
 

@@ -72,10 +72,11 @@ class HabitStreakCalculator {
     List<DateTime> sortedHistory,
     DateTime startDate,
   ) {
+    final dayKeys = sortedHistory.map(_dayKey).toSet();
     var streak = 0;
     var cursor = startDate;
 
-    while (sortedHistory.any((d) => _isSameDay(d, cursor))) {
+    while (dayKeys.contains(_dayKey(cursor))) {
       streak++;
       cursor = cursor.subtract(const Duration(days: 1));
     }
@@ -139,6 +140,10 @@ class HabitStreakCalculator {
   /// Checks if two dates represent the same calendar day
   static bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  static int _dayKey(DateTime date) {
+    return date.year * 10000 + date.month * 100 + date.day;
   }
 
   static DateTime _startOfWeek(DateTime date) {

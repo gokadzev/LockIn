@@ -60,16 +60,30 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
     for (var i = 0; i < box!.length; i++) {
       final habit = box!.getAt(i);
       if (habit == null || habit.abandoned || habit.history.isEmpty) continue;
-      final lastDone = habit.history.reduce((a, b) => a.isAfter(b) ? a : b);
-      final daysMissed = today.difference(lastDone.dateOnly).inDays;
-      if (daysMissed > 1) {
-        if (streakSaverAvailable && !streakSaverUsed && daysMissed <= 3) {
-          streakSaverUsed = true;
-          onStreakSaverUsed?.call(true);
-        } else {
-          habit.streak = 0;
-          updateItem(i, habit);
+      final recalculated = HabitStreakCalculator.calculateStreak(
+        habit.history,
+        frequency: habit.frequency,
+        cue: habit.cue,
+      );
+
+      if (recalculated == 0 && habit.streak > 0) {
+        if (habit.frequency == 'daily') {
+          final lastDone = habit.history.reduce((a, b) => a.isAfter(b) ? a : b);
+          final daysMissed = today.difference(lastDone.dateOnly).inDays;
+          if (streakSaverAvailable && !streakSaverUsed && daysMissed <= 3) {
+            streakSaverUsed = true;
+            onStreakSaverUsed?.call(true);
+            continue;
+          }
         }
+        habit.streak = 0;
+        updateItem(i, habit);
+        continue;
+      }
+
+      if (recalculated != habit.streak) {
+        habit.streak = recalculated;
+        updateItem(i, habit);
       }
     }
     syncStateFromBox();
@@ -99,7 +113,11 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
       final isDoneToday = habit.history.any((d) => d.isToday);
 
       // Recalculate streak using the dedicated service
-      habit.streak = HabitStreakCalculator.calculateStreak(habit.history);
+      habit.streak = HabitStreakCalculator.calculateStreak(
+        habit.history,
+        frequency: habit.frequency,
+        cue: habit.cue,
+      );
 
       updateItem(index, habit);
 
@@ -140,7 +158,11 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
       final isDoneToday = habit.history.any((d) => d.isToday);
 
       // Recalculate streak using the dedicated service
-      habit.streak = HabitStreakCalculator.calculateStreak(habit.history);
+      habit.streak = HabitStreakCalculator.calculateStreak(
+        habit.history,
+        frequency: habit.frequency,
+        cue: habit.cue,
+      );
 
       // Persist using key-based update
       final success = updateItemByKey(key, habit);

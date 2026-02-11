@@ -19,27 +19,40 @@
 class HabitStreakCalculator {
   HabitStreakCalculator._();
 
-  /// Calculates the current streak based on habit history.
+  /// Calculates the current streak based on habit history and frequency.
   ///
-  /// The streak is the number of consecutive days (up to and including today)
-  /// that the habit was completed. Days are normalized to date-only (ignoring time).
-  ///
-  /// Returns 0 if history is empty or if the streak was broken.
-  static int calculateStreak(List<DateTime> history) {
+  /// For daily habits, the streak is consecutive days (including today or yesterday).
+  /// For weekly/custom habits, the streak counts consecutive weeks with a completion.
+  /// For monthly habits, the streak counts consecutive months with a completion.
+  static int calculateStreak(
+    List<DateTime> history, {
+    required String frequency,
+    String? cue,
+  }) {
     if (history.isEmpty) return 0;
 
     final normalizedHistory = _normalizeAndSort(history);
     final today = _normalizeDate(DateTime.now());
-    if (normalizedHistory.any((d) => _isSameDay(d, today))) {
-      return _countConsecutiveDays(normalizedHistory, today);
-    }
 
-    final yesterday = today.subtract(const Duration(days: 1));
-    if (normalizedHistory.any((d) => _isSameDay(d, yesterday))) {
-      return _countConsecutiveDays(normalizedHistory, yesterday);
-    }
+    switch (frequency) {
+      case 'weekly':
+      case 'custom':
+        return _countWeeklyStreak(normalizedHistory, today);
+      case 'monthly':
+        return _countMonthlyStreak(normalizedHistory, today);
+      case 'daily':
+      default:
+        if (normalizedHistory.any((d) => _isSameDay(d, today))) {
+          return _countConsecutiveDays(normalizedHistory, today);
+        }
 
-    return 0;
+        final yesterday = today.subtract(const Duration(days: 1));
+        if (normalizedHistory.any((d) => _isSameDay(d, yesterday))) {
+          return _countConsecutiveDays(normalizedHistory, yesterday);
+        }
+
+        return 0;
+    }
   }
 
   /// Normalizes all history dates to date-only (removing time component)
@@ -70,9 +83,79 @@ class HabitStreakCalculator {
     return streak;
   }
 
+  /// Counts consecutive weeks with at least one completion.
+  static int _countWeeklyStreak(List<DateTime> sortedHistory, DateTime today) {
+    final weekStarts = sortedHistory.map(_startOfWeek).toSet().toList()..sort();
+    final currentWeek = _startOfWeek(today);
+    DateTime? cursor;
+
+    if (weekStarts.any((d) => _isSameDay(d, currentWeek))) {
+      cursor = currentWeek;
+    } else {
+      final previousWeek = currentWeek.subtract(const Duration(days: 7));
+      if (weekStarts.any((d) => _isSameDay(d, previousWeek))) {
+        cursor = previousWeek;
+      } else {
+        return 0;
+      }
+    }
+
+    var streak = 0;
+    while (weekStarts.any((d) => _isSameDay(d, cursor!))) {
+      streak++;
+      cursor = cursor!.subtract(const Duration(days: 7));
+    }
+
+    return streak;
+  }
+
+  /// Counts consecutive months with at least one completion.
+  static int _countMonthlyStreak(List<DateTime> sortedHistory, DateTime today) {
+    final monthKeys = sortedHistory.map((d) => _monthKey(d)).toSet().toList()
+      ..sort();
+    final currentKey = _monthKey(today);
+    int? cursor;
+
+    if (monthKeys.contains(currentKey)) {
+      cursor = currentKey;
+    } else {
+      final previousKey = _previousMonthKey(currentKey);
+      if (monthKeys.contains(previousKey)) {
+        cursor = previousKey;
+      } else {
+        return 0;
+      }
+    }
+
+    var streak = 0;
+    while (monthKeys.contains(cursor)) {
+      streak++;
+      cursor = _previousMonthKey(cursor!);
+    }
+
+    return streak;
+  }
+
   /// Checks if two dates represent the same calendar day
   static bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  static DateTime _startOfWeek(DateTime date) {
+    final normalized = _normalizeDate(date);
+    final weekday = normalized.weekday; // 1=Mon ... 7=Sun
+    return normalized.subtract(Duration(days: weekday - 1));
+  }
+
+  static int _monthKey(DateTime date) => date.year * 12 + date.month;
+
+  static int _previousMonthKey(int key) {
+    final month = key % 12;
+    final year = (key - month) ~/ 12;
+    if (month <= 1) {
+      return (year - 1) * 12 + 12;
+    }
+    return year * 12 + (month - 1);
   }
 
   /// Checks if a date is today

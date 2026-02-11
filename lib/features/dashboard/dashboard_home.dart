@@ -17,7 +17,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/constants/gamification_constants.dart';
 import 'package:lockin/constants/hive_constants.dart';
@@ -28,6 +27,7 @@ import 'package:lockin/features/dashboard/dashboard_provider.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
+import 'package:lockin/widgets/advanced_dashboard_section.dart';
 import 'package:lockin/widgets/average_mood_card.dart';
 import 'package:lockin/widgets/encouragement_card.dart';
 import 'package:lockin/widgets/focus_overview_card.dart';
@@ -45,16 +45,16 @@ class DashboardHome extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stats = ref.watch(dashboardStatsProvider);
-    final weeklyStats = ref.watch(weeklyOverviewStatsProvider);
-    final statsFull = stats;
-    final sessions = ref.watch(sessionsListProvider);
     final xpState = ref.watch(xpNotifierProvider);
     final xpProfile = xpState.asData?.value.profile;
     final userLevel = xpProfile?.level ?? 0;
-    final statsItems = userLevel >= GamificationConstants.advancedLevel
-        ? _buildStats(statsFull)
-        : const <DashboardItem>[];
+    final isAdvanced = userLevel >= GamificationConstants.advancedLevel;
+    final stats = ref.watch(dashboardStatsProvider);
+    final weeklyStats = ref.watch(weeklyOverviewStatsProvider);
+    final sessions = ref.watch(sessionsListProvider);
+    final advancedInsights = isAdvanced
+        ? ref.watch(advancedDashboardInsightsProvider)
+        : null;
 
     return Scaffold(
       appBar: const LockinAppBar(title: 'Dashboard'),
@@ -92,10 +92,8 @@ class DashboardHome extends ConsumerWidget {
                 ),
               ),
             ),
-            if (statsItems.isNotEmpty)
-              LockinDashboardCard(title: 'Stats', items: statsItems)
-            else
-              QuickStatsCard(stats: stats),
+            if (isAdvanced) AdvancedDashboardSection(stats: advancedInsights!),
+            QuickStatsCard(stats: stats),
             if (xpProfile != null) XPDashboardCard(xpProfile: xpProfile),
             WeeklyOverviewChart(stats: weeklyStats),
             FocusOverviewCard(sessions: sessions),
@@ -212,154 +210,5 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
       ),
     );
   }
-  return items;
-}
-
-// Build items for stats card
-List<DashboardItem> _buildStats(DashboardStats statsFull) {
-  final items = <DashboardItem>[];
-  if (statsFull.avgDuration > 0) {
-    items.add(
-      DashboardItem(
-        icon: Icons.timer,
-        text:
-            'Avg Task Duration: ${statsFull.avgDuration.toStringAsFixed(1)} min',
-      ),
-    );
-  }
-  if (statsFull.clusters.isNotEmpty) {
-    items.add(
-      DashboardItem(
-        icon: Icons.bolt,
-        text: 'Focus: ${statsFull.clusters.map((c) => '$c:00').join(', ')}',
-      ),
-    );
-  }
-  if (statsFull.streak > 1) {
-    items.add(
-      DashboardItem(
-        icon: Icons.local_fire_department,
-        text: 'Streak: ${statsFull.streak} days',
-      ),
-    );
-  }
-  if (statsFull.accuracy > 0 && statsFull.accuracy < 1) {
-    items.add(
-      DashboardItem(
-        icon: Icons.insights,
-        text:
-            'Estimate Accuracy: ${(statsFull.accuracy * 100).toStringAsFixed(1)}%',
-      ),
-    );
-  }
-  if (statsFull.fatigue.abs() > 0.1) {
-    items.add(
-      DashboardItem(
-        icon: Icons.battery_alert,
-        text: 'Fatigue: ${statsFull.fatigue.toStringAsFixed(1)}',
-      ),
-    );
-  }
-  if (statsFull.heatmap.isNotEmpty) {
-    final hourlyEntries = statsFull.heatmap.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
-    items.add(
-      DashboardItem(
-        icon: Icons.grid_on,
-        text:
-            'Hourly: ${hourlyEntries.map((e) => '${e.key}:00→${e.value}').join(', ')}',
-      ),
-    );
-  }
-  if (statsFull.nudge.isNotEmpty &&
-      statsFull.nudge != 'Keep up the good work!') {
-    items.add(DashboardItem(icon: Icons.lightbulb, text: statsFull.nudge));
-  }
-
-  final habitBox = Hive.box<Habit>(HiveBoxes.habits);
-  final taskBox = Hive.box<Task>(HiveBoxes.tasks);
-  final weekCompletions = <DateTime, int>{};
-  for (final habit in habitBox.values) {
-    if (habit.abandoned) continue;
-    for (final date in habit.history) {
-      final weekStart = DateTime(
-        date.year,
-        date.month,
-        date.day - date.weekday + 1,
-      );
-      weekCompletions[weekStart] = (weekCompletions[weekStart] ?? 0) + 1;
-    }
-  }
-  for (final task in taskBox.values) {
-    if (task.completed && !task.abandoned && task.completionTime != null) {
-      final date = task.completionTime!;
-      final weekStart = DateTime(
-        date.year,
-        date.month,
-        date.day - date.weekday + 1,
-      );
-      weekCompletions[weekStart] = (weekCompletions[weekStart] ?? 0) + 1;
-    }
-  }
-  if (weekCompletions.isNotEmpty) {
-    final bestWeek = weekCompletions.entries.reduce(
-      (a, b) => a.value >= b.value ? a : b,
-    );
-    final weekStr =
-        '${DateFormat.yMMMd().format(bestWeek.key)} - '
-        '${DateFormat.yMMMd().format(bestWeek.key.add(const Duration(days: 6)))}';
-    items.add(
-      DashboardItem(
-        icon: Icons.calendar_today,
-        text: 'Best week: $weekStr\n${bestWeek.value} completions',
-      ),
-    );
-  }
-
-  Habit? topHabit;
-  var topHabitCount = 0;
-  for (final habit in habitBox.values) {
-    if (habit.abandoned) continue;
-    if (habit.history.length > topHabitCount) {
-      topHabit = habit;
-      topHabitCount = habit.history.length;
-    }
-  }
-  Task? topTask;
-  var topTaskCount = 0;
-  final taskCounts = <String, int>{};
-  for (final task in taskBox.values) {
-    if (task.completed && !task.abandoned) {
-      taskCounts[task.title] = (taskCounts[task.title] ?? 0) + 1;
-    }
-  }
-  if (taskCounts.isNotEmpty) {
-    final topEntry = taskCounts.entries.reduce(
-      (a, b) => a.value >= b.value ? a : b,
-    );
-    for (final task in taskBox.values) {
-      if (task.completed && !task.abandoned && task.title == topEntry.key) {
-        topTask = task;
-        break;
-      }
-    }
-    if (topTask != null) {
-      topTaskCount = topEntry.value;
-    }
-  }
-  if (topHabit != null || topTask != null) {
-    var text = '';
-    if (topHabit != null) {
-      text += 'Most completed habit: ${topHabit.title} ($topHabitCount times)';
-    }
-    if (topTask != null) {
-      if (text.isNotEmpty) text += '\n';
-      text +=
-          'Most completed task: ${topTask.title}'
-          '${topTaskCount > 1 ? ' ($topTaskCount times)' : ''}';
-    }
-    items.add(DashboardItem(icon: Icons.star, text: text));
-  }
-
   return items;
 }

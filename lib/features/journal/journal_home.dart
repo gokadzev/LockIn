@@ -61,6 +61,30 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
 
   DateTime _startOfDay(DateTime day) => DateTime(day.year, day.month, day.day);
 
+  void _jumpToDay(DateTime day) {
+    final normalized = _startOfDay(day);
+    setState(() => _selectedDay = normalized);
+    final dayIndex = normalized.difference(_weekRef).inDays;
+    final pageIndex = dayIndex ~/ _daysPerPage;
+    _weekController.animateToPage(
+      _pageCenter + pageIndex,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  Future<void> _pickDateFromMonthHeader(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _startOfDay(_selectedDay),
+      firstDate: DateTime(1970),
+      lastDate: DateTime(2100, 12, 31),
+      helpText: 'Select date',
+    );
+    if (picked == null) return;
+    _jumpToDay(picked);
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -103,12 +127,36 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                           Expanded(
                             child: Column(
                               children: [
-                                Text(
-                                  DateFormat.yMMMM().format(_selectedDay),
-                                  style: textTheme.titleLarge?.copyWith(
-                                    color: scheme.onSurface,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.2,
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () =>
+                                      _pickDateFromMonthHeader(context),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          DateFormat.yMMMM().format(
+                                            _selectedDay,
+                                          ),
+                                          style: textTheme.titleLarge?.copyWith(
+                                            color: scheme.onSurface,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.2,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Icon(
+                                          Icons.calendar_month_rounded,
+                                          size: 18,
+                                          color: scheme.onSurfaceVariant,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -120,22 +168,6 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                 ),
                               ],
                             ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              final today = _startOfDay(DateTime.now());
-                              setState(() => _selectedDay = today);
-                              final dayIndex = today
-                                  .difference(_weekRef)
-                                  .inDays;
-                              final pageIndex = dayIndex ~/ _daysPerPage;
-                              _weekController.animateToPage(
-                                _pageCenter + pageIndex,
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            child: const Text('Today'),
                           ),
                           IconButton(
                             icon: const Icon(Icons.chevron_right),
@@ -495,7 +527,6 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                   ],
                 ),
                 Slider(
-                  min: 0,
                   max: 10,
                   divisions: 10,
                   value: mood,

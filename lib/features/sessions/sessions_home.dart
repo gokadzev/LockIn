@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/utils/category_icon.dart';
-import 'package:lockin/features/sessions/_pomodoro_session_logger.dart';
 import 'package:lockin/features/sessions/pomodoro_timer.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/widgets/icon_badge.dart';
@@ -42,7 +41,6 @@ class SessionsHome extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const PomodoroSessionLogger(),
             const PomodoroTimer(),
             const SizedBox(height: 24),
             Text(

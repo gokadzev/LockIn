@@ -68,7 +68,7 @@ class CategoryManagerDialog extends ConsumerWidget {
                   icon: Icon(Icons.delete, color: scheme.onSurfaceVariant),
                   onPressed: () {
                     if (key != null) {
-                      notifier.deleteCategoryByKey(key, ref: ref);
+                      notifier.deleteCategoryByKey(key);
                     }
                   },
                 ),

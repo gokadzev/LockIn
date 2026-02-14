@@ -32,20 +32,25 @@ final habitsBoxProvider = Provider<Box<Habit>?>((ref) {
 });
 
 /// Main provider for the list of habits, using [HabitsNotifier].
-final habitsListProvider = StateNotifierProvider<HabitsNotifier, List<Habit>>((
-  ref,
-) {
-  final box = ref.watch(habitsBoxProvider);
-  return HabitsNotifier(box)..startWatchingBox();
-});
+final habitsListProvider = NotifierProvider<HabitsNotifier, List<Habit>>(
+  HabitsNotifier.new,
+);
 
 /// StateNotifier for managing the list of habits, including streak logic and XP updates.
-class HabitsNotifier extends StateNotifier<List<Habit>>
-    with BoxCrudMixin<Habit> {
-  /// Creates a HabitsNotifier backed by the given Hive [box].
-  HabitsNotifier(this.box) : super(box?.values.toList() ?? []);
+class HabitsNotifier extends Notifier<List<Habit>> with BoxCrudMixin<Habit> {
+  Box<Habit>? _box;
+
   @override
-  final Box<Habit>? box;
+  Box<Habit>? get box => _box;
+
+  @override
+  List<Habit> build() {
+    stopWatchingBox();
+    _box = ref.watch(habitsBoxProvider);
+    startWatchingBox();
+    ref.onDispose(stopWatchingBox);
+    return _box?.values.toList() ?? [];
+  }
 
   /// Checks all habits for missed days and resets streaks if needed.
   /// If [streakSaverAvailable] is true and a streak is missed by 1-3 days, calls [onStreakSaverUsed].
@@ -183,10 +188,4 @@ class HabitsNotifier extends StateNotifier<List<Habit>>
 
   /// Delete habit by Hive [key] instead of index - delegates to mixin.
   void deleteHabitByKey(dynamic key) => deleteItemByKey(key);
-
-  @override
-  void dispose() {
-    stopWatchingBox();
-    super.dispose();
-  }
 }

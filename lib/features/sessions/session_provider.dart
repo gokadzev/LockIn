@@ -28,19 +28,25 @@ final sessionsBoxProvider = Provider<Box<Session>?>((ref) {
 });
 
 /// Main provider for the list of sessions, using [SessionsNotifier].
-final sessionsListProvider =
-    StateNotifierProvider<SessionsNotifier, List<Session>>((ref) {
-      final box = ref.watch(sessionsBoxProvider);
-      final notifier = SessionsNotifier(box)..startWatchingBox();
-      return notifier;
-    });
+final sessionsListProvider = NotifierProvider<SessionsNotifier, List<Session>>(
+  SessionsNotifier.new,
+);
 
-class SessionsNotifier extends StateNotifier<List<Session>>
+class SessionsNotifier extends Notifier<List<Session>>
     with BoxCrudMixin<Session> {
-  /// Creates a SessionsNotifier backed by the given Hive [box].
-  SessionsNotifier(this.box) : super(box?.values.toList() ?? []);
+  Box<Session>? _box;
+
   @override
-  final Box<Session>? box;
+  Box<Session>? get box => _box;
+
+  @override
+  List<Session> build() {
+    stopWatchingBox();
+    _box = ref.watch(sessionsBoxProvider);
+    startWatchingBox();
+    ref.onDispose(stopWatchingBox);
+    return _box?.values.toList() ?? [];
+  }
 
   /// Adds a new session to the box and updates state.
   void addSession(Session session) => addItem(session);
@@ -59,11 +65,5 @@ class SessionsNotifier extends StateNotifier<List<Session>>
     } catch (_) {
       return false;
     }
-  }
-
-  @override
-  void dispose() {
-    stopWatchingBox();
-    super.dispose();
   }
 }

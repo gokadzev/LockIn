@@ -30,20 +30,25 @@ final tasksBoxProvider = Provider<Box<Task>?>((ref) {
 });
 
 /// Main provider for the list of tasks, using [TasksNotifier].
-final tasksListProvider = StateNotifierProvider<TasksNotifier, List<Task>>((
-  ref,
-) {
-  final box = ref.watch(tasksBoxProvider);
-  final notifier = TasksNotifier(box)..startWatchingBox();
-  return notifier;
-});
+final tasksListProvider = NotifierProvider<TasksNotifier, List<Task>>(
+  TasksNotifier.new,
+);
 
 /// StateNotifier for managing the list of tasks, including completion time and XP updates.
-class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
-  /// Creates a TasksNotifier backed by the given Hive [box].
-  TasksNotifier(this.box) : super(box?.values.toList() ?? []);
+class TasksNotifier extends Notifier<List<Task>> with BoxCrudMixin<Task> {
+  Box<Task>? _box;
+
   @override
-  final Box<Task>? box;
+  Box<Task>? get box => _box;
+
+  @override
+  List<Task> build() {
+    stopWatchingBox();
+    _box = ref.watch(tasksBoxProvider);
+    startWatchingBox();
+    ref.onDispose(stopWatchingBox);
+    return _box?.values.toList() ?? [];
+  }
 
   /// Adds a new task to the box and updates state.
   void addTask(Task task) => addItem(task);
@@ -133,10 +138,4 @@ class TasksNotifier extends StateNotifier<List<Task>> with BoxCrudMixin<Task> {
 
   /// Deletes a task by its Hive key - delegates to mixin.
   bool deleteTaskByKey(dynamic key) => deleteItemByKey(key);
-
-  @override
-  void dispose() {
-    stopWatchingBox();
-    super.dispose();
-  }
 }

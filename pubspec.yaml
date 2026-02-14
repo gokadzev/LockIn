@@ -17,7 +17,7 @@ dependencies:
   dynamic_color: ^1.8.1
   fl_chart: ^1.1.1
   flutter_local_notifications: ^20.0.0
-  flutter_riverpod: ^2.6.1
+  flutter_riverpod: ^3.2.1
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
   path_provider: ^2.1.3

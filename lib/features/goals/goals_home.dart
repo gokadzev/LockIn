@@ -436,11 +436,8 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                     xpChange,
                                   ) {
                                     ref
-                                        .read(xpNotifierProvider.future)
-                                        .then(
-                                          (notifier) =>
-                                              notifier.addXP(xpChange),
-                                        );
+                                        .read(xpNotifierProvider.notifier)
+                                        .addXP(xpChange);
                                     LockinSnackBar.showSimple(
                                       context: context,
                                       message: xpChange > 0
@@ -474,11 +471,8 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                     xpChange,
                                   ) {
                                     ref
-                                        .read(xpNotifierProvider.future)
-                                        .then(
-                                          (notifier) =>
-                                              notifier.addXP(xpChange),
-                                        );
+                                        .read(xpNotifierProvider.notifier)
+                                        .addXP(xpChange);
                                     LockinSnackBar.showSimple(
                                       context: context,
                                       message: xpChange > 0

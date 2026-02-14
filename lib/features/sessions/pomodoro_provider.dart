@@ -52,19 +52,9 @@ class PomodoroState {
   }
 }
 
-class PomodoroNotifier extends StateNotifier<PomodoroState> {
-  PomodoroNotifier({int? workSeconds, int? breakSeconds})
-    : workSeconds = workSeconds ?? (AppValues.defaultWorkMinutes * 60),
-      breakSeconds = breakSeconds ?? (AppValues.defaultBreakMinutes * 60),
-      super(
-        PomodoroState(
-          phase: PomodoroPhase.work,
-          secondsLeft: workSeconds ?? (AppValues.defaultWorkMinutes * 60),
-          isRunning: false,
-        ),
-      );
-  final int workSeconds;
-  final int breakSeconds;
+class PomodoroNotifier extends Notifier<PomodoroState> {
+  late int workSeconds;
+  late int breakSeconds;
   Timer? _timer;
   bool _cancelled = false;
 
@@ -81,6 +71,31 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
   int get breakCount => _breakCount;
   DateTime? get sessionStart => _sessionStart;
   Duration get sessionDuration => _sessionDuration;
+
+  @override
+  PomodoroState build() {
+    _timer?.cancel();
+    _cancelled = false;
+    _sessionStart = null;
+    _phaseStart = null;
+    _pomodoroCount = 0;
+    _breakCount = 0;
+    _sessionDuration = Duration.zero;
+    _workAccumulatedSeconds = 0;
+
+    workSeconds = AppValues.defaultWorkMinutes * 60;
+    breakSeconds = AppValues.defaultBreakMinutes * 60;
+
+    ref.onDispose(() {
+      _timer?.cancel();
+    });
+
+    return PomodoroState(
+      phase: PomodoroPhase.work,
+      secondsLeft: workSeconds,
+      isRunning: false,
+    );
+  }
 
   void startOrResume(BuildContext context) {
     if (state.isRunning) return;
@@ -201,7 +216,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     }
   }
 
-  void finishSession(WidgetRef ref, BuildContext context) {
+  void finishSession(BuildContext context) {
     _timer?.cancel();
     if (_sessionStart != null && _pomodoroCount > 0) {
       final notifier = ref.read(sessionsListProvider.notifier);
@@ -222,9 +237,7 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
           ..breakCount = _breakCount
           ..category = normalizedCategory,
       );
-      ref
-          .read(xpNotifierProvider.future)
-          .then((xpNotifier) => xpNotifier.addXP(10));
+      ref.read(xpNotifierProvider.notifier).addXP(10);
       showLockinNotification(
         context,
         'Session finished! $_pomodoroCount Pomodoros, $_breakCount Breaks',
@@ -259,19 +272,22 @@ class PomodoroNotifier extends StateNotifier<PomodoroState> {
     _pomodoroCount = 0;
     _breakCount = 0;
   }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
 }
 
-final pomodoroProvider = StateNotifierProvider<PomodoroNotifier, PomodoroState>(
-  (ref) {
-    return PomodoroNotifier();
-  },
+final pomodoroProvider = NotifierProvider<PomodoroNotifier, PomodoroState>(
+  PomodoroNotifier.new,
 );
 
 /// Selected focus category for new sessions.
-final focusCategoryProvider = StateProvider<String?>((ref) => null);
+final focusCategoryProvider = NotifierProvider<FocusCategoryNotifier, String?>(
+  FocusCategoryNotifier.new,
+);
+
+class FocusCategoryNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void setCategory(String? value) {
+    state = value;
+  }
+}

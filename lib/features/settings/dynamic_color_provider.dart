@@ -20,16 +20,18 @@ import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/hive_constants.dart';
 
 final dynamicColorEnabledProvider =
-    StateNotifierProvider<DynamicColorEnabledNotifier, bool>((ref) {
-      final box = Hive.box<dynamic>(HiveBoxes.appSettings);
-      return DynamicColorEnabledNotifier(box);
-    });
+    NotifierProvider<DynamicColorEnabledNotifier, bool>(
+      DynamicColorEnabledNotifier.new,
+    );
 
-class DynamicColorEnabledNotifier extends StateNotifier<bool> {
-  DynamicColorEnabledNotifier(this.box)
-    : super(box.get(HiveKeys.dynamicColorEnabled, defaultValue: true) as bool);
+class DynamicColorEnabledNotifier extends Notifier<bool> {
+  late Box<dynamic> box;
 
-  final Box<dynamic> box;
+  @override
+  bool build() {
+    box = Hive.box<dynamic>(HiveBoxes.appSettings);
+    return box.get(HiveKeys.dynamicColorEnabled, defaultValue: true) as bool;
+  }
 
   void toggle() {
     state = !state;

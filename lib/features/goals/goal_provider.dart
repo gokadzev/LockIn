@@ -30,19 +30,25 @@ final goalsBoxProvider = Provider<Box<Goal>?>((ref) {
 });
 
 /// Main provider for the list of goals, using [GoalsNotifier].
-final goalsListProvider = StateNotifierProvider<GoalsNotifier, List<Goal>>((
-  ref,
-) {
-  final box = ref.watch(goalsBoxProvider);
-  return GoalsNotifier(box)..startWatchingBox();
-});
+final goalsListProvider = NotifierProvider<GoalsNotifier, List<Goal>>(
+  GoalsNotifier.new,
+);
 
 /// StateNotifier for managing the list of goals, including milestone progress and XP updates.
-class GoalsNotifier extends StateNotifier<List<Goal>> with BoxCrudMixin<Goal> {
-  /// Creates a GoalsNotifier backed by the given Hive [box].
-  GoalsNotifier(this.box) : super(box?.values.toList() ?? []);
+class GoalsNotifier extends Notifier<List<Goal>> with BoxCrudMixin<Goal> {
+  Box<Goal>? _box;
+
   @override
-  final Box<Goal>? box;
+  Box<Goal>? get box => _box;
+
+  @override
+  List<Goal> build() {
+    stopWatchingBox();
+    _box = ref.watch(goalsBoxProvider);
+    startWatchingBox();
+    ref.onDispose(stopWatchingBox);
+    return _box?.values.toList() ?? [];
+  }
 
   /// Adds a new goal to the box and updates state. Progress is set from milestones.
   Future<void> addGoal(Goal goal) async {
@@ -138,10 +144,4 @@ class GoalsNotifier extends StateNotifier<List<Goal>> with BoxCrudMixin<Goal> {
 
   /// Delete goal by Hive [key] instead of index - delegates to mixin.
   void deleteGoalByKey(dynamic key) => deleteItemByKey(key);
-
-  @override
-  void dispose() {
-    stopWatchingBox();
-    super.dispose();
-  }
 }

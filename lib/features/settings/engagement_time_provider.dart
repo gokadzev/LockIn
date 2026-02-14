@@ -21,12 +21,13 @@ import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/utils/hive_utils.dart';
 
 final engagementTimeProvider =
-    StateNotifierProvider<EngagementTimeNotifier, TimeOfDay>((ref) {
-      return EngagementTimeNotifier();
-    });
+    NotifierProvider<EngagementTimeNotifier, TimeOfDay>(
+      EngagementTimeNotifier.new,
+    );
 
-class EngagementTimeNotifier extends StateNotifier<TimeOfDay> {
-  EngagementTimeNotifier() : super(_loadInitialTime());
+class EngagementTimeNotifier extends Notifier<TimeOfDay> {
+  @override
+  TimeOfDay build() => _loadInitialTime();
 
   static TimeOfDay _loadInitialTime() {
     final box = openBoxIfAvailable(HiveBoxes.settings);

@@ -45,9 +45,8 @@ class DashboardHome extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final xpState = ref.watch(xpNotifierProvider);
-    final xpProfile = xpState.asData?.value.profile;
-    final userLevel = xpProfile?.level ?? 0;
+    final xpProfile = ref.watch(xpNotifierProvider);
+    final userLevel = xpProfile.level;
     final isAdvanced = userLevel >= GamificationConstants.advancedLevel;
     final stats = ref.watch(dashboardStatsProvider);
     final weeklyStats = ref.watch(weeklyOverviewStatsProvider);
@@ -94,7 +93,7 @@ class DashboardHome extends ConsumerWidget {
             ),
             if (isAdvanced) AdvancedDashboardSection(stats: advancedInsights!),
             QuickStatsCard(stats: stats),
-            if (xpProfile != null) XPDashboardCard(xpProfile: xpProfile),
+            XPDashboardCard(xpProfile: xpProfile),
             WeeklyOverviewChart(stats: weeklyStats),
             FocusOverviewCard(sessions: sessions),
             MonthlyOverviewHeatmap(

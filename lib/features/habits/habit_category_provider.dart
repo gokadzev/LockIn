@@ -26,16 +26,25 @@ final habitCategoriesBoxProvider = Provider<Box<String>?>(
 );
 
 final habitCategoriesProvider =
-    StateNotifierProvider<HabitCategoriesNotifier, List<String>>((ref) {
-      final box = ref.watch(habitCategoriesBoxProvider);
-      return HabitCategoriesNotifier(box)..startWatchingBox();
-    });
+    NotifierProvider<HabitCategoriesNotifier, List<String>>(
+      HabitCategoriesNotifier.new,
+    );
 
-class HabitCategoriesNotifier extends StateNotifier<List<String>>
+class HabitCategoriesNotifier extends Notifier<List<String>>
     with BoxCrudMixin<String> {
-  HabitCategoriesNotifier(this.box) : super(box?.values.toList() ?? []);
+  Box<String>? _box;
+
   @override
-  final Box<String>? box;
+  Box<String>? get box => _box;
+
+  @override
+  List<String> build() {
+    stopWatchingBox();
+    _box = ref.watch(habitCategoriesBoxProvider);
+    startWatchingBox();
+    ref.onDispose(stopWatchingBox);
+    return _box?.values.toList() ?? [];
+  }
 
   void addCategory(String name) {
     if (box == null) return;
@@ -54,13 +63,13 @@ class HabitCategoriesNotifier extends StateNotifier<List<String>>
     state = box!.values.toList();
   }
 
-  void deleteCategoryByKey(dynamic key, {WidgetRef? ref}) {
+  void deleteCategoryByKey(dynamic key) {
     if (box == null) return;
     if (!box!.containsKey(key)) return;
     final deletedCategory = box!.get(key);
     box!.delete(key);
     state = box!.values.toList();
-    if (deletedCategory != null && ref != null) {
+    if (deletedCategory != null) {
       final habitsBox = ref.read(habitsBoxProvider);
       if (habitsBox != null) {
         for (var i = 0; i < habitsBox.length; i++) {
@@ -74,11 +83,5 @@ class HabitCategoriesNotifier extends StateNotifier<List<String>>
         ref.read(habitsListProvider.notifier).state = habitsBox.values.toList();
       }
     }
-  }
-
-  @override
-  void dispose() {
-    stopWatchingBox();
-    super.dispose();
   }
 }

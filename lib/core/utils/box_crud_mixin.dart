@@ -21,7 +21,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 
-mixin BoxCrudMixin<T> on StateNotifier<List<T>> {
+mixin BoxCrudMixin<T> on Notifier<List<T>> {
   /// The Hive box backing this provider. Must be implemented by the class using the mixin.
   Box<T>? get box;
 

@@ -26,17 +26,25 @@ final journalsBoxProvider = Provider<Box<Journal>?>((ref) {
   return openBoxIfAvailable<Journal>(HiveBoxes.journals);
 });
 
-final journalsListProvider =
-    StateNotifierProvider<JournalsNotifier, List<Journal>>((ref) {
-      final box = ref.watch(journalsBoxProvider);
-      return JournalsNotifier(box)..startWatchingBox();
-    });
+final journalsListProvider = NotifierProvider<JournalsNotifier, List<Journal>>(
+  JournalsNotifier.new,
+);
 
-class JournalsNotifier extends StateNotifier<List<Journal>>
+class JournalsNotifier extends Notifier<List<Journal>>
     with BoxCrudMixin<Journal> {
-  JournalsNotifier(this.box) : super(box?.values.toList() ?? []);
+  Box<Journal>? _box;
+
   @override
-  final Box<Journal>? box;
+  Box<Journal>? get box => _box;
+
+  @override
+  List<Journal> build() {
+    stopWatchingBox();
+    _box = ref.watch(journalsBoxProvider);
+    startWatchingBox();
+    ref.onDispose(stopWatchingBox);
+    return _box?.values.toList() ?? [];
+  }
 
   void addJournal(Journal journal) => addItem(journal);
   void updateJournal(int index, Journal journal) => updateItem(index, journal);
@@ -51,11 +59,5 @@ class JournalsNotifier extends StateNotifier<List<Journal>>
   void deleteJournalByKey(dynamic key) {
     if (box == null) return;
     deleteItemByKey(key);
-  }
-
-  @override
-  void dispose() {
-    stopWatchingBox();
-    super.dispose();
   }
 }

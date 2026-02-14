@@ -107,9 +107,7 @@ class LockinTaskCard extends StatelessWidget {
                         ..completed = isCompleted
                         ..tags = List<String>.from(task.tags);
                       notifier.updateTaskByKey(task.key, updated, (xpChange) {
-                        ref
-                            .read(xpNotifierProvider.future)
-                            .then((notifier) => notifier.addXP(xpChange));
+                        ref.read(xpNotifierProvider.notifier).addXP(xpChange);
                         LockinSnackBar.showSimple(
                           context: parentContext,
                           message: xpChange > 0

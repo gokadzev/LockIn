@@ -152,8 +152,9 @@ class PomodoroTimer extends ConsumerWidget {
                         },
                       );
                       if (selected != null) {
-                        ref.read(focusCategoryProvider.notifier).state =
-                            selected;
+                        ref
+                            .read(focusCategoryProvider.notifier)
+                            .setCategory(selected);
                       }
                     }
                   : null,
@@ -228,7 +229,7 @@ class PomodoroTimer extends ConsumerWidget {
                   ),
                   onPressed: notifier.sessionStart == null
                       ? () => notifier.startOrResume(context)
-                      : () => notifier.finishSession(ref, context),
+                      : () => notifier.finishSession(context),
                   child: Text(
                     notifier.sessionStart == null ? 'Start' : 'Finish',
                   ),

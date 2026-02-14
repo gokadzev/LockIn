@@ -57,7 +57,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
     super.initState();
     // Check streak saver on startup
     Future.microtask(() async {
-      final xpNotifier = await ref.read(xpNotifierProvider.future);
+      final xpNotifier = ref.read(xpNotifierProvider.notifier);
       final streakSaverAvailable = xpNotifier.profile.streakSaverAvailable;
       ref.read(habitsListProvider.notifier).checkStreaksWithStreakSaver(
         streakSaverAvailable,
@@ -170,8 +170,8 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                             xpChange,
                           ) {
                             ref
-                                .read(xpNotifierProvider.future)
-                                .then((notifier) => notifier.addXP(xpChange));
+                                .read(xpNotifierProvider.notifier)
+                                .addXP(xpChange);
                             LockinSnackBar.showSimple(
                               context: context,
                               message: xpChange > 0

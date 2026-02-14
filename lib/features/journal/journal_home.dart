@@ -59,9 +59,12 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
+  DateTime _startOfDay(DateTime day) => DateTime(day.year, day.month, day.day);
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final journalsRaw = ref.watch(journalsListProvider);
     final journals = journalsRaw.toList();
     final notifier = ref.read(journalsListProvider.notifier);
@@ -70,11 +73,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
       final day = DateTime(j.date.year, j.date.month, j.date.day);
       entriesByDay.putIfAbsent(day, () => []).add(j);
     }
-    final selectedDay = DateTime(
-      _selectedDay.year,
-      _selectedDay.month,
-      _selectedDay.day,
-    );
+    final selectedDay = _startOfDay(_selectedDay);
     final selectedEntries = entriesByDay[selectedDay] ?? [];
 
     return Scaffold(
@@ -87,11 +86,9 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
               child: LockinCard(
                 child: Column(
                   children: [
-                    // Header with chevrons and month title
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.chevron_left),
@@ -103,18 +100,42 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                               );
                             },
                           ),
-                          Column(
-                            children: [
-                              Text(
-                                DateFormat.yMMMM().format(_selectedDay),
-                                style: TextStyle(
-                                  color: scheme.onSurface,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.5,
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  DateFormat.yMMMM().format(_selectedDay),
+                                  style: textTheme.titleLarge?.copyWith(
+                                    color: scheme.onSurface,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.2,
+                                  ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Swipe to browse days',
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: scheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              final today = _startOfDay(DateTime.now());
+                              setState(() => _selectedDay = today);
+                              final dayIndex = today
+                                  .difference(_weekRef)
+                                  .inDays;
+                              final pageIndex = dayIndex ~/ _daysPerPage;
+                              _weekController.animateToPage(
+                                _pageCenter + pageIndex,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            child: const Text('Today'),
                           ),
                           IconButton(
                             icon: const Icon(Icons.chevron_right),
@@ -129,14 +150,10 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                         ],
                       ),
                     ),
-                    // Swipeable day strip (pages by 3 days)
                     SizedBox(
                       height: 112,
                       child: PageView.builder(
                         controller: _weekController,
-                        onPageChanged: (page) {
-                          // Keep the selected day unchanged when paging.
-                        },
                         itemBuilder: (ctx, page) {
                           final pageIndex = page - _pageCenter;
                           final firstOfChunk = _weekRef.add(
@@ -167,11 +184,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                   child: GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        _selectedDay = DateTime(
-                                          day.year,
-                                          day.month,
-                                          day.day,
-                                        );
+                                        _selectedDay = _startOfDay(day);
                                       });
                                     },
                                     child: Container(
@@ -181,8 +194,13 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                       decoration: BoxDecoration(
                                         color: isSelected
                                             ? scheme.secondaryContainer
-                                            : null,
+                                            : scheme.surfaceContainerHigh,
                                         borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? scheme.secondary
+                                              : scheme.outlineVariant,
+                                        ),
                                       ),
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 10,
@@ -212,6 +230,15 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                                     : scheme.onSurface,
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          if (day.month != _selectedDay.month)
+                                            Text(
+                                              '${day.day}',
+                                              style: TextStyle(
+                                                color: scheme.onSurfaceVariant,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
                                               ),
                                             ),
                                           const SizedBox(height: 6),
@@ -316,7 +343,6 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Header row with mood and date
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -376,7 +402,6 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        // Entry content
                         Text(
                           journal.entry ?? '',
                           style: const TextStyle(
@@ -386,7 +411,6 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        // Date at bottom
                         Text(
                           DateFormat.yMMMd().format(journal.date),
                           style: TextStyle(
@@ -432,11 +456,11 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
     DateTime selectedDay,
   ) async {
     final entryController = TextEditingController();
-    final moodController = TextEditingController();
-    final result = await showDialog<Map<String, String>>(
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) {
         String? errorText;
+        var mood = 6.0;
         return StatefulBuilder(
           builder: (context, setState) => LockinDialog(
             title: const Text('Add Journal Entry'),
@@ -460,34 +484,35 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                   minLines: 3,
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  controller: moodController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: 'Mood (0-10)',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    contentPadding: const EdgeInsets.all(16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                Row(
+                  children: [
+                    const Icon(Icons.sentiment_satisfied, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Mood: ${mood.round()}/10',
+                      style: const TextStyle(color: Colors.white),
                     ),
-                    prefixIcon: const Icon(
-                      Icons.sentiment_satisfied,
-                      color: Colors.white,
-                    ),
-                    errorText: errorText,
-                  ),
-                  keyboardType: TextInputType.number,
+                  ],
+                ),
+                Slider(
+                  min: 0,
+                  max: 10,
+                  divisions: 10,
+                  value: mood,
                   onChanged: (value) {
-                    final mood = int.tryParse(value);
-                    if (mood == null || mood < 0 || mood > 10) {
-                      setState(() => errorText = 'Enter a number from 0 to 10');
-                    } else {
-                      setState(() => errorText = null);
-                    }
+                    setState(() {
+                      mood = value;
+                      errorText = null;
+                    });
                   },
                 ),
+                if (errorText != null)
+                  Text(
+                    errorText!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
               ],
             ),
             actions: [
@@ -500,14 +525,9 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  final mood = int.tryParse(moodController.text);
-                  if (mood == null || mood < 0 || mood > 10) {
-                    setState(() => errorText = 'Enter a number from 0 to 10');
-                    return;
-                  }
                   Navigator.pop(context, {
                     'entry': entryController.text,
-                    'mood': moodController.text,
+                    'mood': mood.round(),
                   });
                 },
                 child: const Text('Add Entry'),
@@ -517,12 +537,12 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
         );
       },
     );
-    if (result != null && result['entry']!.isNotEmpty) {
+    if (result != null && (result['entry'] as String).isNotEmpty) {
       notifier.addJournal(
         Journal()
           ..entry = result['entry']
           ..date = selectedDay
-          ..mood = int.tryParse(result['mood'] ?? '0') ?? 0,
+          ..mood = result['mood'] as int,
       );
     }
   }

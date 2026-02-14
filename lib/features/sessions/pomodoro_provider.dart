@@ -145,6 +145,7 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
       _sendNotification(
         title: '⏱️ Pomodoro Finished',
         body: 'Time for a break!',
+        sessionType: 'work',
       ).then((_) {
         state = PomodoroState(
           phase: PomodoroPhase.breakTime,
@@ -155,17 +156,19 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
       });
     } else {
       _breakCount++;
-      _sendNotification(title: '⏰ Break Finished', body: 'Time to focus!').then(
-        (_) {
-          _sessionStart ??= DateTime.now();
-          state = PomodoroState(
-            phase: PomodoroPhase.work,
-            secondsLeft: workSeconds,
-            isRunning: true,
-          );
-          _restartTimer();
-        },
-      );
+      _sendNotification(
+        title: '⏰ Break Finished',
+        body: 'Time to focus!',
+        sessionType: 'break',
+      ).then((_) {
+        _sessionStart ??= DateTime.now();
+        state = PomodoroState(
+          phase: PomodoroPhase.work,
+          secondsLeft: workSeconds,
+          isRunning: true,
+        );
+        _restartTimer();
+      });
     }
   }
 
@@ -202,11 +205,14 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
   Future<void> _sendNotification({
     required String title,
     required String body,
+    required String sessionType,
   }) async {
     try {
-      final result = await NotificationService().showInstantNotification(
+      final result = await NotificationService().showPomodoroNotification(
         title: title,
         body: body,
+        sessionType: sessionType,
+        sessionId: _sessionStart?.toIso8601String(),
       );
       if (!result.success) {
         debugPrint('Notification failed: ${result.error}');

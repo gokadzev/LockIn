@@ -25,7 +25,6 @@ import 'package:lockin/core/notifications/notification_service.dart';
 
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
-import 'package:lockin/widgets/lockin_notification.dart';
 
 enum PomodoroPhase { work, breakTime }
 
@@ -244,10 +243,6 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
           ..category = normalizedCategory,
       );
       ref.read(xpNotifierProvider.notifier).addXP(10);
-      showLockinNotification(
-        context,
-        'Session finished! $_pomodoroCount Pomodoros, $_breakCount Breaks',
-      );
     }
     state = PomodoroState(
       phase: PomodoroPhase.work,

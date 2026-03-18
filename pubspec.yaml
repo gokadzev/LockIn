@@ -15,15 +15,15 @@ dependencies:
 
   # Core dependencies
   dynamic_color: ^1.8.1
-  fl_chart: ^1.1.1
-  flutter_local_notifications: ^20.1.0
-  flutter_riverpod: ^3.2.1
+  fl_chart: ^1.2.0
+  flutter_local_notifications: ^21.0.0
+  flutter_riverpod: ^3.3.1
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
   path_provider: ^2.1.3
   intl: ^0.20.2
   encrypt: ^5.0.3
-  timezone: ^0.10.1
+  timezone: ^0.11.0
   workmanager: ^0.9.0+3
   permission_handler: ^12.0.1
   file_picker: ^10.3.10
@@ -36,7 +36,7 @@ dev_dependencies:
 
   # For code generation
   hive_ce_generator: ^1.11.0
-  build_runner: ^2.11.1
+  build_runner: ^2.13.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -46,6 +46,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
   Future<void> _backup() async {
     final jsonData = await BackupRestoreUtil.exportAllData();
     final filePath = await BackupRestoreUtil.saveBackupFile(jsonData);
+    if (!mounted) return;
     setState(
       () => _status = (text: 'Backup saved to: $filePath', success: true),
     );
@@ -58,11 +59,13 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
         allowedExtensions: ['json'],
       );
       if (result == null || result.files.isEmpty) {
+        if (!mounted) return;
         setState(() => _status = (text: 'No file selected.', success: false));
         return;
       }
       final filePath = result.files.first.path;
       if (filePath == null) {
+        if (!mounted) return;
         setState(() => _status = (text: 'Invalid file path.', success: false));
         return;
       }
@@ -70,6 +73,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
       final data = await BackupRestoreUtil.importBackupFile(file);
       await BackupRestoreUtil.restoreAllData(data);
       // Invalidate all major providers to refresh UI
+      if (!mounted) return;
       ref
         ..invalidate(dashboardStatsProvider)
         ..invalidate(tasksListProvider)
@@ -79,6 +83,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
         ..invalidate(journalsListProvider);
       setState(() => _status = (text: 'Restore complete.', success: true));
     } catch (e) {
+      if (!mounted) return;
       setState(() => _status = (text: 'Restore failed: $e', success: false));
     }
   }
@@ -294,6 +299,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                             .getHealthCheck();
                         if (result.containsKey('error') &&
                             result['error'] != null) {
+                          if (!mounted) return;
                           setState(
                             () => _status = (
                               text: 'Health check failed: ${result['error']}',
@@ -344,6 +350,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                             'Missing: ${missing.join(', ')}',
                         ].join('\n');
 
+                        if (!mounted) return;
                         setState(
                           () => _status = (
                             text: statusText,

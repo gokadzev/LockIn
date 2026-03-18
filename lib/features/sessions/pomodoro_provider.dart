@@ -136,38 +136,43 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
     });
   }
 
-  void _handlePhaseTransition() {
+  Future<void> _handlePhaseTransition() async {
     if (state.phase == PomodoroPhase.work) {
       _pomodoroCount++;
       _workAccumulatedSeconds += workSeconds;
       _sessionDuration = Duration(seconds: _workAccumulatedSeconds);
-      _sendNotification(
+      await _sendNotification(
         title: '⏱️ Pomodoro Finished',
         body: 'Time for a break!',
         sessionType: 'work',
-      ).then((_) {
-        state = PomodoroState(
-          phase: PomodoroPhase.breakTime,
-          secondsLeft: breakSeconds,
-          isRunning: true,
-        );
-        _restartTimer();
-      });
+      );
+
+      // Don't mutate state if the session was cancelled/stopped during the async work
+      if (_cancelled) return;
+
+      state = PomodoroState(
+        phase: PomodoroPhase.breakTime,
+        secondsLeft: breakSeconds,
+        isRunning: true,
+      );
+      _restartTimer();
     } else {
       _breakCount++;
-      _sendNotification(
+      await _sendNotification(
         title: '⏰ Break Finished',
         body: 'Time to focus!',
         sessionType: 'break',
-      ).then((_) {
-        _sessionStart ??= DateTime.now();
-        state = PomodoroState(
-          phase: PomodoroPhase.work,
-          secondsLeft: workSeconds,
-          isRunning: true,
-        );
-        _restartTimer();
-      });
+      );
+
+      if (_cancelled) return;
+
+      _sessionStart ??= DateTime.now();
+      state = PomodoroState(
+        phase: PomodoroPhase.work,
+        secondsLeft: workSeconds,
+        isRunning: true,
+      );
+      _restartTimer();
     }
   }
 

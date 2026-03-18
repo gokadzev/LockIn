@@ -134,17 +134,11 @@ class MainNavigationState extends State<MainNavigation> {
               Expanded(
                 child: ColoredBox(
                   color: Theme.of(context).scaffoldBackgroundColor,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: UIConstants.extraLargeSpacing,
-                          ),
-                          child: _pages[_selectedIndex],
-                        ),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: UIConstants.extraLargeSpacing,
+                    ),
+                    child: _pages[_selectedIndex],
                   ),
                 ),
               ),

@@ -48,7 +48,9 @@ class RecommendationsCategoryNotifier extends Notifier<String?> {
 }
 
 class RecommendationsPage extends ConsumerWidget {
-  const RecommendationsPage({super.key});
+  const RecommendationsPage({super.key, this.initialTabIndex = 0});
+
+  final int initialTabIndex;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -108,6 +110,7 @@ class RecommendationsPage extends ConsumerWidget {
 
     return DefaultTabController(
       length: 3,
+      initialIndex: initialTabIndex,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Recommendations'),

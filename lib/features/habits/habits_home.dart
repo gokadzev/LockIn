@@ -128,7 +128,10 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                       icon: const Icon(Icons.lightbulb_outline),
                       label: const Text('See examples'),
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/recommendations');
+                        Navigator.of(context).pushNamed(
+                          '/recommendations',
+                          arguments: {'initialTab': 0},
+                        );
                       },
                     ),
                   ],

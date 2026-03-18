@@ -79,7 +79,10 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                       icon: const Icon(Icons.lightbulb_outline),
                       label: const Text('See examples'),
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/recommendations');
+                        Navigator.of(context).pushNamed(
+                          '/recommendations',
+                          arguments: {'initialTab': 2},
+                        );
                       },
                     ),
                   ],

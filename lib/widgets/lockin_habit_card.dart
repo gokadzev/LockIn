@@ -22,6 +22,7 @@ import 'package:lockin/features/habits/habits_home.dart';
 import 'package:lockin/widgets/action_icon_button.dart';
 import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/lockin_card.dart';
+import 'package:lockin/widgets/lockin_card_header.dart';
 
 class HabitCard extends StatelessWidget {
   const HabitCard({
@@ -48,51 +49,41 @@ class HabitCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: IconBadge(
-                  icon: categoryToIcon(habit.category),
-                  backgroundColor: scheme.secondaryContainer,
-                  color: scheme.onSecondaryContainer,
-                ),
+          LockinCardHeader(
+            leading: IconBadge(
+              icon: categoryToIcon(habit.category),
+              backgroundColor: scheme.secondaryContainer,
+              color: scheme.onSecondaryContainer,
+            ),
+            title: Text(
+              habit.title,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                height: 1.15,
+                letterSpacing: 0.1,
               ),
-              Expanded(
-                child: Text(
-                  habit.title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    height: 1.15,
-                    letterSpacing: 0.1,
-                  ),
-                ),
+            ),
+            actions: [
+              ActionIconButton(
+                icon: Icons.check_circle_outline,
+                color: isDoneToday(habit, lastDone)
+                    ? scheme.onSurfaceVariant
+                    : scheme.onSurface,
+                tooltip: 'Mark as done',
+                onPressed: isDoneToday(habit, lastDone) ? null : onMarkDone,
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ActionIconButton(
-                    icon: Icons.check_circle_outline,
-                    color: isDoneToday(habit, lastDone)
-                        ? scheme.onSurfaceVariant
-                        : scheme.onSurface,
-                    tooltip: 'Mark as done',
-                    onPressed: isDoneToday(habit, lastDone) ? null : onMarkDone,
-                  ),
-                  const SizedBox(width: 8),
-                  ActionIconButton(
-                    icon: Icons.edit_outlined,
-                    color: scheme.onSurface,
-                    tooltip: 'Edit',
-                    onPressed: onEdit,
-                  ),
-                  const SizedBox(width: 4),
-                  ActionIconButton(
-                    icon: Icons.delete_outline,
-                    color: scheme.onSurfaceVariant,
-                    tooltip: 'Delete',
-                    onPressed: onDelete,
-                  ),
-                ],
+              const SizedBox(width: 8),
+              ActionIconButton(
+                icon: Icons.edit_outlined,
+                color: scheme.onSurface,
+                tooltip: 'Edit',
+                onPressed: onEdit,
+              ),
+              const SizedBox(width: 4),
+              ActionIconButton(
+                icon: Icons.delete_outline,
+                color: scheme.onSurfaceVariant,
+                tooltip: 'Delete',
+                onPressed: onDelete,
               ),
             ],
           ),

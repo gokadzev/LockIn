@@ -21,6 +21,7 @@ import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/widgets/action_icon_button.dart';
 import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/lockin_card.dart';
+import 'package:lockin/widgets/lockin_card_header.dart';
 
 class GoalCard extends StatelessWidget {
   const GoalCard({
@@ -56,87 +57,72 @@ class GoalCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: IconBadge(
-                  icon: categoryToIcon(goal.category),
-                  backgroundColor: scheme.secondaryContainer,
-                  color: scheme.onSecondaryContainer,
-                ),
-              ),
-              // Title and subtitle
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          LockinCardHeader(
+            leading: IconBadge(
+              icon: categoryToIcon(goal.category),
+              backgroundColor: scheme.secondaryContainer,
+              color: scheme.onSecondaryContainer,
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            goal.title,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleLarge?.copyWith(height: 1.15),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ActionIconButton(
-                              icon: isFinished
-                                  ? Icons.cancel_outlined
-                                  : Icons.check_circle_outline,
-                              color: isFinished
-                                  ? scheme.onSurfaceVariant
-                                  : scheme.onSurface,
-                              tooltip: isFinished
-                                  ? 'Finished'
-                                  : 'Mark as finished',
-                              onPressed: (onFinish != null && !isFinished)
-                                  ? () => onFinish!(index)
-                                  : null,
-                            ),
-                            const SizedBox(width: 8),
-                            if (onEdit != null)
-                              ActionIconButton(
-                                icon: Icons.edit_outlined,
-                                color: scheme.onSurface,
-                                tooltip: 'Edit',
-                                onPressed: () => onEdit!(index),
-                              ),
-                            const SizedBox(width: 4),
-                            if (onDelete != null)
-                              ActionIconButton(
-                                icon: Icons.delete_outline,
-                                color: scheme.onSurfaceVariant,
-                                tooltip: 'Delete',
-                                onPressed: () => onDelete!(index),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    if (goal.smart != null && goal.smart!.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        goal.smart!,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: secondaryColor,
-                          height: 1.25,
-                          fontWeight: FontWeight.w400,
-                        ),
+                    Expanded(
+                      child: Text(
+                        goal.title,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleLarge?.copyWith(height: 1.15),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ],
+                    ),
+                    const SizedBox(width: 6),
                   ],
                 ),
+                if (goal.smart != null && goal.smart!.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    goal.smart!,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: secondaryColor,
+                      height: 1.25,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              ActionIconButton(
+                icon: isFinished
+                    ? Icons.cancel_outlined
+                    : Icons.check_circle_outline,
+                color: isFinished ? scheme.onSurfaceVariant : scheme.onSurface,
+                tooltip: isFinished ? 'Finished' : 'Mark as finished',
+                onPressed: (onFinish != null && !isFinished)
+                    ? () => onFinish!(index)
+                    : null,
               ),
+              const SizedBox(width: 8),
+              if (onEdit != null)
+                ActionIconButton(
+                  icon: Icons.edit_outlined,
+                  color: scheme.onSurface,
+                  tooltip: 'Edit',
+                  onPressed: () => onEdit!(index),
+                ),
+              const SizedBox(width: 4),
+              if (onDelete != null)
+                ActionIconButton(
+                  icon: Icons.delete_outline,
+                  color: scheme.onSurfaceVariant,
+                  tooltip: 'Delete',
+                  onPressed: () => onDelete!(index),
+                ),
             ],
           ),
           // Deadline section

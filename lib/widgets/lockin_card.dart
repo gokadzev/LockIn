@@ -26,14 +26,12 @@ class LockinCard extends StatelessWidget {
     this.margin = const EdgeInsets.symmetric(vertical: 8),
     this.borderRadius = 16,
     this.color,
-    this.boxShadow,
   });
   final Widget child;
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry margin;
   final double borderRadius;
   final Color? color;
-  final List<BoxShadow>? boxShadow;
 
   @override
   Widget build(BuildContext context) {

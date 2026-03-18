@@ -36,14 +36,25 @@ class MainNavigation extends StatefulWidget {
 
 class MainNavigationState extends State<MainNavigation> {
   late int _selectedIndex;
-  final List<Widget> _pages = const [
-    DashboardHome(),
-    TasksHome(),
-    HabitsHome(),
-    GoalsHome(),
-    SessionsHome(),
-    JournalHome(),
+  static const List<_NavigationItem> _items = [
+    _NavigationItem(
+      icon: Icons.dashboard,
+      label: 'Dashboard',
+      page: DashboardHome(),
+    ),
+    _NavigationItem(
+      icon: Icons.check_circle_outline,
+      label: 'Tasks',
+      page: TasksHome(),
+    ),
+    _NavigationItem(icon: Icons.repeat, label: 'Habits', page: HabitsHome()),
+    _NavigationItem(icon: Icons.flag, label: 'Goals', page: GoalsHome()),
+    _NavigationItem(icon: Icons.timer, label: 'Focus', page: SessionsHome()),
+    _NavigationItem(icon: Icons.book, label: 'Journal', page: JournalHome()),
   ];
+
+  List<Widget> get _pages =>
+      _items.map((item) => item.page).toList(growable: false);
 
   @override
   void initState() {
@@ -51,6 +62,7 @@ class MainNavigationState extends State<MainNavigation> {
     _selectedIndex = widget.initialIndex;
     // Request notification permission globally for all features
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
       await NotificationService().initialize(context);
       // Mark user as active when opening app
       await UserActivityTracker.markActive();
@@ -79,58 +91,20 @@ class MainNavigationState extends State<MainNavigation> {
                     constraints.maxWidth > UIConstants.extendedNavBreakpoint
                     ? NavigationRailLabelType.none
                     : NavigationRailLabelType.all,
-                destinations: [
-                  NavigationRailDestination(
-                    indicatorColor: indicatorColor,
-                    indicatorShape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    icon: const Icon(Icons.dashboard),
-                    label: const Text('Dashboard'),
-                  ),
-                  NavigationRailDestination(
-                    indicatorColor: indicatorColor,
-                    indicatorShape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    icon: const Icon(Icons.check_circle_outline),
-                    label: const Text('Tasks'),
-                  ),
-                  NavigationRailDestination(
-                    indicatorColor: indicatorColor,
-                    indicatorShape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    icon: const Icon(Icons.repeat),
-                    label: const Text('Habits'),
-                  ),
-                  NavigationRailDestination(
-                    indicatorColor: indicatorColor,
-                    indicatorShape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    icon: const Icon(Icons.flag),
-                    label: const Text('Goals'),
-                  ),
-                  NavigationRailDestination(
-                    indicatorColor: indicatorColor,
-                    indicatorShape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    icon: const Icon(Icons.timer),
-                    label: const Text('Focus'),
-                  ),
-                  NavigationRailDestination(
-                    indicatorColor: indicatorColor,
-                    indicatorShape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    icon: const Icon(Icons.book),
-                    label: const Text('Journal'),
-                  ),
-                ],
+                // Main content
+                destinations: _items
+                    .map(
+                      (item) => NavigationRailDestination(
+                        indicatorColor: indicatorColor,
+                        indicatorShape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                        icon: Icon(item.icon),
+                        label: Text(item.label),
+                      ),
+                    )
+                    .toList(growable: false),
               ),
-              // Main content
               Expanded(
                 child: ColoredBox(
                   color: Theme.of(context).scaffoldBackgroundColor,
@@ -152,27 +126,30 @@ class MainNavigationState extends State<MainNavigation> {
               selectedIndex: _selectedIndex,
               onDestinationSelected: (index) =>
                   setState(() => _selectedIndex = index),
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.dashboard),
-                  label: 'Dashboard',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.check_circle_outline),
-                  label: 'Tasks',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.repeat),
-                  label: 'Habits',
-                ),
-                NavigationDestination(icon: Icon(Icons.flag), label: 'Goals'),
-                NavigationDestination(icon: Icon(Icons.timer), label: 'Focus'),
-                NavigationDestination(icon: Icon(Icons.book), label: 'Journal'),
-              ],
+              destinations: _items
+                  .map(
+                    (item) => NavigationDestination(
+                      icon: Icon(item.icon),
+                      label: item.label,
+                    ),
+                  )
+                  .toList(growable: false),
             ),
           );
         }
       },
     );
   }
+}
+
+class _NavigationItem {
+  const _NavigationItem({
+    required this.icon,
+    required this.label,
+    required this.page,
+  });
+
+  final IconData icon;
+  final String label;
+  final Widget page;
 }

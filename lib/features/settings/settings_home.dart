@@ -31,6 +31,7 @@ import 'package:lockin/features/settings/backup_restore_util.dart';
 import 'package:lockin/features/settings/dynamic_color_provider.dart';
 import 'package:lockin/features/settings/engagement_time_provider.dart';
 import 'package:lockin/features/tasks/task_provider.dart';
+import 'package:lockin/widgets/settings_item.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SettingsHome extends ConsumerStatefulWidget {
@@ -136,23 +137,17 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
 
                 // Dynamic Color Toggle
-                Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    leading: const Icon(Icons.palette),
-                    title: const Text('Dynamic Colors'),
-                    subtitle: const Text(
-                      'Use device theme colors (Material You)',
-                    ),
-                    trailing: Switch(
-                      value: dynamicColorEnabled,
-                      onChanged: (value) {
-                        ref
-                            .read(dynamicColorEnabledProvider.notifier)
-                            .set(value);
-                      },
-                    ),
+                SettingsItem(
+                  leading: const Icon(Icons.palette),
+                  title: const Text('Dynamic Colors'),
+                  subtitle: const Text(
+                    'Use device theme colors (Material You)',
+                  ),
+                  trailing: Switch(
+                    value: dynamicColorEnabled,
+                    onChanged: (value) {
+                      ref.read(dynamicColorEnabledProvider.notifier).set(value);
+                    },
                   ),
                 ),
 
@@ -172,26 +167,20 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
 
                 // Engagement Notification Time
-                Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    leading: const Icon(Icons.notifications_active),
-                    title: const Text('Engagement Notification Time'),
-                    subtitle: Text(engagementTime.format(context)),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () async {
-                      final picked = await showTimePicker(
-                        context: context,
-                        initialTime: engagementTime,
-                      );
-                      if (picked != null) {
-                        ref
-                            .read(engagementTimeProvider.notifier)
-                            .setTime(picked);
-                      }
-                    },
-                  ),
+                SettingsItem(
+                  leading: const Icon(Icons.notifications_active),
+                  title: const Text('Engagement Notification Time'),
+                  subtitle: Text(engagementTime.format(context)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    final picked = await showTimePicker(
+                      context: context,
+                      initialTime: engagementTime,
+                    );
+                    if (picked != null) {
+                      ref.read(engagementTimeProvider.notifier).setTime(picked);
+                    }
+                  },
                 ),
 
                 const SizedBox(height: 8),
@@ -210,29 +199,21 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
 
                 // Backup
-                Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    leading: const Icon(Icons.backup),
-                    title: const Text('Backup'),
-                    subtitle: const Text('Export app data to a JSON backup'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _backup,
-                  ),
+                SettingsItem(
+                  leading: const Icon(Icons.backup),
+                  title: const Text('Backup'),
+                  subtitle: const Text('Export app data to a JSON backup'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _backup,
                 ),
 
                 // Restore
-                Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    leading: const Icon(Icons.restore),
-                    title: const Text('Restore'),
-                    subtitle: const Text('Import data from a backup file'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _restore,
-                  ),
+                SettingsItem(
+                  leading: const Icon(Icons.restore),
+                  title: const Text('Restore'),
+                  subtitle: const Text('Import data from a backup file'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _restore,
                 ),
 
                 const SizedBox(height: 8),
@@ -250,116 +231,108 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
 
                 // Battery optimization
-                Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    leading: const Icon(Icons.battery_alert),
-                    title: const Text('Battery Optimization'),
-                    subtitle: const Text(
-                      'Disable optimizations to ensure background tasks run reliably',
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.open_in_new),
-                          onPressed: () async {
-                            try {
-                              await BatteryOptimizationHelper.requestIgnoreBatteryOptimizations();
-                            } catch (_) {
-                              await openAppSettings();
-                            }
-                          },
-                        ),
-                      ],
-                    ),
+                SettingsItem(
+                  leading: const Icon(Icons.battery_alert),
+                  title: const Text('Battery Optimization'),
+                  subtitle: const Text(
+                    'Disable optimizations to ensure background tasks run reliably',
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.open_in_new),
+                        onPressed: () async {
+                          try {
+                            await BatteryOptimizationHelper.requestIgnoreBatteryOptimizations();
+                          } catch (_) {
+                            await openAppSettings();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
 
                 // Notification health
-                Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    leading: const Icon(Icons.health_and_safety),
-                    title: const Text('Notification Health'),
-                    subtitle: const Text(
-                      'Quick check whether notifications are permitted and scheduled items exist.',
-                    ),
-                    trailing: TextButton(
-                      onPressed: () async {
-                        setState(
-                          () => _status = (
-                            text: 'Running notification health check...',
-                            success: true,
-                          ),
-                        );
-                        final result = await NotificationService()
-                            .getHealthCheck();
-                        if (result.containsKey('error') &&
-                            result['error'] != null) {
-                          if (!mounted) return;
-                          setState(
-                            () => _status = (
-                              text: 'Health check failed: ${result['error']}',
-                              success: false,
-                            ),
-                          );
-                          return;
-                        }
-                        final permGranted = result['permissionGranted'] == true;
-                        final pending = result['pendingCount'] ?? 0;
-                        final tzInitialized = result['tzInitialized'] == true;
-                        var batteryStatus = 'Unknown';
-                        var batteryOk = true;
-
-                        try {
-                          final ignoring =
-                              await BatteryOptimizationHelper.isIgnoringBatteryOptimizations();
-                          batteryStatus = ignoring ? 'Disabled' : 'Enabled';
-                          batteryOk = ignoring;
-                        } catch (_) {
-                          batteryStatus = 'Unknown';
-                          batteryOk = false;
-                        }
-
-                        final criteria = <String, bool>{
-                          'Notification permission granted': permGranted,
-                          'Pending notifications exist': pending > 0,
-                          'Timezone initialized': tzInitialized,
-                          'Battery optimization disabled': batteryOk,
-                        };
-
-                        final missing = criteria.entries
-                            .where((entry) => !entry.value)
-                            .map((entry) => entry.key)
-                            .toList();
-
-                        final details = <String>[
-                          'Permission: ${permGranted ? 'OK' : 'Missing'}',
-                          'Pending: ${pending > 0 ? 'OK' : 'Missing'}',
-                          'Timezone: ${tzInitialized ? 'OK' : 'Missing'}',
-                          'Battery optimization: ${batteryOk ? 'OK' : batteryStatus}',
-                        ];
-
-                        final statusText = <String>[
-                          'Criteria:',
-                          ...details.map((d) => '- $d'),
-                          if (missing.isNotEmpty)
-                            'Missing: ${missing.join(', ')}',
-                        ].join('\n');
-
+                SettingsItem(
+                  leading: const Icon(Icons.health_and_safety),
+                  title: const Text('Notification Health'),
+                  subtitle: const Text(
+                    'Quick check whether notifications are permitted and scheduled items exist.',
+                  ),
+                  trailing: TextButton(
+                    onPressed: () async {
+                      setState(
+                        () => _status = (
+                          text: 'Running notification health check...',
+                          success: true,
+                        ),
+                      );
+                      final result = await NotificationService()
+                          .getHealthCheck();
+                      if (result.containsKey('error') &&
+                          result['error'] != null) {
                         if (!mounted) return;
                         setState(
                           () => _status = (
-                            text: statusText,
-                            success: missing.isEmpty,
+                            text: 'Health check failed: ${result['error']}',
+                            success: false,
                           ),
                         );
-                      },
-                      child: const Text('Run'),
-                    ),
+                        return;
+                      }
+                      final permGranted = result['permissionGranted'] == true;
+                      final pending = result['pendingCount'] ?? 0;
+                      final tzInitialized = result['tzInitialized'] == true;
+                      var batteryStatus = 'Unknown';
+                      var batteryOk = true;
+
+                      try {
+                        final ignoring =
+                            await BatteryOptimizationHelper.isIgnoringBatteryOptimizations();
+                        batteryStatus = ignoring ? 'Disabled' : 'Enabled';
+                        batteryOk = ignoring;
+                      } catch (_) {
+                        batteryStatus = 'Unknown';
+                        batteryOk = false;
+                      }
+
+                      final criteria = <String, bool>{
+                        'Notification permission granted': permGranted,
+                        'Pending notifications exist': pending > 0,
+                        'Timezone initialized': tzInitialized,
+                        'Battery optimization disabled': batteryOk,
+                      };
+
+                      final missing = criteria.entries
+                          .where((entry) => !entry.value)
+                          .map((entry) => entry.key)
+                          .toList();
+
+                      final details = <String>[
+                        'Permission: ${permGranted ? 'OK' : 'Missing'}',
+                        'Pending: ${pending > 0 ? 'OK' : 'Missing'}',
+                        'Timezone: ${tzInitialized ? 'OK' : 'Missing'}',
+                        'Battery optimization: ${batteryOk ? 'OK' : batteryStatus}',
+                      ];
+
+                      final statusText = <String>[
+                        'Criteria:',
+                        ...details.map((d) => '- $d'),
+                        if (missing.isNotEmpty)
+                          'Missing: ${missing.join(', ')}',
+                      ].join('\n');
+
+                      if (!mounted) return;
+                      setState(
+                        () => _status = (
+                          text: statusText,
+                          success: missing.isEmpty,
+                        ),
+                      );
+                    },
+                    child: const Text('Run'),
                   ),
                 ),
 

@@ -25,13 +25,15 @@ class LockinSnackBar {
     String undoLabel = 'Undo',
     Duration duration = const Duration(seconds: 3),
   }) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: duration,
-        action: SnackBarAction(label: undoLabel, onPressed: onUndo),
-      ),
-    );
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: duration,
+          action: SnackBarAction(label: undoLabel, onPressed: onUndo),
+        ),
+      );
   }
 
   static void showSimple({
@@ -39,8 +41,8 @@ class LockinSnackBar {
     required String message,
     Duration duration = const Duration(seconds: 3),
   }) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message), duration: duration));
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message), duration: duration));
   }
 }

@@ -187,7 +187,7 @@ class NotificationBackgroundManager {
         frequency: const Duration(hours: 24),
         initialDelay: const Duration(minutes: 5),
         constraints: Constraints(
-          networkType: NetworkType.unmetered,
+          networkType: NetworkType.notRequired,
           requiresBatteryNotLow: false,
           requiresCharging: false,
           requiresDeviceIdle: false,
@@ -227,6 +227,7 @@ class NotificationBackgroundManager {
         engagementTaskName,
         frequency: frequency,
         initialDelay: const Duration(minutes: 5),
+        constraints: Constraints(networkType: NetworkType.notRequired),
       );
 
       debugPrint(

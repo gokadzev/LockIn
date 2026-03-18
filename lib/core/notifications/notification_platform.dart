@@ -27,9 +27,20 @@ class NotificationResult {
     required this.success,
     this.error,
     this.notificationId,
+    this.notificationIds,
   });
+
   factory NotificationResult.success([int? id]) {
     return NotificationResult(success: true, notificationId: id);
+  }
+
+  /// Success with multiple scheduled ids (e.g. per-weekday instances)
+  factory NotificationResult.successWithIds(List<int> ids) {
+    return NotificationResult(
+      success: true,
+      notificationIds: ids,
+      notificationId: ids.isNotEmpty ? ids.first : null,
+    );
   }
 
   factory NotificationResult.failure(String error) {
@@ -39,6 +50,7 @@ class NotificationResult {
   final bool success;
   final String? error;
   final int? notificationId;
+  final List<int>? notificationIds;
 }
 
 /// Low-level notification platform interface
@@ -174,9 +186,17 @@ class NotificationPlatform {
           break;
 
         case NotificationRepeatInterval.custom:
-          if (data.customWeekdays != null) {
-            // Schedule for each selected weekday
-            for (final weekday in data.customWeekdays!) {
+          // Validate weekdays selection
+          if (data.customWeekdays == null || data.customWeekdays!.isEmpty) {
+            return NotificationResult.failure(
+              'No weekdays selected for custom repeat scheduling',
+            );
+          }
+
+          final scheduledIds = <int>[];
+
+          for (final weekday in data.customWeekdays!) {
+            try {
               final weekdayScheduled = _getNextWeekdaySchedule(
                 data.scheduledTime,
                 weekday,
@@ -195,9 +215,25 @@ class NotificationPlatform {
                 androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
                 matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
               );
+              scheduledIds.add(instanceId);
+            } catch (e) {
+              // Roll back any scheduled instances to avoid partial state
+              try {
+                for (final id in scheduledIds) {
+                  await _plugin.cancel(id: id);
+                }
+              } catch (_) {
+                // ignore rollback failures, we'll still surface original error
+              }
+
+              return NotificationResult.failure(
+                'Failed to schedule custom weekday $weekday: $e',
+              );
             }
           }
-          break;
+
+          // Return the actual per-weekday ids that were scheduled
+          return NotificationResult.successWithIds(scheduledIds);
       }
 
       return NotificationResult.success(data.id);

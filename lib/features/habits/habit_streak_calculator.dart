@@ -46,7 +46,7 @@ class HabitStreakCalculator {
           return _countConsecutiveDays(normalizedHistory, today);
         }
 
-        final yesterday = today.subtract(const Duration(days: 1));
+        final yesterday = DateTime(today.year, today.month, today.day - 1);
         if (normalizedHistory.any((d) => _isSameDay(d, yesterday))) {
           return _countConsecutiveDays(normalizedHistory, yesterday);
         }
@@ -78,7 +78,7 @@ class HabitStreakCalculator {
 
     while (dayKeys.contains(_dayKey(cursor))) {
       streak++;
-      cursor = cursor.subtract(const Duration(days: 1));
+      cursor = DateTime(cursor.year, cursor.month, cursor.day - 1);
     }
 
     return streak;
@@ -93,7 +93,7 @@ class HabitStreakCalculator {
     if (weekStarts.any((d) => _isSameDay(d, currentWeek))) {
       cursor = currentWeek;
     } else {
-      final previousWeek = currentWeek.subtract(const Duration(days: 7));
+      final previousWeek = DateTime(currentWeek.year, currentWeek.month, currentWeek.day - 7);
       if (weekStarts.any((d) => _isSameDay(d, previousWeek))) {
         cursor = previousWeek;
       } else {
@@ -104,7 +104,7 @@ class HabitStreakCalculator {
     var streak = 0;
     while (weekStarts.any((d) => _isSameDay(d, cursor!))) {
       streak++;
-      cursor = cursor!.subtract(const Duration(days: 7));
+      cursor = DateTime(cursor!.year, cursor.month, cursor.day - 7);
     }
 
     return streak;
@@ -148,7 +148,7 @@ class HabitStreakCalculator {
   static DateTime _startOfWeek(DateTime date) {
     final normalized = _normalizeDate(date);
     final weekday = normalized.weekday; // 1=Mon ... 7=Sun
-    return normalized.subtract(Duration(days: weekday - 1));
+    return DateTime(normalized.year, normalized.month, normalized.day - (weekday - 1));
   }
 
   static int _monthKey(DateTime date) => date.year * 12 + date.month;

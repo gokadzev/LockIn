@@ -227,6 +227,10 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
   }
 
   void finishSession(BuildContext context) {
+    // Guard: if reset() was called first, _cancelled is already true.
+    // Bail out to avoid persisting a session the user discarded.
+    if (_cancelled) return;
+
     _timer?.cancel();
     if (_sessionStart != null && _pomodoroCount > 0) {
       final notifier = ref.read(sessionsListProvider.notifier);
@@ -264,8 +268,10 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
   }
 
   void reset() {
-    _timer?.cancel();
+    // Set _cancelled FIRST so any in-flight async _handlePhaseTransition
+    // sees the flag before it resumes from an await and mutates state.
     _cancelled = true;
+    _timer?.cancel();
     state = PomodoroState(
       phase: PomodoroPhase.work,
       secondsLeft: workSeconds,

@@ -241,12 +241,16 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
           : selectedCategory.trim();
       final start = _sessionStart!;
       final end = DateTime.now();
-      final duration = _sessionDuration.inMinutes;
+      // Total elapsed time (wall-clock) — consistent with startTime/endTime.
+      final totalMinutes = end.difference(start).inMinutes;
+      // Work-only focused time — excludes break intervals.
+      final workMinutes = _sessionDuration.inMinutes;
       notifier.addSession(
         Session()
           ..startTime = start
           ..endTime = end
-          ..duration = duration > 0 ? duration : 1
+          ..duration = totalMinutes > 0 ? totalMinutes : 1
+          ..flowSessionDuration = workMinutes > 0 ? workMinutes : 1
           ..pomodoroCount = _pomodoroCount
           ..breakCount = _breakCount
           ..category = normalizedCategory,

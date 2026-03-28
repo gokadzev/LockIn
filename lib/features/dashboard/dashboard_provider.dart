@@ -233,6 +233,9 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
   }
 
   int sessionMinutes(Session session) {
+    // Prefer focused work-only time for analytics.
+    // Fall back to total duration, then endTime diff for legacy sessions.
+    if (session.flowSessionDuration > 0) return session.flowSessionDuration;
     if (session.duration > 0) return session.duration;
     if (session.endTime != null) {
       final diff = session.endTime!.difference(session.startTime).inMinutes;

@@ -112,7 +112,8 @@ class ProductivityService {
     for (final t in tasks) {
       final est = t.estimatedDuration!.toDouble();
       if (est <= 0) continue; // skip invalid estimates
-      sum += 1 - (t.estimatedDuration! - t.actualDuration!).abs() / est;
+      final taskAccuracy = 1 - (t.estimatedDuration! - t.actualDuration!).abs() / est;
+      sum += taskAccuracy.clamp(-1.0, 1.0);
     }
     final count = tasks.where((t) => t.estimatedDuration! > 0).length;
     return count == 0 ? 1 : (sum / count).clamp(-1.0, 1.0);

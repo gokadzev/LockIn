@@ -30,19 +30,36 @@ class XPService {
     while (newXP >= xpForLevel(newLevel + 1)) {
       newLevel++;
     }
-    // Unlock all rewards for levels <= newLevel
-    final newUnlocked = List<Reward>.from(profile.unlockedRewards);
+    var newUnlocked = List<Reward>.from(profile.unlockedRewards);
     var streakSaverAvailable = profile.streakSaverAvailable;
-    for (final reward in XPData.rewards.where(
-      (r) => r.unlockLevel <= newLevel,
-    )) {
-      if (!newUnlocked.any((ur) => ur.id == reward.id)) {
-        newUnlocked.add(reward);
-        if (reward.id == 'streak_saver') {
-          streakSaverAvailable = true;
+
+    if (newLevel > profile.level) {
+      // Level-up: unlock any newly eligible rewards.
+      for (final reward in XPData.rewards.where(
+        (r) => r.unlockLevel <= newLevel,
+      )) {
+        if (!newUnlocked.any((ur) => ur.id == reward.id)) {
+          newUnlocked.add(reward);
+          if (reward.id == 'streak_saver') {
+            streakSaverAvailable = true;
+          }
         }
       }
+    } else if (newLevel < profile.level) {
+      // Level-down: revoke rewards that require a level above the new level.
+      newUnlocked = newUnlocked
+          .where((ur) {
+            final def = XPData.rewards.where((r) => r.id == ur.id).firstOrNull;
+            return def == null || def.unlockLevel <= newLevel;
+          })
+          .toList();
+      // Reset streak saver if it was revoked.
+      final hasStreakSaver = newUnlocked.any((ur) => ur.id == 'streak_saver');
+      if (!hasStreakSaver) {
+        streakSaverAvailable = false;
+      }
     }
+
     profile = XPProfile(
       xp: newXP,
       level: newLevel,

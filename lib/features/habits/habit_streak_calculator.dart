@@ -153,14 +153,7 @@ class HabitStreakCalculator {
 
   static int _monthKey(DateTime date) => date.year * 12 + date.month;
 
-  static int _previousMonthKey(int key) {
-    final month = key % 12;
-    final year = (key - month) ~/ 12;
-    if (month <= 1) {
-      return (year - 1) * 12 + 12;
-    }
-    return year * 12 + (month - 1);
-  }
+  static int _previousMonthKey(int key) => key - 1;
 
   /// Checks if a date is today
   static bool isToday(DateTime date) {

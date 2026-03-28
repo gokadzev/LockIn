@@ -30,13 +30,15 @@ extension DateTimeX on DateTime {
 
   /// Checks if this DateTime is yesterday
   bool get isYesterday {
-    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    final now = DateTime.now();
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
     return isSameDay(yesterday);
   }
 
   /// Checks if this DateTime is tomorrow
   bool get isTomorrow {
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final now = DateTime.now();
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
     return isSameDay(tomorrow);
   }
 }

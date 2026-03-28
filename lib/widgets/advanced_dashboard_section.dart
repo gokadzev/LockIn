@@ -43,7 +43,7 @@ class AdvancedDashboardSection extends StatelessWidget {
     final peakIndex = _peakIndex(stats.focusMinutesByDay);
     final peakDate = peakIndex == null
         ? null
-        : stats.windowStart.add(Duration(days: peakIndex));
+        : DateTime(stats.windowStart.year, stats.windowStart.month, stats.windowStart.day + peakIndex);
     final peakValue = peakIndex == null
         ? 0
         : stats.focusMinutesByDay[peakIndex];

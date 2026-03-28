@@ -304,7 +304,13 @@ class EngagementNotificationManager {
 
     // If preferred time has passed today, schedule for tomorrow
     if (preferredDateTime.isBefore(now)) {
-      return preferredDateTime.add(const Duration(days: 1));
+      return DateTime(
+        preferredDateTime.year,
+        preferredDateTime.month,
+        preferredDateTime.day + 1,
+        preferredDateTime.hour,
+        preferredDateTime.minute,
+      );
     }
 
     // If preferred time is within the next hour, schedule immediately

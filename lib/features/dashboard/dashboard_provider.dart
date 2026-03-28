@@ -179,7 +179,7 @@ final weeklyOverviewStatsProvider = Provider<WeeklyOverviewStats>((ref) {
 
   final now = DateTime.now();
   final end = DateTime(now.year, now.month, now.day);
-  final start = end.subtract(const Duration(days: 6));
+  final start = DateTime(end.year, end.month, end.day - 6);
 
   bool inWindow(DateTime date) {
     final day = DateTime(date.year, date.month, date.day);
@@ -221,7 +221,11 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
   final sessions = ref.watch(sessionsListProvider);
   final now = DateTime.now();
   final windowEnd = DateTime(now.year, now.month, now.day);
-  final windowStart = windowEnd.subtract(const Duration(days: windowDays - 1));
+  final windowStart = DateTime(
+    windowEnd.year,
+    windowEnd.month,
+    windowEnd.day - (windowDays - 1),
+  );
 
   bool inWindow(DateTime date) {
     final day = DateTime(date.year, date.month, date.day);
@@ -250,11 +254,21 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
       totalCompletedMinutes += minutes;
       completedSessions += 1;
     }
-    final dayIndex = DateTime(
+    // Convert to UTC before calculating the exact calendar day delta.
+    // UTC lacks Daylight Saving Time transitions, ensuring that 
+    // every calendar day is perfectly 24 hours long. This guarantees .inDays 
+    // will never truncate integer division during a 23-hour DST "Spring Forward" day.
+    final sessionDayUtc = DateTime.utc(
       session.startTime.year,
       session.startTime.month,
       session.startTime.day,
-    ).difference(windowStart).inDays;
+    );
+    final windowStartUtc = DateTime.utc(
+      windowStart.year,
+      windowStart.month,
+      windowStart.day,
+    );
+    final dayIndex = sessionDayUtc.difference(windowStartUtc).inDays;
     if (dayIndex >= 0 && dayIndex < windowDays) {
       focusMinutesByDay[dayIndex] += minutes;
     }

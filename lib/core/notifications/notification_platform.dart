@@ -371,7 +371,7 @@ class NotificationPlatform {
       }
     }
 
-    final targetDate = reference.add(Duration(days: daysUntilTarget));
+    final targetDate = DateTime(reference.year, reference.month, reference.day + daysUntilTarget);
     return tz.TZDateTime(
       tz.local,
       targetDate.year,

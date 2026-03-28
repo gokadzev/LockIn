@@ -40,12 +40,14 @@ class AverageMoodCard extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final journals = ref.watch(journalsListProvider);
     final now = DateTime.now();
-    final weekAgo = now.subtract(const Duration(days: 6));
+    final weekAgo = DateTime(now.year, now.month, now.day - 6);
+    final weekAgoBoundary = DateTime(weekAgo.year, weekAgo.month, weekAgo.day - 1);
+    final nowBoundary = DateTime(now.year, now.month, now.day + 1);
     final recent = journals
         .where(
           (j) =>
-              j.date.isAfter(weekAgo.subtract(const Duration(days: 1))) &&
-              j.date.isBefore(now.add(const Duration(days: 1))),
+              j.date.isAfter(weekAgoBoundary) &&
+              j.date.isBefore(nowBoundary),
         )
         .toList();
     final moodAvg = recent.isNotEmpty

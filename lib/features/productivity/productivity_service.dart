@@ -83,7 +83,7 @@ class ProductivityService {
     final now = DateTime.now();
     final scores = <double>[];
     for (var i = 0; i < window; i++) {
-      final day = now.subtract(Duration(days: i));
+      final day = DateTime(now.year, now.month, now.day - i);
       final tasks = taskBox.values.where(
         (t) =>
             t.completed &&
@@ -143,7 +143,7 @@ class ProductivityService {
     final today = DateTime.now();
     var streak = 0;
     for (var i = 0; i < 30; i++) {
-      final day = today.subtract(Duration(days: i));
+      final day = DateTime(today.year, today.month, today.day - i);
       final tasks = taskBox.values.where(
         (t) =>
             t.completed &&

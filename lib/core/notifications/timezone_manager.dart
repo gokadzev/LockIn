@@ -92,9 +92,15 @@ class TimezoneManager {
       time.minute,
     );
 
-    // If the time has already passed today, schedule for tomorrow
     if (scheduled.isBefore(base)) {
-      scheduled = scheduled.add(const Duration(days: 1));
+      scheduled = tz.TZDateTime(
+        tz.local,
+        scheduled.year,
+        scheduled.month,
+        scheduled.day + 1,
+        time.hour,
+        time.minute,
+      );
     }
 
     return scheduled;
@@ -135,7 +141,7 @@ class TimezoneManager {
       }
     }
 
-    final targetDate = base.add(Duration(days: daysToAdd));
+    final targetDate = DateTime(base.year, base.month, base.day + daysToAdd);
     return tz.TZDateTime(
       tz.local,
       targetDate.year,
@@ -234,11 +240,7 @@ class TimezoneManager {
   }
 
   int _daysInMonth(int year, int month) {
-    final beginningNextMonth = month == 12
-        ? DateTime(year + 1)
-        : DateTime(year, month + 1);
-    final lastDay = beginningNextMonth.subtract(const Duration(days: 1));
-    return lastDay.day;
+    return DateTime(year, month + 1, 0).day;
   }
 
   /// Convert DateTime to TZDateTime

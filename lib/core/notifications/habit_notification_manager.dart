@@ -95,7 +95,13 @@ class HabitNotificationManager {
     switch (frequency) {
       case 'weekly':
         // Schedule for same day next week
-        scheduledFrom = reminderDateTime.add(const Duration(days: 7));
+        scheduledFrom = DateTime(
+          reminderDateTime.year,
+          reminderDateTime.month,
+          reminderDateTime.day + 7,
+          reminderDateTime.hour,
+          reminderDateTime.minute,
+        );
         break;
       case 'monthly':
         final monthDay = _parseMonthDay(habit.cue) ?? reminderDateTime.day;
@@ -107,16 +113,34 @@ class HabitNotificationManager {
                 from: reminderDateTime.add(const Duration(minutes: 1)),
               );
         } else {
-          scheduledFrom = reminderDateTime.add(const Duration(days: 30));
+          scheduledFrom = DateTime(
+            reminderDateTime.year,
+            reminderDateTime.month,
+            reminderDateTime.day + 30,
+            reminderDateTime.hour,
+            reminderDateTime.minute,
+          );
         }
         break;
       case 'custom':
         // Skip today's occurrence while keeping the reminder time unchanged
-        scheduledFrom = reminderDateTime.add(const Duration(days: 1));
+        scheduledFrom = DateTime(
+          reminderDateTime.year,
+          reminderDateTime.month,
+          reminderDateTime.day + 1,
+          reminderDateTime.hour,
+          reminderDateTime.minute,
+        );
         break;
       default: // daily
         // Schedule for tomorrow
-        scheduledFrom = reminderDateTime.add(const Duration(days: 1));
+        scheduledFrom = DateTime(
+          reminderDateTime.year,
+          reminderDateTime.month,
+          reminderDateTime.day + 1,
+          reminderDateTime.hour,
+          reminderDateTime.minute,
+        );
     }
 
     await _notificationService.scheduleHabitNotification(

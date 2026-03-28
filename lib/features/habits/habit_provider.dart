@@ -79,7 +79,7 @@ class HabitsNotifier extends Notifier<List<Habit>> with BoxCrudMixin<Habit> {
             streakSaverUsed = true;
             onStreakSaverUsed?.call(true);
             for (var d = 1; d < daysMissed; d++) {
-              habit.history.add(lastDone.dateOnly.add(Duration(days: d)));
+              habit.history.add(DateTime(lastDone.year, lastDone.month, lastDone.day + d));
             }
             habit.history = HabitStreakCalculator.normalizeHistory(habit.history);
             updateItem(i, habit);

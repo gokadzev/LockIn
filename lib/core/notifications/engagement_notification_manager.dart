@@ -139,7 +139,7 @@ class EngagementNotificationManager {
 
     final totalActiveHabits = activeHabits.length;
     final avgStreak = activeHabits.isEmpty
-        ? 0
+        ? 0.0
         : activeHabits.map((h) => h.streak).reduce((a, b) => a + b) /
               activeHabits.length;
 
@@ -183,7 +183,7 @@ class EngagementNotificationManager {
       'activeGoals': activeGoals,
       'goalProgressPercent': goalProgressPercent,
       'habitCompletionRate': totalActiveHabits == 0
-          ? 0
+          ? 0.0
           : (habitsCompletedToday / totalActiveHabits),
     };
   }

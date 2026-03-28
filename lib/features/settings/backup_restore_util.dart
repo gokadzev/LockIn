@@ -69,6 +69,31 @@ class BackupRestoreUtil {
   }
 
   static Future<void> restoreAllData(Map<String, dynamic> data) async {
+    // Stage all parsed objects in memory BEFORE touching any Hive box.
+    // If any entry is malformed and throws, existing data remains untouched.
+    final stagedTasks = <Task>[];
+    final stagedGoals = <Goal>[];
+    final stagedJournals = <Journal>[];
+    final stagedHabits = <Habit>[];
+    final stagedSessions = <Session>[];
+
+    for (final t in data['tasks'] ?? []) {
+      stagedTasks.add(Task.fromJson(t));
+    }
+    for (final g in data['goals'] ?? []) {
+      stagedGoals.add(Goal.fromJson(g));
+    }
+    for (final j in data['journals'] ?? []) {
+      stagedJournals.add(Journal.fromJson(j));
+    }
+    for (final h in data['habits'] ?? []) {
+      stagedHabits.add(Habit.fromJson(h));
+    }
+    for (final s in data['sessions'] ?? []) {
+      stagedSessions.add(Session.fromJson(s));
+    }
+
+    // All entries parsed successfully — safe to commit.
     final tasksBox = Hive.box<Task>(HiveBoxes.tasks);
     final goalsBox = Hive.box<Goal>(HiveBoxes.goals);
     final journalsBox = Hive.box<Journal>(HiveBoxes.journals);
@@ -81,20 +106,10 @@ class BackupRestoreUtil {
     await habitsBox.clear();
     await sessionsBox.clear();
 
-    for (final t in data['tasks'] ?? []) {
-      await tasksBox.add(Task.fromJson(t));
-    }
-    for (final g in data['goals'] ?? []) {
-      await goalsBox.add(Goal.fromJson(g));
-    }
-    for (final j in data['journals'] ?? []) {
-      await journalsBox.add(Journal.fromJson(j));
-    }
-    for (final h in data['habits'] ?? []) {
-      await habitsBox.add(Habit.fromJson(h));
-    }
-    for (final s in data['sessions'] ?? []) {
-      await sessionsBox.add(Session.fromJson(s));
-    }
+    await tasksBox.addAll(stagedTasks);
+    await goalsBox.addAll(stagedGoals);
+    await journalsBox.addAll(stagedJournals);
+    await habitsBox.addAll(stagedHabits);
+    await sessionsBox.addAll(stagedSessions);
   }
 }

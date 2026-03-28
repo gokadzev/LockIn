@@ -154,6 +154,8 @@ class ProductivityService {
       );
       if (tasks.isNotEmpty) {
         streak++;
+      } else if (i == 0) {
+        continue;
       } else {
         break;
       }

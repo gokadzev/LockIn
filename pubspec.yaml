@@ -27,7 +27,7 @@ dependencies:
   timezone: ^0.11.0
   workmanager: ^0.9.0+3
   permission_handler: ^12.0.1
-  file_picker: ^10.3.10
+  file_picker: ^11.0.2
 
 dev_dependencies:
   flutter_test:
@@ -37,7 +37,7 @@ dev_dependencies:
 
   # For code generation
   hive_ce_generator: ^1.11.0
-  build_runner: ^2.13.1
+  build_runner: ^2.15.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

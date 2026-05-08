@@ -101,7 +101,7 @@ class GoalCard extends StatelessWidget {
                 icon: isFinished
                     ? Icons.cancel_outlined
                     : Icons.check_circle_outline,
-                color: isFinished ? scheme.onSurfaceVariant : scheme.onSurface,
+                color: scheme.onSurface,
                 tooltip: isFinished ? 'Finished' : 'Mark as finished',
                 onPressed: (onFinish != null && !isFinished)
                     ? () => onFinish!(index)

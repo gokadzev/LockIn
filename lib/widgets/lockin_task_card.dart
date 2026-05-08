@@ -72,11 +72,8 @@ class LockinTaskCard extends StatelessWidget {
             title: Text(
               task.title,
               style: textTheme.titleMedium?.copyWith(
-                color: finished
-                    ? scheme.onSurface.withValues(alpha: 0.7)
-                    : scheme.onSurface,
+                color: scheme.onSurface,
                 height: 1.15,
-                decoration: task.completed ? TextDecoration.lineThrough : null,
                 decorationColor: scheme.onSurface,
                 letterSpacing: 0.1,
               ),
@@ -86,9 +83,7 @@ class LockinTaskCard extends StatelessWidget {
                 icon: task.completed
                     ? Icons.cancel_outlined
                     : Icons.check_circle_outline,
-                color: task.completed
-                    ? scheme.onSurfaceVariant
-                    : scheme.onSurface,
+                color: scheme.onSurface,
                 tooltip: task.completed ? 'Completed' : 'Mark as done',
                 onPressed: () {
                   final isCompleted = !task.completed;

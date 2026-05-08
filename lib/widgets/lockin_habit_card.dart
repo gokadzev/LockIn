@@ -66,7 +66,7 @@ class HabitCard extends StatelessWidget {
               ActionIconButton(
                 icon: Icons.check_circle_outline,
                 color: isDoneToday(habit, lastDone)
-                    ? scheme.onSurfaceVariant
+                    ? scheme.onSurface.withValues(alpha: 0.38)
                     : scheme.onSurface,
                 tooltip: 'Mark as done',
                 onPressed: isDoneToday(habit, lastDone) ? null : onMarkDone,

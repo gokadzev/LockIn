@@ -8,7 +8,7 @@ version: 1.0.0-beta.9+9
 
 environment:
   sdk: '>=3.11.0 <4.0.0'
-  flutter: ^3.41.6
+  flutter: ^3.41.9
 
 dependencies:
   flutter:

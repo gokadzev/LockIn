@@ -55,7 +55,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
 
   Future<void> _restore() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
       );

@@ -23,7 +23,6 @@ dependencies:
   hive_ce_flutter: ^2.3.4
   path_provider: ^2.1.3
   intl: ^0.20.2
-  encrypt: ^5.0.3
   timezone: ^0.11.0
   workmanager: ^0.9.0+3
   permission_handler: ^12.0.1

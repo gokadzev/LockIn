@@ -123,56 +123,73 @@ class EngagementNotificationManager {
     List<Goal> goals,
     DateTime today,
   ) {
-    final activeHabits = habits.where((h) => !h.abandoned).toList();
+    final todayDate = DateTime(today.year, today.month, today.day);
 
-    // Habits analysis
-    final habitsCompletedToday = activeHabits
-        .where(
-          (h) => h.history.any(
-            (d) =>
-                d.year == today.year &&
-                d.month == today.month &&
-                d.day == today.day,
-          ),
-        )
-        .length;
+    // Single-pass analysis for habits
+    var habitsCompletedToday = 0;
+    double totalStreak = 0;
+    var totalActiveHabits = 0;
 
-    final totalActiveHabits = activeHabits.length;
-    final avgStreak = activeHabits.isEmpty
+    for (final habit in habits) {
+      if (habit.abandoned) continue;
+      totalActiveHabits++;
+      totalStreak += habit.streak;
+
+      // Check if completed today
+      if (habit.history.any(
+        (d) =>
+            d.year == todayDate.year &&
+            d.month == todayDate.month &&
+            d.day == todayDate.day,
+      )) {
+        habitsCompletedToday++;
+      }
+    }
+
+    final avgStreak = totalActiveHabits == 0
         ? 0.0
-        : activeHabits.map((h) => h.streak).reduce((a, b) => a + b) /
-              activeHabits.length;
+        : totalStreak / totalActiveHabits;
 
-    // Tasks analysis
-    final tasksCompletedToday = tasks
-        .where(
-          (t) =>
-              t.completed &&
-              t.completionTime != null &&
-              t.completionTime!.year == today.year &&
-              t.completionTime!.month == today.month &&
-              t.completionTime!.day == today.day,
-        )
-        .length;
+    // Tasks analysis - single pass
+    var tasksCompletedToday = 0;
+    var totalPendingTasks = 0;
 
-    final totalPendingTasks = tasks.where((t) => !t.completed).length;
+    for (final task in tasks) {
+      if (task.completed) {
+        if (task.completionTime != null &&
+            task.completionTime!.year == todayDate.year &&
+            task.completionTime!.month == todayDate.month &&
+            task.completionTime!.day == todayDate.day) {
+          tasksCompletedToday++;
+        }
+      } else {
+        totalPendingTasks++;
+      }
+    }
 
     // Goals analysis
-    final activeGoals = goals.where((g) => g.milestoneProgress < 1.0).length;
-    var goalProgressPercent = 0.0;
-    if (goals.isNotEmpty) {
-      final progressList = goals
-          .map(
-            (g) => g.milestones.isEmpty
-                ? 0.0
-                : g.milestones.where((m) => m.completed).length /
-                      g.milestones.length,
-          )
-          .toList();
-      goalProgressPercent = progressList.isEmpty
+    var activeGoals = 0;
+    var totalGoalProgress = 0.0;
+
+    for (final goal in goals) {
+      if (goal.milestoneProgress < 1.0) {
+        activeGoals++;
+      }
+
+      final progress = goal.milestones.isEmpty
           ? 0.0
-          : progressList.reduce((a, b) => a + b) / progressList.length * 100;
+          : goal.milestones.where((m) => m.completed).length /
+                goal.milestones.length;
+      totalGoalProgress += progress;
     }
+
+    final goalProgressPercent = goals.isEmpty
+        ? 0.0
+        : (totalGoalProgress / goals.length) * 100;
+
+    final habitCompletionRate = totalActiveHabits == 0
+        ? 0.0
+        : (habitsCompletedToday / totalActiveHabits);
 
     return {
       'habitsCompletedToday': habitsCompletedToday,
@@ -182,9 +199,7 @@ class EngagementNotificationManager {
       'totalPendingTasks': totalPendingTasks,
       'activeGoals': activeGoals,
       'goalProgressPercent': goalProgressPercent,
-      'habitCompletionRate': totalActiveHabits == 0
-          ? 0.0
-          : (habitsCompletedToday / totalActiveHabits),
+      'habitCompletionRate': habitCompletionRate,
     };
   }
 

@@ -37,7 +37,6 @@ void notificationBackgroundHandler() {
       debugPrint('Background task started: $task');
 
       await initHiveForBackground();
-      await _registerHiveAdapters();
 
       switch (task) {
         case engagementTaskName:
@@ -55,22 +54,6 @@ void notificationBackgroundHandler() {
   });
 }
 
-/// Register all Hive adapters needed for background tasks
-Future<void> _registerHiveAdapters() async {
-  final adapters = <TypeAdapter<dynamic>>[
-    TaskAdapter(),
-    HabitAdapter(),
-    GoalAdapter(),
-    MilestoneAdapter(),
-  ];
-
-  for (final adapter in adapters) {
-    if (!Hive.isAdapterRegistered(adapter.typeId)) {
-      Hive.registerAdapter(adapter);
-    }
-  }
-}
-
 /// Handle daily engagement notifications
 Future<bool> _handleEngagementTask() async {
   try {
@@ -80,31 +63,45 @@ Future<bool> _handleEngagementTask() async {
     final goalBox = await _openBox<Goal>(HiveBoxes.goals);
     final settingsBox = await _openBox(HiveBoxes.settings);
 
-    // Get preferred notification time
-    final preferredTime = _getPreferredTime(settingsBox);
+    try {
+      // Get preferred notification time
+      final preferredTime = _getPreferredTime(settingsBox);
 
-    // Check if user was recently active
-    final isUserActive = await UserActivityTracker.wasActiveWithin(
-      const Duration(hours: 2),
-    );
+      // Check if user was recently active
+      final isUserActive = await UserActivityTracker.wasActiveWithin(
+        const Duration(hours: 2),
+      );
 
-    // Get data for analysis
-    final habits = habitBox?.values.toList() ?? <Habit>[];
-    final tasks = taskBox?.values.toList() ?? <Task>[];
-    final goals = goalBox?.values.toList() ?? <Goal>[];
+      // Get data efficiently - filter before converting to list to reduce memory usage
+      final habits =
+          habitBox?.values.where((h) => !h.abandoned).toList() ?? <Habit>[];
 
-    // Send engagement notification
-    final manager = EngagementNotificationManager();
-    final success = await manager.sendEngagementNotificationBackground(
-      habits: habits,
-      tasks: tasks,
-      goals: goals,
-      preferredTime: preferredTime,
-      isUserActive: isUserActive,
-    );
+      final tasks =
+          taskBox?.values.where((t) => !t.completed).toList() ?? <Task>[];
 
-    debugPrint('Engagement task completed: $success');
-    return success;
+      final goals =
+          goalBox?.values.where((g) => g.milestoneProgress < 1.0).toList() ??
+          <Goal>[];
+
+      // Send engagement notification
+      final manager = EngagementNotificationManager();
+      final success = await manager.sendEngagementNotificationBackground(
+        habits: habits,
+        tasks: tasks,
+        goals: goals,
+        preferredTime: preferredTime,
+        isUserActive: isUserActive,
+      );
+
+      debugPrint('Engagement task completed: $success');
+      return success;
+    } finally {
+      // Always close boxes to prevent resource accumulation in background isolate
+      _closeBox(HiveBoxes.habits);
+      _closeBox(HiveBoxes.tasks);
+      _closeBox(HiveBoxes.goals);
+      _closeBox(HiveBoxes.settings);
+    }
   } catch (e) {
     debugPrint('Error in engagement task: $e');
     return false;
@@ -135,6 +132,17 @@ Future<Box<T>?> _openBox<T>(String boxName) async {
   } catch (e) {
     debugPrint('Error opening box $boxName: $e');
     return null;
+  }
+}
+
+/// Safely close a Hive box to prevent resource accumulation
+void _closeBox(String boxName) {
+  try {
+    if (Hive.isBoxOpen(boxName)) {
+      Hive.box(boxName).close();
+    }
+  } catch (e) {
+    debugPrint('Error closing box $boxName: $e');
   }
 }
 

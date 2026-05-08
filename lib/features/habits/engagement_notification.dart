@@ -27,28 +27,35 @@ import 'package:lockin/core/utils/hive_utils.dart';
 
 Future<void> sendDailyEngagementNotifications(TimeOfDay preferredTime) async {
   try {
-    // Ensure boxes are opened in background isolate
+    // Ensure boxes are opened in background isolate with proper types
     final habitBox =
         openBoxIfAvailable<Habit>(HiveBoxes.habits) ??
         await Hive.openBox<Habit>(HiveBoxes.habits);
     final taskBox =
-        openBoxIfAvailable(HiveBoxes.tasks) ??
-        await Hive.openBox(HiveBoxes.tasks);
+        openBoxIfAvailable<Task>(HiveBoxes.tasks) ??
+        await Hive.openBox<Task>(HiveBoxes.tasks);
     final goalBox =
-        openBoxIfAvailable(HiveBoxes.goals) ??
-        await Hive.openBox(HiveBoxes.goals);
+        openBoxIfAvailable<Goal>(HiveBoxes.goals) ??
+        await Hive.openBox<Goal>(HiveBoxes.goals);
 
     final manager = EngagementNotificationManager();
 
-    // User activity detection: if app opened in last hour, mark active
+    // User activity detection: if app opened in last 2 hours, mark active
     final isUserActive = await UserActivityTracker.wasActiveWithin(
-      const Duration(hours: 1),
+      const Duration(hours: 2),
     );
 
-    // Collect all data
-    final habits = habitBox.values.cast<Habit>().toList();
-    final tasks = taskBox.values.cast<Task>().toList();
-    final goals = goalBox.values.cast<Goal>().toList();
+    // Collect data efficiently - filter before converting to list
+    // Only load active habits (not abandoned)
+    final habits = habitBox.values.where((h) => !h.abandoned).toList();
+
+    // Load only incomplete tasks
+    final tasks = taskBox.values.where((t) => !t.completed).toList();
+
+    // Load only active goals with incomplete milestones
+    final goals = goalBox.values
+        .where((g) => g.milestoneProgress < 1.0)
+        .toList();
 
     // Send engagement notification
     await manager.sendEngagementNotificationBackground(

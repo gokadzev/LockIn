@@ -31,7 +31,9 @@ void showLockinNotification(
   if (_activeLockinEntries.length >= _kMaxLockinEntries) {
     try {
       _activeLockinEntries.removeAt(0).remove();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Warning: Failed to remove old overlay entry: $e');
+    }
   }
 
   late OverlayEntry entry;
@@ -42,18 +44,28 @@ void showLockinNotification(
       onTap: () {
         try {
           entry.remove();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('Warning: Failed to remove overlay on tap: $e');
+        }
         try {
           _activeLockinEntries.remove(entry);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('Warning: Failed to remove entry from list on tap: $e');
+        }
       },
       onDismiss: () {
         try {
           entry.remove();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('Warning: Failed to remove overlay on dismiss: $e');
+        }
         try {
           _activeLockinEntries.remove(entry);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint(
+            'Warning: Failed to remove entry from list on dismiss: $e',
+          );
+        }
       },
     ),
   );
@@ -61,7 +73,7 @@ void showLockinNotification(
     overlay.insert(entry);
     _activeLockinEntries.add(entry);
   } catch (e) {
-    // overlay insert failed (race with navigation); ignore silently
+    // overlay insert failed (race with navigation); log but continue gracefully
     debugPrint('Failed to insert overlay: $e');
   }
 }

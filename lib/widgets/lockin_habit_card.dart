@@ -20,6 +20,7 @@ import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/features/habits/habits_home.dart';
 import 'package:lockin/widgets/action_icon_button.dart';
+import 'package:lockin/widgets/habit_activity_mosaic.dart';
 import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 import 'package:lockin/widgets/lockin_card_header.dart';
@@ -87,38 +88,84 @@ class HabitCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            'Frequency: ${habit.frequency.capitalize()}${habit.frequency == 'custom' && habit.cue != null ? ' (${_weekdaysString(habit.cue!)})' : ''}',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              height: 1.4,
-              fontWeight: FontWeight.w400,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Streak: $streak',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-              height: 1.4,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          if (lastDone != null) ...[
-            const SizedBox(height: 6),
-            Text(
-              'Last done: ${lastDone.day}/${lastDone.month}/${lastDone.year}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurface.withValues(alpha: 0.6),
-                height: 1.4,
-                fontWeight: FontWeight.w400,
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Current Streak',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.local_fire_department,
+                        color: scheme.primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '$streak day${streak != 1 ? 's' : ''}',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: scheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+              if (lastDone != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Last Completed',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${lastDone.day}/${lastDone.month}/${lastDone.year}',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: scheme.onSurface,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Divider(color: scheme.outlineVariant),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Icon(Icons.repeat, color: scheme.onSurfaceVariant, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Frequency: ${habit.frequency.capitalize()}${habit.frequency == 'custom' && habit.cue != null ? ' (${_weekdaysString(habit.cue!)})' : ''}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                    height: 1.4,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          HabitActivityMosaic(history: habit.history),
         ],
       ),
     );

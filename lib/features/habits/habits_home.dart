@@ -137,13 +137,16 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                   ],
                 ),
               )
-            : ListView(
+            : ListView.builder(
                 padding: AppConstants.listContentPadding,
-                children: habits.map((habit) {
+                itemCount: habits.length,
+                itemBuilder: (context, index) {
+                  final habit = habits[index];
                   final habitKey = habit.key;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: HabitCard(
+                      key: ValueKey(habitKey),
                       habit: habit,
                       onMarkDone: () {
                         final today = DateTime.now();
@@ -228,7 +231,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                       onDelete: () => _handleDeleteHabit(habitKey, habit),
                     ),
                   );
-                }).toList(),
+                },
               ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -143,11 +143,23 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                 itemBuilder: (context, index) {
                   final habit = habits[index];
                   final habitKey = habit.key;
+                  final today = DateTime.now();
+                  final lastDone = habit.history.isNotEmpty
+                      ? habit.history.reduce((a, b) => a.isAfter(b) ? a : b)
+                      : null;
+                  final doneToday =
+                      lastDone != null &&
+                      lastDone.year == today.year &&
+                      lastDone.month == today.month &&
+                      lastDone.day == today.day;
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: HabitCard(
                       key: ValueKey(habitKey),
                       habit: habit,
+                      lastDone: lastDone,
+                      doneToday: doneToday,
                       onMarkDone: () {
                         final today = DateTime.now();
                         bool isToday(DateTime d) =>

@@ -31,20 +31,38 @@ class HabitCard extends StatelessWidget {
     required this.onMarkDone,
     required this.onEdit,
     required this.onDelete,
+    this.lastDone,
+    this.doneToday,
     super.key,
   });
   final Habit habit;
   final VoidCallback onMarkDone;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final DateTime? lastDone;
+  final bool? doneToday;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final streak = habit.streak;
-    final lastDone = habit.history.isNotEmpty
-        ? habit.history.reduce((a, b) => a.isAfter(b) ? a : b)
-        : null;
+    final lastDoneLocal =
+        lastDone ??
+        (habit.history.isNotEmpty
+            ? habit.history.reduce((a, b) => a.isAfter(b) ? a : b)
+            : null);
+    final isMarkedDoneToday =
+        doneToday ??
+        (lastDoneLocal != null
+            ? (DateTime.now().year == lastDoneLocal.year &&
+                  DateTime.now().month == lastDoneLocal.month &&
+                  DateTime.now().day == lastDoneLocal.day)
+            : habit.history.any((d) {
+                final now = DateTime.now();
+                return d.year == now.year &&
+                    d.month == now.month &&
+                    d.day == now.day;
+              }));
 
     return LockinCard(
       child: Column(
@@ -66,11 +84,11 @@ class HabitCard extends StatelessWidget {
             actions: [
               ActionIconButton(
                 icon: Icons.check_circle_outline,
-                color: isDoneToday(habit, lastDone)
+                color: isMarkedDoneToday
                     ? scheme.onSurface.withValues(alpha: 0.38)
                     : scheme.onSurface,
                 tooltip: 'Mark as done',
-                onPressed: isDoneToday(habit, lastDone) ? null : onMarkDone,
+                onPressed: isMarkedDoneToday ? null : onMarkDone,
               ),
               const SizedBox(width: 8),
               ActionIconButton(
@@ -122,7 +140,7 @@ class HabitCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (lastDone != null)
+              if (lastDoneLocal != null)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -134,7 +152,7 @@ class HabitCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${lastDone.day}/${lastDone.month}/${lastDone.year}',
+                      '${lastDoneLocal.day}/${lastDoneLocal.month}/${lastDoneLocal.year}',
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: scheme.onSurface,
                         fontWeight: FontWeight.w500,
@@ -174,6 +192,11 @@ class HabitCard extends StatelessWidget {
 
 bool isDoneToday(Habit habit, DateTime? lastDone) {
   final now = DateTime.now();
+  if (lastDone != null) {
+    return lastDone.year == now.year &&
+        lastDone.month == now.month &&
+        lastDone.day == now.day;
+  }
   return habit.history.any(
     (d) => d.year == now.year && d.month == now.month && d.day == now.day,
   );

@@ -29,11 +29,13 @@ class HabitActivityMosaic extends StatefulWidget {
 
 class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
   late DateTime _currentMonth;
+  late Set<DateTime> _completedDates;
 
   @override
   void initState() {
     super.initState();
     _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
+    _updateCompletedDates(widget.history);
   }
 
   void _previousMonth() {
@@ -63,9 +65,6 @@ class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final completedDates = widget.history
-        .map((d) => DateTime(d.year, d.month, d.day))
-        .toSet();
     final now = DateTime.now();
 
     final lastDay = DateTime(
@@ -150,7 +149,7 @@ class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
               .toList(),
         ),
         const SizedBox(height: 4),
-        ..._buildCalendarRows(lastDay, firstDayWeekday, completedDates, now),
+        ..._buildCalendarRows(lastDay, firstDayWeekday, now),
       ],
     );
   }
@@ -158,7 +157,6 @@ class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
   List<Widget> _buildCalendarRows(
     int lastDay,
     int firstDayWeekday,
-    Set<DateTime> completedDates,
     DateTime now,
   ) {
     final rows = <Widget>[];
@@ -181,7 +179,7 @@ class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
             _currentMonth.month,
             dayNumber,
           );
-          final isCompleted = completedDates.contains(date);
+          final isCompleted = _completedDates.contains(date);
           final isToday =
               date.year == now.year &&
               date.month == now.month &&
@@ -211,6 +209,26 @@ class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
     }
 
     return rows;
+  }
+
+  @override
+  void didUpdateWidget(covariant HabitActivityMosaic oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newSet = widget.history
+        .map((d) => DateTime(d.year, d.month, d.day))
+        .toSet();
+    if (newSet.length != _completedDates.length ||
+        !newSet.containsAll(_completedDates)) {
+      setState(() {
+        _completedDates = newSet;
+      });
+    }
+  }
+
+  void _updateCompletedDates(List<DateTime> history) {
+    _completedDates = history
+        .map((d) => DateTime(d.year, d.month, d.day))
+        .toSet();
   }
 
   String _getMonthName(int month) {

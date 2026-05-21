@@ -31,6 +31,7 @@ class LockinSnackBar {
         SnackBar(
           content: Text(message),
           duration: duration,
+          persist: false,
           action: SnackBarAction(label: undoLabel, onPressed: onUndo),
         ),
       );
@@ -43,6 +44,8 @@ class LockinSnackBar {
   }) {
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
-      ..showSnackBar(SnackBar(content: Text(message), duration: duration));
+      ..showSnackBar(
+        SnackBar(content: Text(message), persist: false, duration: duration),
+      );
   }
 }

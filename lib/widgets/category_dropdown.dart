@@ -36,40 +36,190 @@ class CategoryDropdown extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
     final categories = ref.watch(categoriesProvider);
-    return DropdownButtonFormField<String?>(
-      initialValue: value,
-      isExpanded: true,
-      borderRadius: BorderRadius.circular(16),
-      decoration: InputDecoration(
-        labelText: hint ?? 'Category',
-        filled: true,
-        fillColor: scheme.onSurface.withValues(alpha: 0.04),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+
+    Future<void> openCategorySheet() async {
+      final result = await showModalBottomSheet<String>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: scheme.surface,
+        elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: scheme.onSurface.withValues(alpha: 0.12),
+        clipBehavior: Clip.antiAlias,
+        builder: (context) {
+          return DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.6,
+            minChildSize: 0.3,
+            maxChildSize: 0.95,
+            builder: (context, scrollController) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Drag handle
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 16),
+                    child: Container(
+                      width: 48,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: scheme.outlineVariant,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                  // Header with title
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 8, 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            hint ?? 'Select category',
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(color: scheme.onSurface),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: Icon(
+                            Icons.close,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                          tooltip: 'Close',
+                          constraints: const BoxConstraints(
+                            minWidth: 44,
+                            minHeight: 44,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // List
+                  Expanded(
+                    child: categories.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No categories',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: scheme.onSurfaceVariant),
+                            ),
+                          )
+                        : ListView.builder(
+                            controller: scrollController,
+                            padding: EdgeInsets.only(
+                              bottom:
+                                  MediaQuery.of(context).viewInsets.bottom + 16,
+                            ),
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              final c = categories[index];
+                              final isSelected = c == value;
+                              return Material(
+                                color: isSelected
+                                    ? scheme.primaryContainer.withValues(
+                                        alpha: 0.5,
+                                      )
+                                    : Colors.transparent,
+                                child: InkWell(
+                                  onTap: () => Navigator.of(context).pop(c),
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      minHeight: 56,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              c,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge
+                                                  ?.copyWith(
+                                                    color: scheme.onSurface,
+                                                    fontWeight: isSelected
+                                                        ? FontWeight.w600
+                                                        : FontWeight.w400,
+                                                  ),
+                                            ),
+                                          ),
+                                          if (isSelected)
+                                            Icon(
+                                              Icons.check,
+                                              color: scheme.primary,
+                                              size: 24,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+
+      if (result != null && result != value) onChanged(result);
+    }
+
+    return GestureDetector(
+      onTap: openCategorySheet,
+      child: Material(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: scheme.outline),
+            borderRadius: BorderRadius.circular(12),
+            color: scheme.surfaceContainerHighest.withValues(alpha: 0.32),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      hint ?? 'Category',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      value ?? 'Select a category',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: value != null
+                            ? scheme.onSurface
+                            : scheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Icon(Icons.expand_more, color: scheme.onSurfaceVariant, size: 24),
+            ],
           ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: scheme.onSurface),
-        ),
       ),
-      dropdownColor: scheme.surfaceContainerHighest,
-      style: TextStyle(color: scheme.onSurface),
-      onChanged: onChanged,
-      items: categories
-          .map(
-            (c) => DropdownMenuItem<String?>(
-              value: c,
-              child: Text(c, style: TextStyle(color: scheme.onSurface)),
-            ),
-          )
-          .toList(),
     );
   }
 }

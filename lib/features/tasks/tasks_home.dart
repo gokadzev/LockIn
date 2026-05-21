@@ -147,54 +147,62 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
           final descController = TextEditingController();
           var priority = 2;
           String? category = 'General';
+          final formKey = GlobalKey<FormState>();
 
           final result = await showDialog<Map<String, dynamic>>(
             context: context,
             builder: (context) => LockinDialog(
               title: const Text('Add Task'),
               content: StatefulBuilder(
-                builder: (context, setState) => Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(
-                        labelText: 'Title',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        hintText: 'Task title',
+                builder: (context, setState) => Form(
+                  key: formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: titleController,
+                        decoration: const InputDecoration(
+                          labelText: 'Title',
+                          labelStyle: TextStyle(color: Colors.white70),
+                          hintText: 'Task title',
+                        ),
+                        validator: (val) => val == null || val.trim().isEmpty
+                            ? 'Title cannot be empty'
+                            : null,
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: descController,
-                      keyboardType: TextInputType.multiline,
-                      minLines: 1,
-                      maxLines: 6,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        hintText: 'Description',
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: descController,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 1,
+                        maxLines: 6,
+                        decoration: const InputDecoration(
+                          labelText: 'Description',
+                          labelStyle: TextStyle(color: Colors.white70),
+                          hintText: 'Description',
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Category selector (compact dropdown)
-                    CategoryDropdown(
-                      value: category,
-                      onChanged: (val) => setState(() => category = val),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: TaskPriorityUtils.buildPriorityChips(
-                        context: context,
-                        selectedPriority: priority,
-                        onPrioritySelected: (newPriority) =>
-                            setState(() => priority = newPriority),
+                      const SizedBox(height: 12),
+                      // Category selector (compact dropdown)
+                      CategoryDropdown(
+                        value: category,
+                        onChanged: (val) => setState(() => category = val),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: TaskPriorityUtils.buildPriorityChips(
+                          context: context,
+                          selectedPriority: priority,
+                          onPrioritySelected: (newPriority) =>
+                              setState(() => priority = newPriority),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               actions: [
@@ -210,12 +218,15 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () => Navigator.pop(context, {
-                    'title': titleController.text,
-                    'description': descController.text,
-                    'priority': priority,
-                    'category': category ?? 'General',
-                  }),
+                  onPressed: () {
+                    if (!(formKey.currentState?.validate() ?? false)) return;
+                    Navigator.pop(context, {
+                      'title': titleController.text,
+                      'description': descController.text,
+                      'priority': priority,
+                      'category': category ?? 'General',
+                    });
+                  },
                   child: const Text('Add'),
                 ),
               ],

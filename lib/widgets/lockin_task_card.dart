@@ -115,6 +115,7 @@ class LockinTaskCard extends StatelessWidget {
                   final descController = TextEditingController(
                     text: task.description ?? '',
                   );
+                  final formKey = GlobalKey<FormState>();
                   var priority = task.priority;
                   var selectedCategory = task.tags.isNotEmpty
                       ? task.tags.first
@@ -127,47 +128,55 @@ class LockinTaskCard extends StatelessWidget {
                     builder: (context) => LockinDialog(
                       title: const Text('Edit Task'),
                       content: StatefulBuilder(
-                        builder: (context, setState) => Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextField(
-                              controller: titleController,
-                              decoration: const InputDecoration(
-                                labelText: 'Title',
-                                hintText: 'Task title',
+                        builder: (context, setState) => Form(
+                          key: formKey,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextFormField(
+                                controller: titleController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Title',
+                                  hintText: 'Task title',
+                                ),
+                                validator: (val) =>
+                                    val == null || val.trim().isEmpty
+                                    ? 'Title cannot be empty'
+                                    : null,
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: descController,
-                              keyboardType: TextInputType.multiline,
-                              minLines: 1,
-                              maxLines: 6,
-                              decoration: const InputDecoration(
-                                labelText: 'Description',
-                                hintText: 'Description',
+                              const SizedBox(height: 12),
+                              TextField(
+                                controller: descController,
+                                keyboardType: TextInputType.multiline,
+                                minLines: 1,
+                                maxLines: 6,
+                                decoration: const InputDecoration(
+                                  labelText: 'Description',
+                                  hintText: 'Description',
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            CategoryDropdown(
-                              value: selectedCategory,
-                              onChanged: (val) => setState(
-                                () => selectedCategory = val ?? 'General',
+                              const SizedBox(height: 12),
+                              CategoryDropdown(
+                                value: selectedCategory,
+                                onChanged: (val) => setState(
+                                  () => selectedCategory = val ?? 'General',
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: TaskPriorityUtils.buildPriorityChips(
-                                context: context,
-                                selectedPriority: priority,
-                                onPrioritySelected: (newPriority) =>
-                                    setState(() => priority = newPriority),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: TaskPriorityUtils.buildPriorityChips(
+                                  context: context,
+                                  selectedPriority: priority,
+                                  onPrioritySelected: (newPriority) =>
+                                      setState(() => priority = newPriority),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       actions: [
@@ -183,12 +192,17 @@ class LockinTaskCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () => Navigator.pop(context, {
-                            'title': titleController.text,
-                            'description': descController.text,
-                            'priority': priority,
-                            'category': selectedCategory,
-                          }),
+                          onPressed: () {
+                            if (!(formKey.currentState?.validate() ?? false)) {
+                              return;
+                            }
+                            Navigator.pop(context, {
+                              'title': titleController.text,
+                              'description': descController.text,
+                              'priority': priority,
+                              'category': selectedCategory,
+                            });
+                          },
                           child: const Text('Save'),
                         ),
                       ],

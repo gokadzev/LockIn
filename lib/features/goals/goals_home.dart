@@ -137,6 +137,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                             if (!categories.contains(selectedCategory)) {
                               selectedCategory = 'General';
                             }
+                            final editFormKey = GlobalKey<FormState>();
                             final result = await showDialog<Map<String, dynamic>>(
                               context: context,
                               builder: (context) => LockinDialog(
@@ -144,233 +145,250 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                 content: StatefulBuilder(
                                   builder: (context, setState) => SingleChildScrollView(
                                     padding: const EdgeInsets.only(top: 8),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        TextField(
-                                          controller: titleController,
-                                          decoration: const InputDecoration(
-                                            labelText: 'Title',
-                                            labelStyle: TextStyle(
-                                              color: Colors.white70,
-                                            ),
-                                            hintText: 'Goal title',
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        TextField(
-                                          controller: smartController,
-                                          decoration: const InputDecoration(
-                                            labelText: 'SMART',
-                                            labelStyle: TextStyle(
-                                              color: Colors.white70,
-                                            ),
-                                            hintText: 'SMART details',
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        // Category selector
-                                        CategoryDropdown(
-                                          value: selectedCategory,
-                                          onChanged: (v) => setState(
-                                            () => selectedCategory =
-                                                v ?? 'General',
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Row(
-                                          children: [
-                                            const Text(
-                                              'Deadline',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
+                                    child: Form(
+                                      key: editFormKey,
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextFormField(
+                                            controller: titleController,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Title',
+                                              labelStyle: TextStyle(
+                                                color: Colors.white70,
                                               ),
+                                              hintText: 'Goal title',
                                             ),
-                                            const Spacer(),
-                                            TextButton(
-                                              onPressed: () async {
-                                                final picked =
-                                                    await showDatePicker(
-                                                      context: context,
-                                                      initialDate:
-                                                          selectedDeadline ??
-                                                          DateTime.now(),
-                                                      firstDate: DateTime.now(),
-                                                      lastDate: DateTime(2100),
-                                                    );
-                                                if (picked != null) {
-                                                  setState(
-                                                    () => selectedDeadline =
-                                                        picked,
-                                                  );
-                                                }
-                                              },
-                                              child: Text(
-                                                selectedDeadline == null
-                                                    ? 'Pick date'
-                                                    : '${selectedDeadline!.year}-${selectedDeadline!.month.toString().padLeft(2, '0')}-${selectedDeadline!.day.toString().padLeft(2, '0')}',
-                                                style: const TextStyle(
-                                                  color: Colors.grey,
+                                            validator: (val) =>
+                                                val == null ||
+                                                    val.trim().isEmpty
+                                                ? 'Title cannot be empty'
+                                                : null,
+                                          ),
+                                          const SizedBox(height: 12),
+                                          TextField(
+                                            controller: smartController,
+                                            decoration: const InputDecoration(
+                                              labelText: 'SMART',
+                                              labelStyle: TextStyle(
+                                                color: Colors.white70,
+                                              ),
+                                              hintText: 'SMART details',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          // Category selector
+                                          CategoryDropdown(
+                                            value: selectedCategory,
+                                            onChanged: (v) => setState(
+                                              () => selectedCategory =
+                                                  v ?? 'General',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Row(
+                                            children: [
+                                              const Text(
+                                                'Deadline',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Row(
-                                          children: [
-                                            const Text(
-                                              'Milestones',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const Spacer(),
-                                            IconButton(
-                                              icon: const Icon(Icons.add),
-                                              onPressed: () {
-                                                setState(() {
-                                                  milestones.add(
-                                                    TextEditingController(),
-                                                  );
-                                                  milestonesFocusNodes.add(
-                                                    FocusNode(),
-                                                  );
-                                                });
-                                                Future.delayed(
-                                                  const Duration(
-                                                    milliseconds: 100,
-                                                  ),
-                                                  () {
-                                                    if (!mounted ||
-                                                        milestonesFocusNodes
-                                                            .isEmpty) {
-                                                      return;
-                                                    }
-                                                    milestonesFocusNodes.last
-                                                        .requestFocus();
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        ReorderableListView(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          onReorder: (oldIndex, newIndex) {
-                                            setState(() {
-                                              if (newIndex > oldIndex) {
-                                                newIndex--;
-                                              }
-                                              final ctrl = milestones.removeAt(
-                                                oldIndex,
-                                              );
-                                              final node = milestonesFocusNodes
-                                                  .removeAt(oldIndex);
-                                              milestones.insert(newIndex, ctrl);
-                                              milestonesFocusNodes.insert(
-                                                newIndex,
-                                                node,
-                                              );
-                                            });
-                                          },
-                                          children: [
-                                            for (
-                                              int j = 0;
-                                              j < milestones.length;
-                                              j++
-                                            )
-                                              Padding(
-                                                key: ValueKey(
-                                                  'milestone_edit_$j',
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 6,
-                                                    ),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: TextField(
-                                                        controller:
-                                                            milestones[j],
-                                                        focusNode:
-                                                            milestonesFocusNodes[j],
-                                                        decoration: InputDecoration(
-                                                          hintText:
-                                                              'Milestone ${j + 1}',
+                                              const Spacer(),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  final picked =
+                                                      await showDatePicker(
+                                                        context: context,
+                                                        initialDate:
+                                                            selectedDeadline ??
+                                                            DateTime.now(),
+                                                        firstDate:
+                                                            DateTime.now(),
+                                                        lastDate: DateTime(
+                                                          2100,
                                                         ),
-                                                        onSubmitted: (value) {
-                                                          if (value
-                                                              .trim()
-                                                              .isNotEmpty) {
-                                                            setState(() {
-                                                              milestones.add(
-                                                                TextEditingController(),
-                                                              );
-                                                              milestonesFocusNodes
-                                                                  .add(
-                                                                    FocusNode(),
-                                                                  );
-                                                            });
-                                                            Future.delayed(
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    100,
+                                                      );
+                                                  if (picked != null) {
+                                                    setState(
+                                                      () => selectedDeadline =
+                                                          picked,
+                                                    );
+                                                  }
+                                                },
+                                                child: Text(
+                                                  selectedDeadline == null
+                                                      ? 'Pick date'
+                                                      : '${selectedDeadline!.year}-${selectedDeadline!.month.toString().padLeft(2, '0')}-${selectedDeadline!.day.toString().padLeft(2, '0')}',
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Row(
+                                            children: [
+                                              const Text(
+                                                'Milestones',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              IconButton(
+                                                icon: const Icon(Icons.add),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    milestones.add(
+                                                      TextEditingController(),
+                                                    );
+                                                    milestonesFocusNodes.add(
+                                                      FocusNode(),
+                                                    );
+                                                  });
+                                                  Future.delayed(
+                                                    const Duration(
+                                                      milliseconds: 100,
+                                                    ),
+                                                    () {
+                                                      if (!mounted ||
+                                                          milestonesFocusNodes
+                                                              .isEmpty) {
+                                                        return;
+                                                      }
+                                                      milestonesFocusNodes.last
+                                                          .requestFocus();
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          ReorderableListView(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            onReorder: (oldIndex, newIndex) {
+                                              setState(() {
+                                                if (newIndex > oldIndex) {
+                                                  newIndex--;
+                                                }
+                                                final ctrl = milestones
+                                                    .removeAt(oldIndex);
+                                                final node =
+                                                    milestonesFocusNodes
+                                                        .removeAt(oldIndex);
+                                                milestones.insert(
+                                                  newIndex,
+                                                  ctrl,
+                                                );
+                                                milestonesFocusNodes.insert(
+                                                  newIndex,
+                                                  node,
+                                                );
+                                              });
+                                            },
+                                            children: [
+                                              for (
+                                                int j = 0;
+                                                j < milestones.length;
+                                                j++
+                                              )
+                                                Padding(
+                                                  key: ValueKey(
+                                                    'milestone_edit_$j',
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 6,
+                                                      ),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: TextField(
+                                                          controller:
+                                                              milestones[j],
+                                                          focusNode:
+                                                              milestonesFocusNodes[j],
+                                                          decoration:
+                                                              InputDecoration(
+                                                                hintText:
+                                                                    'Milestone ${j + 1}',
                                                               ),
-                                                              () {
-                                                                if (!mounted ||
-                                                                    milestonesFocusNodes
-                                                                        .isEmpty) {
-                                                                  return;
-                                                                }
+                                                          onSubmitted: (value) {
+                                                            if (value
+                                                                .trim()
+                                                                .isNotEmpty) {
+                                                              setState(() {
+                                                                milestones.add(
+                                                                  TextEditingController(),
+                                                                );
                                                                 milestonesFocusNodes
-                                                                    .last
-                                                                    .requestFocus();
-                                                              },
+                                                                    .add(
+                                                                      FocusNode(),
+                                                                    );
+                                                              });
+                                                              Future.delayed(
+                                                                const Duration(
+                                                                  milliseconds:
+                                                                      100,
+                                                                ),
+                                                                () {
+                                                                  if (!mounted ||
+                                                                      milestonesFocusNodes
+                                                                          .isEmpty) {
+                                                                    return;
+                                                                  }
+                                                                  milestonesFocusNodes
+                                                                      .last
+                                                                      .requestFocus();
+                                                                },
+                                                              );
+                                                            }
+                                                          },
+                                                        ),
+                                                      ),
+                                                      IconButton(
+                                                        icon: Icon(
+                                                          Icons.remove_circle,
+                                                          color: Theme.of(context)
+                                                              .colorScheme
+                                                              .onSurfaceVariant,
+                                                        ),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            milestones[j]
+                                                                .dispose();
+                                                            milestonesFocusNodes[j]
+                                                                .dispose();
+                                                            milestones.removeAt(
+                                                              j,
                                                             );
-                                                          }
+                                                            milestonesFocusNodes
+                                                                .removeAt(j);
+                                                          });
                                                         },
                                                       ),
-                                                    ),
-                                                    IconButton(
-                                                      icon: Icon(
-                                                        Icons.remove_circle,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onSurfaceVariant,
+                                                      const SizedBox(width: 4),
+                                                      ReorderableDragStartListener(
+                                                        index: j,
+                                                        child: const Icon(
+                                                          Icons.drag_handle,
+                                                          size: 18,
+                                                          color: Colors.white38,
+                                                        ),
                                                       ),
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          milestones[j]
-                                                              .dispose();
-                                                          milestonesFocusNodes[j]
-                                                              .dispose();
-                                                          milestones.removeAt(
-                                                            j,
-                                                          );
-                                                          milestonesFocusNodes
-                                                              .removeAt(j);
-                                                        });
-                                                      },
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    ReorderableDragStartListener(
-                                                      index: j,
-                                                      child: const Icon(
-                                                        Icons.drag_handle,
-                                                        size: 18,
-                                                        color: Colors.white38,
-                                                      ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -381,6 +399,11 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
+                                      if (!(editFormKey.currentState
+                                              ?.validate() ??
+                                          false)) {
+                                        return;
+                                      }
                                       final milestoneObjs = milestones
                                           .where(
                                             (c) => c.text.trim().isNotEmpty,
@@ -549,6 +572,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
           addMilestone();
           DateTime? selectedDeadline;
           String? selectedCategory = 'General';
+          final addFormKey = GlobalKey<FormState>();
           final result = await showDialog<Map<String, dynamic>>(
             context: context,
             builder: (context) => LockinDialog(
@@ -556,175 +580,186 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
               content: StatefulBuilder(
                 builder: (context, setState) => SingleChildScrollView(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        controller: titleController,
-                        decoration: const InputDecoration(
-                          labelText: 'Title',
-                          labelStyle: TextStyle(color: Colors.white70),
-                          hintText: 'Goal title',
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: smartController,
-                        decoration: const InputDecoration(
-                          labelText: 'SMART',
-                          labelStyle: TextStyle(color: Colors.white70),
-                          hintText: 'SMART details',
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Category selector for new goal
-                      CategoryDropdown(
-                        value: selectedCategory,
-                        onChanged: (v) => setState(() => selectedCategory = v),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          const Text(
-                            'Deadline',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Form(
+                    key: addFormKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: titleController,
+                          decoration: const InputDecoration(
+                            labelText: 'Title',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            hintText: 'Goal title',
                           ),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: () async {
-                              final picked = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDeadline ?? DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime(2100),
-                              );
-                              if (picked != null) {
-                                setState(() => selectedDeadline = picked);
-                              }
-                            },
-                            child: Text(
-                              selectedDeadline == null
-                                  ? 'Pick date'
-                                  : '${selectedDeadline!.year}-${selectedDeadline!.month.toString().padLeft(2, '0')}-${selectedDeadline!.day.toString().padLeft(2, '0')}',
-                              style: const TextStyle(color: Colors.grey),
+                          validator: (val) => val == null || val.trim().isEmpty
+                              ? 'Title cannot be empty'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: smartController,
+                          decoration: const InputDecoration(
+                            labelText: 'SMART',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            hintText: 'SMART details',
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Category selector for new goal
+                        CategoryDropdown(
+                          value: selectedCategory,
+                          onChanged: (v) =>
+                              setState(() => selectedCategory = v),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            const Text(
+                              'Deadline',
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          const Text(
-                            'Milestones',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.add),
-                            onPressed: () {
-                              setState(() {
-                                milestones.add(TextEditingController());
-                                milestonesFocusNodes.add(FocusNode());
-                              });
-                              Future.delayed(
-                                const Duration(milliseconds: 100),
-                                () {
-                                  if (!mounted ||
-                                      milestonesFocusNodes.isEmpty) {
-                                    return;
-                                  }
-                                  milestonesFocusNodes.last.requestFocus();
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      ReorderableListView(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        onReorder: (oldIndex, newIndex) {
-                          setState(() {
-                            if (newIndex > oldIndex) newIndex--;
-                            final ctrl = milestones.removeAt(oldIndex);
-                            final node = milestonesFocusNodes.removeAt(
-                              oldIndex,
-                            );
-                            milestones.insert(newIndex, ctrl);
-                            milestonesFocusNodes.insert(newIndex, node);
-                          });
-                        },
-                        children: [
-                          for (int i = 0; i < milestones.length; i++)
-                            Padding(
-                              key: ValueKey('milestone_$i'),
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: milestones[i],
-                                      focusNode: milestonesFocusNodes[i],
-                                      decoration: InputDecoration(
-                                        hintText: 'Milestone ${i + 1}',
-                                      ),
-                                      onSubmitted: (value) {
-                                        if (value.trim().isNotEmpty) {
-                                          setState(() {
-                                            milestones.add(
-                                              TextEditingController(),
-                                            );
-                                            milestonesFocusNodes.add(
-                                              FocusNode(),
-                                            );
-                                          });
-                                          Future.delayed(
-                                            const Duration(milliseconds: 100),
-                                            () {
-                                              if (!mounted ||
-                                                  milestonesFocusNodes
-                                                      .isEmpty) {
-                                                return;
-                                              }
-                                              milestonesFocusNodes.last
-                                                  .requestFocus();
-                                            },
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.remove_circle,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        milestones[i].dispose();
-                                        milestonesFocusNodes[i].dispose();
-                                        milestones.removeAt(i);
-                                        milestonesFocusNodes.removeAt(i);
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(width: 4),
-                                  ReorderableDragStartListener(
-                                    index: i,
-                                    child: const Icon(
-                                      Icons.drag_handle,
-                                      size: 18,
-                                      color: Colors.white38,
-                                    ),
-                                  ),
-                                ],
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate:
+                                      selectedDeadline ?? DateTime.now(),
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (picked != null) {
+                                  setState(() => selectedDeadline = picked);
+                                }
+                              },
+                              child: Text(
+                                selectedDeadline == null
+                                    ? 'Pick date'
+                                    : '${selectedDeadline!.year}-${selectedDeadline!.month.toString().padLeft(2, '0')}-${selectedDeadline!.day.toString().padLeft(2, '0')}',
+                                style: const TextStyle(color: Colors.grey),
                               ),
                             ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            const Text(
+                              'Milestones',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () {
+                                setState(() {
+                                  milestones.add(TextEditingController());
+                                  milestonesFocusNodes.add(FocusNode());
+                                });
+                                Future.delayed(
+                                  const Duration(milliseconds: 100),
+                                  () {
+                                    if (!mounted ||
+                                        milestonesFocusNodes.isEmpty) {
+                                      return;
+                                    }
+                                    milestonesFocusNodes.last.requestFocus();
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        ReorderableListView(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          onReorder: (oldIndex, newIndex) {
+                            setState(() {
+                              if (newIndex > oldIndex) newIndex--;
+                              final ctrl = milestones.removeAt(oldIndex);
+                              final node = milestonesFocusNodes.removeAt(
+                                oldIndex,
+                              );
+                              milestones.insert(newIndex, ctrl);
+                              milestonesFocusNodes.insert(newIndex, node);
+                            });
+                          },
+                          children: [
+                            for (int i = 0; i < milestones.length; i++)
+                              Padding(
+                                key: ValueKey('milestone_$i'),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: milestones[i],
+                                        focusNode: milestonesFocusNodes[i],
+                                        decoration: InputDecoration(
+                                          hintText: 'Milestone ${i + 1}',
+                                        ),
+                                        onSubmitted: (value) {
+                                          if (value.trim().isNotEmpty) {
+                                            setState(() {
+                                              milestones.add(
+                                                TextEditingController(),
+                                              );
+                                              milestonesFocusNodes.add(
+                                                FocusNode(),
+                                              );
+                                            });
+                                            Future.delayed(
+                                              const Duration(milliseconds: 100),
+                                              () {
+                                                if (!mounted ||
+                                                    milestonesFocusNodes
+                                                        .isEmpty) {
+                                                  return;
+                                                }
+                                                milestonesFocusNodes.last
+                                                    .requestFocus();
+                                              },
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.remove_circle,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          milestones[i].dispose();
+                                          milestonesFocusNodes[i].dispose();
+                                          milestones.removeAt(i);
+                                          milestonesFocusNodes.removeAt(i);
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 4),
+                                    ReorderableDragStartListener(
+                                      index: i,
+                                      child: const Icon(
+                                        Icons.drag_handle,
+                                        size: 18,
+                                        color: Colors.white38,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -735,6 +770,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    if (!(addFormKey.currentState?.validate() ?? false)) return;
                     final milestoneObjs = milestones
                         .where((c) => c.text.trim().isNotEmpty)
                         .map((c) => Milestone(c.text.trim()))

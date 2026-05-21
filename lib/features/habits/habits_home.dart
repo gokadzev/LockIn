@@ -333,6 +333,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       selectedCategory = categoryNames.first;
     }
 
+    final formKey = GlobalKey<FormState>();
     await showDialog<Map<String, dynamic>>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -341,188 +342,197 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
           return LockinDialog(
             title: Text(habit == null ? 'Add Habit' : 'Edit Habit'),
             content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: titleController,
-                    decoration: const InputDecoration(hintText: 'Habit title'),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    initialValue: frequency,
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      filled: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
+              child: Form(
+                key: formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        hintText: 'Habit title',
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? 'Title cannot be empty'
+                          : null,
                     ),
-                    items: ['daily', 'weekly', 'monthly', 'custom']
-                        .map(
-                          (f) => DropdownMenuItem(
-                            value: f,
-                            child: Text(f.capitalize()),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (val) =>
-                        setState(() => frequency = val ?? 'daily'),
-                  ),
-                  if (frequency == 'custom')
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              if (weekdaysSelected)
-                                FilledButton.icon(
-                                  icon: const Icon(
-                                    Icons.work_outline,
-                                    size: 16,
-                                  ),
-                                  label: const Text('Weekdays'),
-                                  onPressed: () {
-                                    setState(() {
-                                      final target = !customWeekdays
-                                          .sublist(0, 5)
-                                          .every((v) => v);
-                                      for (var i = 0; i < 5; i++) {
-                                        customWeekdays[i] = target;
-                                      }
-                                    });
-                                  },
-                                )
-                              else
-                                OutlinedButton.icon(
-                                  icon: const Icon(
-                                    Icons.work_outline,
-                                    size: 16,
-                                  ),
-                                  label: const Text('Weekdays'),
-                                  onPressed: () {
-                                    setState(() {
-                                      for (var i = 0; i < 5; i++) {
-                                        customWeekdays[i] = true;
-                                      }
-                                    });
-                                  },
-                                ),
-                              const SizedBox(width: 8),
-                              OutlinedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    for (var i = 0; i < 7; i++) {
-                                      customWeekdays[i] = false;
-                                    }
-                                  });
-                                },
-                                child: const Text('Clear'),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 4,
-                            children: List.generate(
-                              7,
-                              (i) => FilterChip(
-                                label: Text(
-                                  [
-                                    'Mon',
-                                    'Tue',
-                                    'Wed',
-                                    'Thu',
-                                    'Fri',
-                                    'Sat',
-                                    'Sun',
-                                  ][i],
-                                ),
-                                selected: customWeekdays[i],
-                                onSelected: (val) =>
-                                    setState(() => customWeekdays[i] = val),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      const Text('Reminder Time:'),
-                      const SizedBox(width: 8),
-                      TextButton(
-                        onPressed: () async {
-                          final picked = await showTimePicker(
-                            context: context,
-                            initialTime: selectedTime,
-                          );
-                          if (picked != null) {
-                            setState(() => selectedTime = picked);
-                          }
-                        },
-                        child: Text(selectedTime.format(context)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CategoryDropdown(
-                          value: selectedCategory,
-                          onChanged: (val) => setState(
-                            () => selectedCategory = val ?? 'General',
-                          ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      initialValue: frequency,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        tooltip: 'Add Category',
-                        onPressed: () async {
-                          final controller = TextEditingController();
-                          final result = await showDialog<String>(
-                            context: context,
-                            builder: (context) => LockinDialog(
-                              title: const Text('New Category'),
-                              content: TextField(
-                                controller: controller,
-                                decoration: const InputDecoration(
-                                  hintText: 'Category name',
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, controller.text),
-                                  child: const Text('Add'),
+                      items: ['daily', 'weekly', 'monthly', 'custom']
+                          .map(
+                            (f) => DropdownMenuItem(
+                              value: f,
+                              child: Text(f.capitalize()),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) =>
+                          setState(() => frequency = val ?? 'daily'),
+                    ),
+                    if (frequency == 'custom')
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                if (weekdaysSelected)
+                                  FilledButton.icon(
+                                    icon: const Icon(
+                                      Icons.work_outline,
+                                      size: 16,
+                                    ),
+                                    label: const Text('Weekdays'),
+                                    onPressed: () {
+                                      setState(() {
+                                        final target = !customWeekdays
+                                            .sublist(0, 5)
+                                            .every((v) => v);
+                                        for (var i = 0; i < 5; i++) {
+                                          customWeekdays[i] = target;
+                                        }
+                                      });
+                                    },
+                                  )
+                                else
+                                  OutlinedButton.icon(
+                                    icon: const Icon(
+                                      Icons.work_outline,
+                                      size: 16,
+                                    ),
+                                    label: const Text('Weekdays'),
+                                    onPressed: () {
+                                      setState(() {
+                                        for (var i = 0; i < 5; i++) {
+                                          customWeekdays[i] = true;
+                                        }
+                                      });
+                                    },
+                                  ),
+                                const SizedBox(width: 8),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      for (var i = 0; i < 7; i++) {
+                                        customWeekdays[i] = false;
+                                      }
+                                    });
+                                  },
+                                  child: const Text('Clear'),
                                 ),
                               ],
                             ),
-                          );
-                          if (result != null && result.trim().isNotEmpty) {
-                            categoriesNotifier.addCategory(result.trim());
-                            setState(() => selectedCategory = result.trim());
-                          }
-                        },
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 4,
+                              children: List.generate(
+                                7,
+                                (i) => FilterChip(
+                                  label: Text(
+                                    [
+                                      'Mon',
+                                      'Tue',
+                                      'Wed',
+                                      'Thu',
+                                      'Fri',
+                                      'Sat',
+                                      'Sun',
+                                    ][i],
+                                  ),
+                                  selected: customWeekdays[i],
+                                  onSelected: (val) =>
+                                      setState(() => customWeekdays[i] = val),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ],
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Text('Reminder Time:'),
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: () async {
+                            final picked = await showTimePicker(
+                              context: context,
+                              initialTime: selectedTime,
+                            );
+                            if (picked != null) {
+                              setState(() => selectedTime = picked);
+                            }
+                          },
+                          child: Text(selectedTime.format(context)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CategoryDropdown(
+                            value: selectedCategory,
+                            onChanged: (val) => setState(
+                              () => selectedCategory = val ?? 'General',
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          tooltip: 'Add Category',
+                          onPressed: () async {
+                            final controller = TextEditingController();
+                            final result = await showDialog<String>(
+                              context: context,
+                              builder: (context) => LockinDialog(
+                                title: const Text('New Category'),
+                                content: TextField(
+                                  controller: controller,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Category name',
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, controller.text),
+                                    child: const Text('Add'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (result != null && result.trim().isNotEmpty) {
+                              categoriesNotifier.addCategory(result.trim());
+                              setState(() => selectedCategory = result.trim());
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             actions: [
@@ -532,6 +542,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  if (!(formKey.currentState?.validate() ?? false)) return;
                   if (frequency == 'custom' &&
                       !customWeekdays.any((day) => day)) {
                     LockinSnackBar.showSimple(

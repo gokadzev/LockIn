@@ -515,7 +515,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                                     onPressed: () => Navigator.pop(context),
                                     child: const Text('Cancel'),
                                   ),
-                                  ElevatedButton(
+                                  FilledButton(
                                     onPressed: () =>
                                         Navigator.pop(context, controller.text),
                                     child: const Text('Add'),
@@ -540,7 +540,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                 onPressed: () => Navigator.pop(context),
                 child: const Text('Cancel'),
               ),
-              ElevatedButton(
+              FilledButton(
                 onPressed: () {
                   if (!(formKey.currentState?.validate() ?? false)) return;
                   if (frequency == 'custom' &&
@@ -603,7 +603,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),

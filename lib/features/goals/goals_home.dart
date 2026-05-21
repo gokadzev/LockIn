@@ -397,7 +397,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                     onPressed: () => Navigator.pop(context),
                                     child: const Text('Cancel'),
                                   ),
-                                  ElevatedButton(
+                                  FilledButton(
                                     onPressed: () {
                                       if (!(editFormKey.currentState
                                               ?.validate() ??
@@ -768,7 +768,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Cancel'),
                 ),
-                ElevatedButton(
+                FilledButton(
                   onPressed: () {
                     if (!(addFormKey.currentState?.validate() ?? false)) return;
                     final milestoneObjs = milestones
@@ -818,7 +818,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),

@@ -416,7 +416,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                             Navigator.pop(context, false),
                                         child: const Text('Cancel'),
                                       ),
-                                      ElevatedButton(
+                                      FilledButton(
                                         onPressed: () =>
                                             Navigator.pop(context, true),
                                         child: const Text('Delete'),
@@ -470,7 +470,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
     final isFuture = selectedDay.isAfter(
       DateTime(today.year, today.month, today.day),
     );
-    return ElevatedButton.icon(
+    return FilledButton.icon(
       onPressed: isFuture
           ? null
           : () => _showAddEntryDialog(context, notifier, selectedDay),
@@ -554,7 +554,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                   style: TextStyle(color: Colors.grey[400]),
                 ),
               ),
-              ElevatedButton(
+              FilledButton(
                 onPressed: () {
                   Navigator.pop(context, {
                     'entry': entryController.text,

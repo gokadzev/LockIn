@@ -83,14 +83,7 @@ class CategoryManagerDialog extends ConsumerWidget {
           child: const Text('Close'),
         ),
         const SizedBox(width: 8),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: scheme.primary,
-            foregroundColor: scheme.onPrimary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
+        FilledButton(
           child: const Text('Add'),
           onPressed: () async {
             final controller = TextEditingController();
@@ -107,14 +100,7 @@ class CategoryManagerDialog extends ConsumerWidget {
                     onPressed: () => Navigator.pop(context),
                     child: const Text('Cancel'),
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: scheme.primary,
-                      foregroundColor: scheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                  FilledButton(
                     onPressed: () => Navigator.pop(context, controller.text),
                     child: const Text('Add'),
                   ),

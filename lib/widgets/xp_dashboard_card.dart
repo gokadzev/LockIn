@@ -44,17 +44,9 @@ class XPDashboardCard extends ConsumerWidget {
           CardHeader(
             title: 'XP & Level',
             icon: Icons.stars_rounded,
-            trailing: ElevatedButton.icon(
+            trailing: FilledButton.icon(
               icon: const Icon(Icons.analytics),
               label: const Text('View XP'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                elevation: 0,
-              ),
               onPressed: () {
                 Navigator.of(context).pushNamed('/xp');
               },

@@ -184,14 +184,7 @@ class LockinTaskCard extends StatelessWidget {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('Cancel'),
                         ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: scheme.primary,
-                            foregroundColor: scheme.onPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                        FilledButton(
                           onPressed: () {
                             if (!(formKey.currentState?.validate() ?? false)) {
                               return;

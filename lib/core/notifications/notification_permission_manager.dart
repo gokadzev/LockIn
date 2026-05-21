@@ -76,7 +76,7 @@ class NotificationPermissionManager {
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Skip'),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Enable'),
           ),
@@ -109,7 +109,7 @@ class NotificationPermissionManager {
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () {
               Navigator.of(context).pop();
               openAppSettings();

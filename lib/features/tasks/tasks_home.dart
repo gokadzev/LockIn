@@ -210,14 +210,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Cancel'),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                FilledButton(
                   onPressed: () {
                     if (!(formKey.currentState?.validate() ?? false)) return;
                     Navigator.pop(context, {
@@ -260,7 +253,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),

@@ -167,6 +167,9 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: descController,
+                      keyboardType: TextInputType.multiline,
+                      minLines: 1,
+                      maxLines: 6,
                       decoration: const InputDecoration(
                         labelText: 'Description',
                         labelStyle: TextStyle(color: Colors.white70),

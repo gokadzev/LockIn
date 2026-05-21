@@ -140,6 +140,9 @@ class LockinTaskCard extends StatelessWidget {
                             const SizedBox(height: 12),
                             TextField(
                               controller: descController,
+                              keyboardType: TextInputType.multiline,
+                              minLines: 1,
+                              maxLines: 6,
                               decoration: const InputDecoration(
                                 labelText: 'Description',
                                 hintText: 'Description',
@@ -222,6 +225,7 @@ class LockinTaskCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               task.description!,
+              softWrap: true,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: finished
                     ? scheme.onSurface.withValues(alpha: 0.38)

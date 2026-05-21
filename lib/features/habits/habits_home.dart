@@ -337,6 +337,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
+          final weekdaysSelected = customWeekdays.sublist(0, 5).every((v) => v);
           return LockinDialog(
             title: Text(habit == null ? 'Add Habit' : 'Edit Habit'),
             content: SingleChildScrollView(
@@ -378,27 +379,81 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                   if (frequency == 'custom')
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child: Wrap(
-                        spacing: 4,
-                        children: List.generate(
-                          7,
-                          (i) => FilterChip(
-                            label: Text(
-                              [
-                                'Mon',
-                                'Tue',
-                                'Wed',
-                                'Thu',
-                                'Fri',
-                                'Sat',
-                                'Sun',
-                              ][i],
-                            ),
-                            selected: customWeekdays[i],
-                            onSelected: (val) =>
-                                setState(() => customWeekdays[i] = val),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              if (weekdaysSelected)
+                                FilledButton.icon(
+                                  icon: const Icon(
+                                    Icons.work_outline,
+                                    size: 16,
+                                  ),
+                                  label: const Text('Weekdays'),
+                                  onPressed: () {
+                                    setState(() {
+                                      final target = !customWeekdays
+                                          .sublist(0, 5)
+                                          .every((v) => v);
+                                      for (var i = 0; i < 5; i++) {
+                                        customWeekdays[i] = target;
+                                      }
+                                    });
+                                  },
+                                )
+                              else
+                                OutlinedButton.icon(
+                                  icon: const Icon(
+                                    Icons.work_outline,
+                                    size: 16,
+                                  ),
+                                  label: const Text('Weekdays'),
+                                  onPressed: () {
+                                    setState(() {
+                                      for (var i = 0; i < 5; i++) {
+                                        customWeekdays[i] = true;
+                                      }
+                                    });
+                                  },
+                                ),
+                              const SizedBox(width: 8),
+                              OutlinedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    for (var i = 0; i < 7; i++) {
+                                      customWeekdays[i] = false;
+                                    }
+                                  });
+                                },
+                                child: const Text('Clear'),
+                              ),
+                            ],
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 4,
+                            children: List.generate(
+                              7,
+                              (i) => FilterChip(
+                                label: Text(
+                                  [
+                                    'Mon',
+                                    'Tue',
+                                    'Wed',
+                                    'Thu',
+                                    'Fri',
+                                    'Sat',
+                                    'Sun',
+                                  ][i],
+                                ),
+                                selected: customWeekdays[i],
+                                onSelected: (val) =>
+                                    setState(() => customWeekdays[i] = val),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   const SizedBox(height: 12),

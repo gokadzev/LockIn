@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/models/journal.dart';
+import 'package:lockin/core/utils/mood_icon.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/lockin_card.dart';
@@ -445,7 +446,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Icon(Icons.sentiment_satisfied, color: Colors.white),
+                    Icon(moodIcon(mood.round()), color: Colors.white),
                     const SizedBox(width: 8),
                     Text(
                       'Mood: ${mood.round()}/10',

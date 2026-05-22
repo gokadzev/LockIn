@@ -19,20 +19,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/constants/ui_constants.dart';
+import 'package:lockin/core/utils/mood_icon.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 
 class AverageMoodCard extends ConsumerWidget {
   const AverageMoodCard({super.key});
-
-  IconData _moodIcon(double? moodAvg) {
-    if (moodAvg == null) return Icons.sentiment_neutral;
-    if (moodAvg >= 8) return Icons.sentiment_very_satisfied;
-    if (moodAvg >= 6) return Icons.sentiment_satisfied;
-    if (moodAvg >= 4) return Icons.sentiment_neutral;
-    return Icons.sentiment_very_dissatisfied;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -90,7 +83,11 @@ class AverageMoodCard extends ConsumerWidget {
                     width: 72,
                     height: 72,
                     child: Center(
-                      child: Icon(_moodIcon(moodAvg), size: 44, color: color),
+                      child: Icon(
+                        moodIcon(moodAvg?.round()),
+                        size: 44,
+                        color: color,
+                      ),
                     ),
                   ),
                 ),

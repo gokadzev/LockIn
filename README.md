@@ -30,7 +30,7 @@ Your Personal Habit & Productivity Companion
 
 ## Screenshots
 
-| ![Screenshot 1](fastlane/metadata/android/en-US/images/phoneScreenshots/01.jpg) | ![Screenshot 2](fastlane/metadata/android/en-US/images/phoneScreenshots/02.jpg) | ![Screenshot 3](fastlane/metadata/android/en-US/images/phoneScreenshots/03.jpg) | ![Screenshot 4](fastlane/metadata/android/en-US/images/phoneScreenshots/04.jpg) |
+| ![Screenshot 1](fastlane/metadata/android/en-US/images/phoneScreenshots/01.png) | ![Screenshot 2](fastlane/metadata/android/en-US/images/phoneScreenshots/02.png) | ![Screenshot 3](fastlane/metadata/android/en-US/images/phoneScreenshots/03.png) | ![Screenshot 4](fastlane/metadata/android/en-US/images/phoneScreenshots/04.png) |
 | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 
 ---

@@ -81,10 +81,10 @@ class LockinTaskCard extends StatelessWidget {
             actions: [
               ActionIconButton(
                 icon: task.completed
-                    ? Icons.cancel_outlined
+                    ? Icons.restore
                     : Icons.check_circle_outline,
                 color: colorScheme.onSurface,
-                tooltip: task.completed ? 'Completed' : 'Mark as done',
+                tooltip: task.completed ? 'Restore' : 'Mark as done',
                 onPressed: () {
                   final isCompleted = !task.completed;
                   final updated = Task()
@@ -108,6 +108,7 @@ class LockinTaskCard extends StatelessWidget {
               ActionIconButton(
                 icon: Icons.edit_outlined,
                 color: colorScheme.onSurface,
+                tooltip: 'Edit',
                 onPressed: () async {
                   final titleController = TextEditingController(
                     text: task.title,
@@ -224,6 +225,7 @@ class LockinTaskCard extends StatelessWidget {
               ActionIconButton(
                 icon: Icons.delete_outline,
                 color: colorScheme.error,
+                tooltip: 'Delete',
                 onPressed: onDelete,
               ),
             ],

@@ -94,7 +94,7 @@ class GoalCard extends StatelessWidget {
                       height: 1.25,
                       fontWeight: FontWeight.w400,
                     ),
-                    maxLines: 2,
+                    maxLines: 6,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],

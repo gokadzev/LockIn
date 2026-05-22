@@ -79,7 +79,7 @@ class RecommendationCard extends StatelessWidget {
                       Text(
                         description!,
                         style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: 3,
+                        maxLines: 6,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],

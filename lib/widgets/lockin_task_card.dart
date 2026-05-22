@@ -243,6 +243,8 @@ class LockinTaskCard extends StatelessWidget {
                 fontWeight: FontWeight.w400,
                 letterSpacing: 0.05,
               ),
+              maxLines: 6,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
           const SizedBox(height: 12),

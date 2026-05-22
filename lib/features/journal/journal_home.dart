@@ -391,14 +391,16 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
     dynamic notifier,
     DateTime selectedDay,
   ) {
-    final today = DateTime.now();
-    final isFuture = selectedDay.isAfter(
-      DateTime(today.year, today.month, today.day),
-    );
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final isToday =
+        selectedDay.year == todayStart.year &&
+        selectedDay.month == todayStart.month &&
+        selectedDay.day == todayStart.day;
     return FilledButton.icon(
-      onPressed: isFuture
-          ? null
-          : () => _showAddEntryDialog(context, notifier, selectedDay),
+      onPressed: isToday
+          ? () => _showAddEntryDialog(context, notifier, selectedDay)
+          : null,
       icon: const Icon(Icons.add, size: 18),
       label: const Text(
         'Add Entry',

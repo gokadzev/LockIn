@@ -401,7 +401,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                             IconButton(
                               icon: Icon(
                                 Icons.delete_outline,
-                                color: colorScheme.onSurfaceVariant,
+                                color: colorScheme.error,
                                 size: 28,
                               ),
                               onPressed: () async {

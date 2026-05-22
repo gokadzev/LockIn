@@ -223,7 +223,7 @@ class LockinTaskCard extends StatelessWidget {
               const SizedBox(width: 4),
               ActionIconButton(
                 icon: Icons.delete_outline,
-                color: colorScheme.onSurfaceVariant,
+                color: colorScheme.error,
                 onPressed: onDelete,
               ),
             ],

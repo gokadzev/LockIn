@@ -26,15 +26,15 @@ class TaskPriorityUtils {
     required Function(int) onPrioritySelected,
     required BuildContext context,
   }) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return AppValues.taskPriorities.entries.map((e) {
       final selected = selectedPriority == e.key;
       final indicator = getPriorityColor(context, e.key);
-      final labelColor = selected ? Colors.white : scheme.onSurface;
+      final labelColor = selected ? Colors.white : colorScheme.onSurface;
       final selectedColor = selected
           ? indicator
-          : scheme.surfaceContainerHighest;
-      final bgColor = scheme.surfaceContainerHighest;
+          : colorScheme.surfaceContainerHighest;
+      final bgColor = colorScheme.surfaceContainerHighest;
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -79,12 +79,12 @@ class TaskPriorityUtils {
 
   /// Build priority container widget (theme-aware)
   static Widget buildPriorityContainer(BuildContext context, int priority) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final indicator = getPriorityColor(context, priority);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: indicator.withValues(alpha: 0.35)),
       ),
@@ -100,7 +100,7 @@ class TaskPriorityUtils {
           Text(
             getPriorityText(priority),
             style: TextStyle(
-              color: scheme.onSurface,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),

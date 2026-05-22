@@ -31,7 +31,7 @@ class LockinDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final maxHeight = MediaQuery.of(context).size.height * 0.7;
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidth =
@@ -41,7 +41,7 @@ class LockinDialog extends StatelessWidget {
             .toDouble();
 
     return Dialog(
-      backgroundColor: scheme.surface,
+      backgroundColor: colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
@@ -59,7 +59,7 @@ class LockinDialog extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: scheme.onSurface,
+                    color: colorScheme.onSurface,
                   ),
                   child: title,
                 ),

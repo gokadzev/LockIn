@@ -24,7 +24,7 @@ class XPProgressionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final xpProfile = ref.watch(xpNotifierProvider);
     final level = xpProfile.level;
     final wisdoms = [
@@ -49,7 +49,7 @@ class XPProgressionScreen extends ConsumerWidget {
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ListTile(
-              leading: Icon(Icons.lightbulb, color: scheme.onSurface),
+              leading: Icon(Icons.lightbulb, color: colorScheme.onSurface),
               title: Text('Level ${wisdom["level"]} Wisdom'),
               subtitle: Text(wisdom['tip'] as String),
             ),

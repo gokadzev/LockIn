@@ -64,7 +64,7 @@ class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final now = DateTime.now();
 
     final lastDay = DateTime(
@@ -108,7 +108,7 @@ class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
                   Text(
                     _currentMonth.year.toString(),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
+                      color: colorScheme.onSurfaceVariant,
                       fontSize: 11,
                     ),
                     textAlign: TextAlign.center,
@@ -138,7 +138,7 @@ class _HabitActivityMosaicState extends State<HabitActivityMosaic> {
                   child: Text(
                     day,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
+                      color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.bold,
                       fontSize: 11,
                     ),
@@ -267,7 +267,7 @@ class _DayTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return SizedBox(
       width: 40,
@@ -278,9 +278,9 @@ class _DayTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
             border: isCompleted
-                ? Border.all(color: scheme.primary, width: 2)
+                ? Border.all(color: colorScheme.primary, width: 2)
                 : isToday
-                ? Border.all(color: scheme.outline)
+                ? Border.all(color: colorScheme.outline)
                 : null,
           ),
           child: Center(

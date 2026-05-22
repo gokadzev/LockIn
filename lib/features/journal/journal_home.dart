@@ -87,7 +87,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final journalsRaw = ref.watch(journalsListProvider);
     final journals = journalsRaw.toList();
@@ -116,7 +116,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.chevron_left),
-                            color: scheme.onSurface,
+                            color: colorScheme.onSurface,
                             onPressed: () {
                               _weekController.previousPage(
                                 duration: const Duration(milliseconds: 300),
@@ -144,7 +144,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                             _selectedDay,
                                           ),
                                           style: textTheme.titleLarge?.copyWith(
-                                            color: scheme.onSurface,
+                                            color: colorScheme.onSurface,
                                             fontWeight: FontWeight.bold,
                                             letterSpacing: 0.2,
                                           ),
@@ -153,7 +153,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                         Icon(
                                           Icons.calendar_month_rounded,
                                           size: 18,
-                                          color: scheme.onSurfaceVariant,
+                                          color: colorScheme.onSurfaceVariant,
                                         ),
                                       ],
                                     ),
@@ -163,7 +163,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                 Text(
                                   'Swipe to browse days',
                                   style: textTheme.bodySmall?.copyWith(
-                                    color: scheme.onSurfaceVariant,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -171,7 +171,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.chevron_right),
-                            color: scheme.onSurface,
+                            color: colorScheme.onSurface,
                             onPressed: () {
                               _weekController.nextPage(
                                 duration: const Duration(milliseconds: 300),
@@ -225,13 +225,13 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? scheme.secondaryContainer
-                                            : scheme.surfaceContainerHigh,
+                                            ? colorScheme.secondaryContainer
+                                            : colorScheme.surfaceContainerHigh,
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
                                           color: isSelected
-                                              ? scheme.secondary
-                                              : scheme.outlineVariant,
+                                              ? colorScheme.secondary
+                                              : colorScheme.outlineVariant,
                                         ),
                                       ),
                                       padding: const EdgeInsets.symmetric(
@@ -246,8 +246,9 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                             DateFormat.E().format(day),
                                             style: TextStyle(
                                               color: isSelected
-                                                  ? scheme.onSecondaryContainer
-                                                  : scheme.onSurface,
+                                                  ? colorScheme
+                                                        .onSecondaryContainer
+                                                  : colorScheme.onSurface,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
@@ -257,9 +258,9 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                               '${day.day}',
                                               style: TextStyle(
                                                 color: isSelected
-                                                    ? scheme
+                                                    ? colorScheme
                                                           .onSecondaryContainer
-                                                    : scheme.onSurface,
+                                                    : colorScheme.onSurface,
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -268,7 +269,8 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                             Text(
                                               '${day.day}',
                                               style: TextStyle(
-                                                color: scheme.onSurfaceVariant,
+                                                color: colorScheme
+                                                    .onSurfaceVariant,
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w600,
                                               ),
@@ -280,9 +282,9 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                               height: 8,
                                               decoration: BoxDecoration(
                                                 color: isSelected
-                                                    ? scheme
+                                                    ? colorScheme
                                                           .onSecondaryContainer
-                                                    : scheme.secondary,
+                                                    : colorScheme.secondary,
                                                 shape: BoxShape.circle,
                                               ),
                                             ),
@@ -399,7 +401,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                             IconButton(
                               icon: Icon(
                                 Icons.delete_outline,
-                                color: scheme.onSurfaceVariant,
+                                color: colorScheme.onSurfaceVariant,
                                 size: 28,
                               ),
                               onPressed: () async {

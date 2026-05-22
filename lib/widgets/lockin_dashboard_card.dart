@@ -51,9 +51,9 @@ class LockinDashboardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final iconColor = scheme.onSurfaceVariant;
-    final textColor = scheme.onSurface;
+    final colorScheme = Theme.of(context).colorScheme;
+    final iconColor = colorScheme.onSurfaceVariant;
+    final textColor = colorScheme.onSurface;
     return LockinCard(
       padding: const EdgeInsets.all(UIConstants.largeSpacing),
       child: Column(

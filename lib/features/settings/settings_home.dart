@@ -93,7 +93,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
   Widget build(BuildContext context) {
     final engagementTime = ref.watch(engagementTimeProvider);
     final dynamicColorEnabled = ref.watch(dynamicColorEnabledProvider);
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Settings'), elevation: 0),
       body: SafeArea(
@@ -107,12 +107,16 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 Center(
                   child: Column(
                     children: [
-                      Icon(Icons.settings, size: 44, color: scheme.onSurface),
+                      Icon(
+                        Icons.settings,
+                        size: 44,
+                        color: colorScheme.onSurface,
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         'Settings',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: scheme.onSurface,
+                          color: colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -130,7 +134,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                   child: Text(
                     'Appearance',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: scheme.onSurface.withValues(alpha: 0.8),
+                      color: colorScheme.onSurface.withValues(alpha: 0.8),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -160,7 +164,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                   child: Text(
                     'Notifications',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: scheme.onSurface.withValues(alpha: 0.8),
+                      color: colorScheme.onSurface.withValues(alpha: 0.8),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -192,7 +196,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                   child: Text(
                     'General',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: scheme.onSurface.withValues(alpha: 0.8),
+                      color: colorScheme.onSurface.withValues(alpha: 0.8),
                       fontWeight: FontWeight.w600,
                     ),
                   ),

@@ -29,7 +29,7 @@ class GoalProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return LockinCard(
       padding: const EdgeInsets.all(UIConstants.largeSpacing),
@@ -48,14 +48,14 @@ class GoalProgressCard extends StatelessWidget {
                     sections: [
                       PieChartSectionData(
                         value: progress * 100,
-                        color: scheme.onSurface,
+                        color: colorScheme.onSurface,
                         title: '',
                         radius: 40,
                         borderSide: BorderSide.none,
                       ),
                       PieChartSectionData(
                         value: 100 - (progress * 100),
-                        color: scheme.surfaceContainerHigh,
+                        color: colorScheme.surfaceContainerHigh,
                         title: '',
                         radius: 40,
                         borderSide: BorderSide.none,

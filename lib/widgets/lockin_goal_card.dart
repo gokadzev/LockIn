@@ -47,11 +47,13 @@ class GoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final mainColor = isFinished ? scheme.onSurfaceVariant : scheme.onSurface;
+    final colorScheme = Theme.of(context).colorScheme;
+    final mainColor = isFinished
+        ? colorScheme.onSurfaceVariant
+        : colorScheme.onSurface;
     final secondaryColor = isFinished
-        ? scheme.onSurface.withValues(alpha: 0.6)
-        : scheme.onSurfaceVariant;
+        ? colorScheme.onSurface.withValues(alpha: 0.6)
+        : colorScheme.onSurfaceVariant;
 
     return LockinCard(
       child: Column(
@@ -60,8 +62,8 @@ class GoalCard extends StatelessWidget {
           LockinCardHeader(
             leading: IconBadge(
               icon: categoryToIcon(goal.category),
-              backgroundColor: scheme.secondaryContainer,
-              color: scheme.onSecondaryContainer,
+              backgroundColor: colorScheme.secondaryContainer,
+              color: colorScheme.onSecondaryContainer,
             ),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,7 +103,7 @@ class GoalCard extends StatelessWidget {
                 icon: isFinished
                     ? Icons.cancel_outlined
                     : Icons.check_circle_outline,
-                color: scheme.onSurface,
+                color: colorScheme.onSurface,
                 tooltip: isFinished ? 'Finished' : 'Mark as finished',
                 onPressed: (onFinish != null && !isFinished)
                     ? () => onFinish!(index)
@@ -111,7 +113,7 @@ class GoalCard extends StatelessWidget {
               if (onEdit != null)
                 ActionIconButton(
                   icon: Icons.edit_outlined,
-                  color: scheme.onSurface,
+                  color: colorScheme.onSurface,
                   tooltip: 'Edit',
                   onPressed: () => onEdit!(index),
                 ),
@@ -119,7 +121,7 @@ class GoalCard extends StatelessWidget {
               if (onDelete != null)
                 ActionIconButton(
                   icon: Icons.delete_outline,
-                  color: scheme.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                   tooltip: 'Delete',
                   onPressed: () => onDelete!(index),
                 ),
@@ -131,7 +133,7 @@ class GoalCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: scheme.onSurface.withValues(alpha: 0.1),
+                color: colorScheme.onSurface.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -160,17 +162,15 @@ class GoalCard extends StatelessWidget {
                       if (daysLeft > 0) {
                         leftText =
                             '$daysLeft day${daysLeft == 1 ? '' : 's'} left';
-                        textColor = Theme.of(
-                          context,
-                        ).colorScheme.onSurfaceVariant;
+                        textColor = colorScheme.onSurfaceVariant;
                       } else if (daysLeft == 0) {
                         leftText = 'Due today';
-                        textColor = Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.85);
+                        textColor = colorScheme.onSurface.withValues(
+                          alpha: 0.85,
+                        );
                       } else {
                         leftText = 'Past due';
-                        textColor = Theme.of(context).colorScheme.error;
+                        textColor = colorScheme.error;
                       }
                       return Text(
                         leftText,
@@ -195,7 +195,7 @@ class GoalCard extends StatelessWidget {
   Widget _buildMilestoneRow(BuildContext context) {
     if (goal.milestones.isEmpty) return const SizedBox.shrink();
 
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final completed = goal.milestones.where((m) => m.completed).length;
     final total = goal.milestones.length;
 
@@ -215,12 +215,16 @@ class GoalCard extends StatelessWidget {
                 margin: const EdgeInsets.only(left: 6),
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: scheme.onSurface.withValues(alpha: 0.1),
+                  color: colorScheme.onSurface.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: GestureDetector(
                   onTap: () => onMilestoneAdd!(index),
-                  child: Icon(Icons.add, size: 16, color: scheme.onSurface),
+                  child: Icon(
+                    Icons.add,
+                    size: 16,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
             if (onMilestoneRemove != null)
@@ -228,12 +232,16 @@ class GoalCard extends StatelessWidget {
                 margin: const EdgeInsets.only(left: 8),
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHighest,
+                  color: colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: GestureDetector(
                   onTap: () => onMilestoneRemove!(index),
-                  child: Icon(Icons.remove, size: 16, color: scheme.onSurface),
+                  child: Icon(
+                    Icons.remove,
+                    size: 16,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
           ],
@@ -245,8 +253,8 @@ class GoalCard extends StatelessWidget {
           child: LinearProgressIndicator(
             value: total > 0 ? completed / total : 0,
             minHeight: 4,
-            backgroundColor: scheme.onSurface.withValues(alpha: 0.08),
-            valueColor: AlwaysStoppedAnimation<Color>(scheme.primary),
+            backgroundColor: colorScheme.onSurface.withValues(alpha: 0.08),
+            valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
           ),
         ),
         const SizedBox(height: 8),
@@ -256,11 +264,11 @@ class GoalCard extends StatelessWidget {
           children: goal.milestones.map((milestone) {
             final isCompleted = milestone.completed;
             final bg = isCompleted
-                ? scheme.onSurface
-                : scheme.surfaceContainerHighest;
+                ? colorScheme.onSurface
+                : colorScheme.surfaceContainerHighest;
             final textColor = isCompleted
-                ? scheme.onPrimary
-                : scheme.onSurfaceVariant;
+                ? colorScheme.onPrimary
+                : colorScheme.onSurfaceVariant;
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
@@ -271,7 +279,7 @@ class GoalCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (isCompleted) ...[
-                    Icon(Icons.check, size: 14, color: scheme.onPrimary),
+                    Icon(Icons.check, size: 14, color: colorScheme.onPrimary),
                     const SizedBox(width: 6),
                   ],
                   Flexible(

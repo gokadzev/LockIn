@@ -33,13 +33,13 @@ class ActionIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 48,
       height: 48,
       child: IconButton(
         padding: EdgeInsets.zero,
-        icon: Icon(icon, color: color ?? scheme.onSurface, size: 28),
+        icon: Icon(icon, color: color ?? colorScheme.onSurface, size: 28),
         tooltip: tooltip,
         onPressed: onPressed,
       ),

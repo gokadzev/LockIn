@@ -44,7 +44,7 @@ class HabitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final streak = habit.streak;
     final lastDoneLocal =
         lastDone ??
@@ -71,8 +71,8 @@ class HabitCard extends StatelessWidget {
           LockinCardHeader(
             leading: IconBadge(
               icon: categoryToIcon(habit.category),
-              backgroundColor: scheme.secondaryContainer,
-              color: scheme.onSecondaryContainer,
+              backgroundColor: colorScheme.secondaryContainer,
+              color: colorScheme.onSecondaryContainer,
             ),
             title: Text(
               habit.title,
@@ -85,22 +85,22 @@ class HabitCard extends StatelessWidget {
               ActionIconButton(
                 icon: Icons.check_circle_outline,
                 color: isMarkedDoneToday
-                    ? scheme.onSurface.withValues(alpha: 0.38)
-                    : scheme.onSurface,
+                    ? colorScheme.onSurface.withValues(alpha: 0.38)
+                    : colorScheme.onSurface,
                 tooltip: 'Mark as done',
                 onPressed: isMarkedDoneToday ? null : onMarkDone,
               ),
               const SizedBox(width: 8),
               ActionIconButton(
                 icon: Icons.edit_outlined,
-                color: scheme.onSurface,
+                color: colorScheme.onSurface,
                 tooltip: 'Edit',
                 onPressed: onEdit,
               ),
               const SizedBox(width: 4),
               ActionIconButton(
                 icon: Icons.delete_outline,
-                color: scheme.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
                 tooltip: 'Delete',
                 onPressed: onDelete,
               ),
@@ -116,7 +116,7 @@ class HabitCard extends StatelessWidget {
                   Text(
                     'Current Streak',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -124,7 +124,7 @@ class HabitCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.local_fire_department,
-                        color: scheme.primary,
+                        color: colorScheme.primary,
                         size: 20,
                       ),
                       const SizedBox(width: 6),
@@ -132,7 +132,7 @@ class HabitCard extends StatelessWidget {
                         '$streak day${streak != 1 ? 's' : ''}',
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
-                              color: scheme.primary,
+                              color: colorScheme.primary,
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -147,14 +147,14 @@ class HabitCard extends StatelessWidget {
                     Text(
                       'Last Completed',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${lastDoneLocal.day}/${lastDoneLocal.month}/${lastDoneLocal.year}',
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: scheme.onSurface,
+                        color: colorScheme.onSurface,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -163,17 +163,17 @@ class HabitCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Divider(color: scheme.outlineVariant),
+          Divider(color: colorScheme.outlineVariant),
           const SizedBox(height: 16),
           Row(
             children: [
-              Icon(Icons.repeat, color: scheme.onSurfaceVariant, size: 18),
+              Icon(Icons.repeat, color: colorScheme.onSurfaceVariant, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Frequency: ${habit.frequency.capitalize()}${habit.frequency == 'custom' && habit.cue != null ? ' (${_weekdaysString(habit.cue!)})' : ''}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
+                    color: colorScheme.onSurfaceVariant,
                     height: 1.4,
                   ),
                   maxLines: 2,

@@ -36,33 +36,36 @@ class AverageMoodCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final journals = ref.watch(journalsListProvider);
     final now = DateTime.now();
     final weekAgo = DateTime(now.year, now.month, now.day - 6);
-    final weekAgoBoundary = DateTime(weekAgo.year, weekAgo.month, weekAgo.day - 1);
+    final weekAgoBoundary = DateTime(
+      weekAgo.year,
+      weekAgo.month,
+      weekAgo.day - 1,
+    );
     final nowBoundary = DateTime(now.year, now.month, now.day + 1);
     final recent = journals
         .where(
           (j) =>
-              j.date.isAfter(weekAgoBoundary) &&
-              j.date.isBefore(nowBoundary),
+              j.date.isAfter(weekAgoBoundary) && j.date.isBefore(nowBoundary),
         )
         .toList();
     final moodAvg = recent.isNotEmpty
         ? (recent.map((j) => j.mood).reduce((a, b) => a + b) / recent.length)
         : null;
-    var color = scheme.onSecondaryContainer;
+    var color = colorScheme.onSecondaryContainer;
     if (moodAvg != null) {
       if (moodAvg >= 8) {
-        color = scheme.onSecondaryContainer;
+        color = colorScheme.onSecondaryContainer;
       } else if (moodAvg >= 6) {
-        color = scheme.onSecondaryContainer.withValues(alpha: 0.85);
+        color = colorScheme.onSecondaryContainer.withValues(alpha: 0.85);
       } else if (moodAvg >= 4) {
-        color = scheme.onSecondaryContainer.withValues(alpha: 0.7);
+        color = colorScheme.onSecondaryContainer.withValues(alpha: 0.7);
       } else {
-        color = scheme.onSecondaryContainer.withValues(alpha: 0.6);
+        color = colorScheme.onSecondaryContainer.withValues(alpha: 0.6);
       }
     }
 
@@ -100,7 +103,7 @@ class AverageMoodCard extends ConsumerWidget {
                     Text(
                       'Last 7 days',
                       style: textTheme.titleMedium?.copyWith(
-                        color: scheme.onSurfaceVariant,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -112,7 +115,7 @@ class AverageMoodCard extends ConsumerWidget {
                       Text(
                         '${DateFormat.yMMMd().format(weekAgo)} - ${DateFormat.yMMMd().format(now)}',
                         style: textTheme.bodyMedium?.copyWith(
-                          color: scheme.onSurfaceVariant,
+                          color: colorScheme.onSurfaceVariant,
                           fontSize: 13,
                         ),
                       ),
@@ -120,7 +123,7 @@ class AverageMoodCard extends ConsumerWidget {
                       Text(
                         'No journal entries this week.',
                         style: textTheme.bodyMedium?.copyWith(
-                          color: scheme.onSurfaceVariant,
+                          color: colorScheme.onSurfaceVariant,
                           fontSize: 13,
                         ),
                       ),

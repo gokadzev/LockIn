@@ -40,10 +40,10 @@ class LockinSectionTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final indicator = indicatorColor ?? scheme.primary;
-    final label = labelColor ?? scheme.onSurface;
-    final unselected = unselectedLabelColor ?? scheme.onSurfaceVariant;
+    final colorScheme = Theme.of(context).colorScheme;
+    final indicator = indicatorColor ?? colorScheme.primary;
+    final label = labelColor ?? colorScheme.onSurface;
+    final unselected = unselectedLabelColor ?? colorScheme.onSurfaceVariant;
     assert(tabTitles.length == tabCounts.length);
     assert(tabTitles.length == tabViews.length);
     return DefaultTabController(

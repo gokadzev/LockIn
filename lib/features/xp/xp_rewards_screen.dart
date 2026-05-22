@@ -26,7 +26,7 @@ class XPRewardsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final xpProfile = ref.watch(xpNotifierProvider);
     final rewards = XPData.rewards;
     return ListView.separated(
@@ -40,13 +40,15 @@ class XPRewardsScreen extends ConsumerWidget {
           (r) => r.id == reward.id,
         );
         return LockinCard(
-          color: scheme.onSurface.withValues(alpha: 0.12),
+          color: colorScheme.onSurface.withValues(alpha: 0.12),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
           child: Row(
             children: [
               Icon(
                 Icons.emoji_events,
-                color: unlocked ? scheme.primary : scheme.onSurfaceVariant,
+                color: unlocked
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
                 size: 32,
               ),
               const SizedBox(width: 16),

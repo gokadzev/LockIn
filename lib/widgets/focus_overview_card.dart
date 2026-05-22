@@ -38,7 +38,7 @@ class _FocusCategoryStat {
 
 List<_FocusCategoryStat> _buildFocusCategoryStats(
   List<Session> sessions,
-  ColorScheme scheme,
+  ColorScheme colorScheme,
 ) {
   if (sessions.isEmpty) return [];
 
@@ -60,12 +60,12 @@ List<_FocusCategoryStat> _buildFocusCategoryStats(
     ..sort((a, b) => b.value.compareTo(a.value));
 
   final palette = <Color>[
-    scheme.primary,
-    scheme.secondary,
-    scheme.tertiary,
-    scheme.error,
-    scheme.primaryContainer,
-    scheme.secondaryContainer,
+    colorScheme.primary,
+    colorScheme.secondary,
+    colorScheme.tertiary,
+    colorScheme.error,
+    colorScheme.primaryContainer,
+    colorScheme.secondaryContainer,
   ];
 
   final stats = <_FocusCategoryStat>[];
@@ -91,9 +91,9 @@ class FocusOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final stats = _buildFocusCategoryStats(sessions, scheme);
+    final stats = _buildFocusCategoryStats(sessions, colorScheme);
 
     if (stats.isEmpty) {
       return LockinCard(
@@ -106,7 +106,7 @@ class FocusOverviewCard extends StatelessWidget {
             Container(
               height: 150,
               decoration: BoxDecoration(
-                color: scheme.surfaceContainerHigh.withValues(alpha: 0.3),
+                color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
@@ -116,20 +116,24 @@ class FocusOverviewCard extends StatelessWidget {
                     Icon(
                       Icons.donut_large,
                       size: 48,
-                      color: scheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'No focus sessions',
                       style: textTheme.bodyMedium?.copyWith(
-                        color: scheme.onSurfaceVariant,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Start a focus session to track your productivity',
                       style: textTheme.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                     ),
                   ],
@@ -153,14 +157,14 @@ class FocusOverviewCard extends StatelessWidget {
             title: 'Focus Overview',
             subtitle: '$totalSessions sessions',
             icon: Icons.donut_large,
-            containerColor: scheme.secondaryContainer,
-            iconColor: scheme.onSecondaryContainer,
+            containerColor: colorScheme.secondaryContainer,
+            iconColor: colorScheme.onSecondaryContainer,
           ),
           const SizedBox(height: 12),
           Text(
             'Most focused: ${top.name} — ${top.percent.toStringAsFixed(0)}% (${top.count})',
             style: textTheme.bodyMedium?.copyWith(
-              color: scheme.onSurface.withValues(alpha: 0.85),
+              color: colorScheme.onSurface.withValues(alpha: 0.85),
             ),
           ),
           const SizedBox(height: 16),
@@ -213,7 +217,7 @@ class FocusOverviewCard extends StatelessWidget {
                       Text(
                         '${stat.count}',
                         style: textTheme.bodySmall?.copyWith(
-                          color: scheme.onSurface.withValues(alpha: 0.7),
+                          color: colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -224,7 +228,9 @@ class FocusOverviewCard extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: stat.percent / 100,
                       minHeight: 6,
-                      backgroundColor: scheme.onSurface.withValues(alpha: 0.08),
+                      backgroundColor: colorScheme.onSurface.withValues(
+                        alpha: 0.08,
+                      ),
                       valueColor: AlwaysStoppedAnimation<Color>(stat.color),
                     ),
                   ),

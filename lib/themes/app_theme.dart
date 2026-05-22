@@ -18,13 +18,13 @@
 import 'package:flutter/material.dart';
 import 'package:lockin/themes/text_theme.dart';
 
-final scheme = ColorScheme.fromSeed(
+final colorScheme = ColorScheme.fromSeed(
   seedColor: Colors.brown,
   brightness: Brightness.dark,
 );
 
 // A single, theme-driven color for subtle box/chip backgrounds used across cards.
-final boxDecorationColor = scheme.onSurface.withValues(alpha: 0.1);
+final boxDecorationColor = colorScheme.onSurface.withValues(alpha: 0.1);
 
 ThemeData getAppTheme({
   ColorScheme? lightColorScheme,
@@ -36,9 +36,9 @@ ThemeData getAppTheme({
           seedColor: Color(darkColorScheme.primary.toARGB32()),
           brightness: Brightness.dark,
         )
-      : scheme;
+      : colorScheme;
 
-  // Adapt the static appTextTheme to use semantic colors from the generated scheme.
+  // Adapt the static appTextTheme to use semantic colors from the generated colorScheme.
   final effectiveTextTheme = appTextTheme.copyWith(
     headlineSmall: appTextTheme.headlineSmall?.copyWith(
       color: effectiveScheme.onSurface,

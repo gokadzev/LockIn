@@ -52,7 +52,7 @@ class LockinTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final categories = ref.watch(categoriesProvider);
     return LockinCard(
@@ -65,16 +65,16 @@ class LockinTaskCard extends StatelessWidget {
                     icon: task.tags.length > 1
                         ? Icons.view_module_outlined
                         : categoryToIcon(task.tags.first),
-                    backgroundColor: scheme.secondaryContainer,
-                    color: scheme.onSecondaryContainer,
+                    backgroundColor: colorScheme.secondaryContainer,
+                    color: colorScheme.onSecondaryContainer,
                   )
                 : null,
             title: Text(
               task.title,
               style: textTheme.titleMedium?.copyWith(
-                color: scheme.onSurface,
+                color: colorScheme.onSurface,
                 height: 1.15,
-                decorationColor: scheme.onSurface,
+                decorationColor: colorScheme.onSurface,
                 letterSpacing: 0.1,
               ),
             ),
@@ -83,7 +83,7 @@ class LockinTaskCard extends StatelessWidget {
                 icon: task.completed
                     ? Icons.cancel_outlined
                     : Icons.check_circle_outline,
-                color: scheme.onSurface,
+                color: colorScheme.onSurface,
                 tooltip: task.completed ? 'Completed' : 'Mark as done',
                 onPressed: () {
                   final isCompleted = !task.completed;
@@ -107,7 +107,7 @@ class LockinTaskCard extends StatelessWidget {
               const SizedBox(width: 8),
               ActionIconButton(
                 icon: Icons.edit_outlined,
-                color: scheme.onSurface,
+                color: colorScheme.onSurface,
                 onPressed: () async {
                   final titleController = TextEditingController(
                     text: task.title,
@@ -223,7 +223,7 @@ class LockinTaskCard extends StatelessWidget {
               const SizedBox(width: 4),
               ActionIconButton(
                 icon: Icons.delete_outline,
-                color: scheme.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
                 onPressed: onDelete,
               ),
             ],
@@ -235,8 +235,8 @@ class LockinTaskCard extends StatelessWidget {
               softWrap: true,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: finished
-                    ? scheme.onSurface.withValues(alpha: 0.38)
-                    : scheme.onSurfaceVariant,
+                    ? colorScheme.onSurface.withValues(alpha: 0.38)
+                    : colorScheme.onSurfaceVariant,
                 height: 1.4,
                 fontWeight: FontWeight.w400,
                 letterSpacing: 0.05,

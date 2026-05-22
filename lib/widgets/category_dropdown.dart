@@ -34,14 +34,14 @@ class CategoryDropdown extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final categories = ref.watch(categoriesProvider);
 
     Future<void> openCategorySheet() async {
       final result = await showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
-        backgroundColor: scheme.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -64,7 +64,7 @@ class CategoryDropdown extends ConsumerWidget {
                       width: 48,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: scheme.outlineVariant,
+                        color: colorScheme.outlineVariant,
                         borderRadius: BorderRadius.circular(3),
                       ),
                     ),
@@ -78,14 +78,14 @@ class CategoryDropdown extends ConsumerWidget {
                           child: Text(
                             hint ?? 'Select category',
                             style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(color: scheme.onSurface),
+                                ?.copyWith(color: colorScheme.onSurface),
                           ),
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(context),
                           icon: Icon(
                             Icons.close,
-                            color: scheme.onSurfaceVariant,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           tooltip: 'Close',
                           constraints: const BoxConstraints(
@@ -103,7 +103,9 @@ class CategoryDropdown extends ConsumerWidget {
                             child: Text(
                               'No categories',
                               style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: scheme.onSurfaceVariant),
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                             ),
                           )
                         : ListView.builder(
@@ -118,7 +120,7 @@ class CategoryDropdown extends ConsumerWidget {
                               final isSelected = c == value;
                               return Material(
                                 color: isSelected
-                                    ? scheme.primaryContainer.withValues(
+                                    ? colorScheme.primaryContainer.withValues(
                                         alpha: 0.5,
                                       )
                                     : Colors.transparent,
@@ -143,7 +145,8 @@ class CategoryDropdown extends ConsumerWidget {
                                                   .textTheme
                                                   .bodyLarge
                                                   ?.copyWith(
-                                                    color: scheme.onSurface,
+                                                    color:
+                                                        colorScheme.onSurface,
                                                     fontWeight: isSelected
                                                         ? FontWeight.w600
                                                         : FontWeight.w400,
@@ -153,7 +156,7 @@ class CategoryDropdown extends ConsumerWidget {
                                           if (isSelected)
                                             Icon(
                                               Icons.check,
-                                              color: scheme.primary,
+                                              color: colorScheme.primary,
                                               size: 24,
                                             ),
                                         ],
@@ -178,13 +181,13 @@ class CategoryDropdown extends ConsumerWidget {
     return GestureDetector(
       onTap: openCategorySheet,
       child: Material(
-        color: scheme.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: scheme.outline),
+            border: Border.all(color: colorScheme.outline),
             borderRadius: BorderRadius.circular(12),
-            color: scheme.surfaceContainerHighest.withValues(alpha: 0.32),
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.32),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
           child: Row(
@@ -197,7 +200,7 @@ class CategoryDropdown extends ConsumerWidget {
                     Text(
                       hint ?? 'Category',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -205,8 +208,8 @@ class CategoryDropdown extends ConsumerWidget {
                       value ?? 'Select a category',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: value != null
-                            ? scheme.onSurface
-                            : scheme.onSurfaceVariant,
+                            ? colorScheme.onSurface
+                            : colorScheme.onSurfaceVariant,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -215,7 +218,11 @@ class CategoryDropdown extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Icon(Icons.expand_more, color: scheme.onSurfaceVariant, size: 24),
+              Icon(
+                Icons.expand_more,
+                color: colorScheme.onSurfaceVariant,
+                size: 24,
+              ),
             ],
           ),
         ),

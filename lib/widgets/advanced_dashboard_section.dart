@@ -30,7 +30,7 @@ class AdvancedDashboardSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final totalFocusMinutes = stats.focusMinutesByDay.fold<int>(
       0,
@@ -43,7 +43,11 @@ class AdvancedDashboardSection extends StatelessWidget {
     final peakIndex = _peakIndex(stats.focusMinutesByDay);
     final peakDate = peakIndex == null
         ? null
-        : DateTime(stats.windowStart.year, stats.windowStart.month, stats.windowStart.day + peakIndex);
+        : DateTime(
+            stats.windowStart.year,
+            stats.windowStart.month,
+            stats.windowStart.day + peakIndex,
+          );
     final peakValue = peakIndex == null
         ? 0
         : stats.focusMinutesByDay[peakIndex];
@@ -67,8 +71,8 @@ class AdvancedDashboardSection extends StatelessWidget {
                     title: 'Advanced Insights',
                     subtitle: 'Last 30 days',
                     icon: Icons.insights_rounded,
-                    containerColor: scheme.primaryContainer,
-                    iconColor: scheme.onPrimaryContainer,
+                    containerColor: colorScheme.primaryContainer,
+                    iconColor: colorScheme.onPrimaryContainer,
                   ),
                   const SizedBox(height: UIConstants.largeSpacing),
                   Text(
@@ -92,19 +96,19 @@ class AdvancedDashboardSection extends StatelessWidget {
                       _StatPill(
                         label: 'Total',
                         value: '${totalFocusMinutes}m',
-                        color: scheme.primary,
+                        color: colorScheme.primary,
                       ),
                       _StatPill(
                         label: 'Avg/day',
                         value: '${avgPerDay.toStringAsFixed(1)}m',
-                        color: scheme.secondary,
+                        color: colorScheme.secondary,
                       ),
                       _StatPill(
                         label: 'Peak',
                         value: peakDate == null
                             ? 'No data'
                             : '${DateFormat.MMMd().format(peakDate)} (${peakValue}m)',
-                        color: scheme.tertiary,
+                        color: colorScheme.tertiary,
                       ),
                     ],
                   ),
@@ -164,7 +168,7 @@ class _FocusTrendChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final maxValue = minutesByDay.isEmpty
         ? 10
         : minutesByDay.reduce((a, b) => a > b ? a : b).toDouble();
@@ -186,13 +190,13 @@ class _FocusTrendChart extends StatelessWidget {
           LineChartBarData(
             spots: _buildSpots(),
             isCurved: true,
-            color: scheme.primary,
+            color: colorScheme.primary,
             barWidth: 3,
             isStrokeCapRound: true,
             dotData: const FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: scheme.primary.withValues(alpha: 0.18),
+              color: colorScheme.primary.withValues(alpha: 0.18),
             ),
           ),
         ],
@@ -216,7 +220,7 @@ class _SessionEfficiencyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final completionPercent = (stats.sessionCompletionRate * 100)
         .clamp(0.0, 100.0)
@@ -238,7 +242,9 @@ class _SessionEfficiencyCard extends StatelessWidget {
         ),
         Text(
           'Average session length',
-          style: textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          style: textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 16),
         Text(
@@ -251,8 +257,8 @@ class _SessionEfficiencyCard extends StatelessWidget {
           child: LinearProgressIndicator(
             value: stats.sessionCompletionRate.clamp(0.0, 1.0),
             minHeight: 8,
-            backgroundColor: scheme.surfaceContainerHighest,
-            valueColor: AlwaysStoppedAnimation<Color>(scheme.primary),
+            backgroundColor: colorScheme.surfaceContainerHighest,
+            valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
           ),
         ),
       ],
@@ -267,7 +273,7 @@ class _HabitConsistencyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final consistencyPercent = (stats.habitConsistencyRate * 100)
         .clamp(0.0, 100.0)
@@ -289,7 +295,9 @@ class _HabitConsistencyCard extends StatelessWidget {
         ),
         Text(
           'Completions over 30 days',
-          style: textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          style: textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 16),
         ClipRRect(
@@ -297,8 +305,8 @@ class _HabitConsistencyCard extends StatelessWidget {
           child: LinearProgressIndicator(
             value: stats.habitConsistencyRate.clamp(0.0, 1.0),
             minHeight: 8,
-            backgroundColor: scheme.surfaceContainerHighest,
-            valueColor: AlwaysStoppedAnimation<Color>(scheme.secondary),
+            backgroundColor: colorScheme.surfaceContainerHighest,
+            valueColor: AlwaysStoppedAnimation<Color>(colorScheme.secondary),
           ),
         ),
       ],
@@ -313,7 +321,7 @@ class _BestTimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,7 +337,7 @@ class _BestTimeCard extends StatelessWidget {
                 subtitle: stats.bestDayCount == 0
                     ? 'No activity'
                     : '${stats.bestDayCount} activities',
-                color: scheme.tertiary,
+                color: colorScheme.tertiary,
               ),
             ),
             const SizedBox(width: 12),
@@ -340,7 +348,7 @@ class _BestTimeCard extends StatelessWidget {
                 subtitle: stats.bestHourCount == 0
                     ? 'No sessions'
                     : '${stats.bestHourCount} sessions/tasks',
-                color: scheme.primary,
+                color: colorScheme.primary,
               ),
             ),
           ],
@@ -365,15 +373,17 @@ class _HighlightTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.4)),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,7 +391,7 @@ class _HighlightTile extends StatelessWidget {
           Text(
             label,
             style: textTheme.labelSmall?.copyWith(
-              color: scheme.onSurfaceVariant,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 6),
@@ -396,7 +406,7 @@ class _HighlightTile extends StatelessWidget {
           Text(
             subtitle,
             style: textTheme.bodySmall?.copyWith(
-              color: scheme.onSurfaceVariant,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -418,7 +428,7 @@ class _StatPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -429,7 +439,7 @@ class _StatPill extends StatelessWidget {
       child: Text(
         '$label: $value',
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: scheme.onSurface,
+          color: colorScheme.onSurface,
           fontWeight: FontWeight.w600,
         ),
       ),

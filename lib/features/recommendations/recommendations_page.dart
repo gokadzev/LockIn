@@ -54,6 +54,8 @@ class RecommendationsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final habitNotifier = ref.read(habitsListProvider.notifier);
     final categories = ref.watch(habitCategoriesProvider);
     final categoriesNotifier = ref.read(habitCategoriesProvider.notifier);
@@ -120,14 +122,12 @@ class RecommendationsPage extends ConsumerWidget {
               Tab(text: 'Tasks', icon: Icon(Icons.check_circle_outline)),
               Tab(text: 'Goals', icon: Icon(Icons.flag)),
             ],
-            indicatorColor: Theme.of(context).colorScheme.primary,
+            indicatorColor: colorScheme.primary,
             indicatorSize: TabBarIndicatorSize.label,
             // Make the active label light (onSurface) so it contrasts with the dark background
-            labelColor: Theme.of(context).colorScheme.onSurface,
+            labelColor: colorScheme.onSurface,
             // Use a muted grey for unselected labels
-            unselectedLabelColor: Theme.of(
-              context,
-            ).colorScheme.onSurfaceVariant,
+            unselectedLabelColor: colorScheme.onSurfaceVariant,
           ),
         ),
         body: Padding(
@@ -151,37 +151,29 @@ class RecommendationsPage extends ConsumerWidget {
                       child: ChoiceChip(
                         label: Text(cat),
                         selected: selected,
-                        selectedColor: Theme.of(context).colorScheme.primary,
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerHighest,
+                        selectedColor: colorScheme.primary,
+                        backgroundColor: colorScheme.surfaceContainerHighest,
                         avatar: CircleAvatar(
                           radius: 10,
                           backgroundColor: selected
-                              ? Theme.of(
-                                  context,
-                                ).colorScheme.surfaceContainerHighest
+                              ? colorScheme.surfaceContainerHighest
                               : Colors.transparent,
                           child: selected
                               ? Icon(
                                   Icons.check,
                                   size: 14,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimary,
+                                  color: colorScheme.onPrimary,
                                 )
                               : Icon(
                                   categoryToIcon(cat),
                                   size: 14,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                         ),
                         labelStyle: Theme.of(context).textTheme.bodySmall
                             ?.copyWith(
                               color: selected
-                                  ? Theme.of(context).colorScheme.onPrimary
+                                  ? colorScheme.onPrimary
                                   : Theme.of(
                                       context,
                                     ).textTheme.bodySmall?.color,

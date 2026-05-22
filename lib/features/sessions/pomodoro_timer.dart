@@ -30,7 +30,7 @@ class PomodoroTimer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final pomodoro = ref.watch(pomodoroProvider);
     final notifier = ref.read(pomodoroProvider.notifier);
@@ -58,14 +58,16 @@ class PomodoroTimer extends ConsumerWidget {
                   phaseIsWork
                       ? Icons.bolt_rounded
                       : Icons.free_breakfast_rounded,
-                  color: phaseIsWork ? scheme.primary : scheme.tertiary,
+                  color: phaseIsWork
+                      ? colorScheme.primary
+                      : colorScheme.tertiary,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   phaseIsWork ? 'Focus Time' : 'Break',
                   style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: scheme.onSurface,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -76,7 +78,7 @@ class PomodoroTimer extends ConsumerWidget {
                   ? (phaseIsWork ? 'Deep work in progress' : 'Recovery time')
                   : 'Ready to start',
               style: textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 10),
@@ -85,7 +87,7 @@ class PomodoroTimer extends ConsumerWidget {
               child: Text(
                 'Focus category',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: scheme.onSurface.withValues(alpha: 0.8),
+                  color: colorScheme.onSurface.withValues(alpha: 0.8),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -99,31 +101,31 @@ class PomodoroTimer extends ConsumerWidget {
                   enabled: notifier.sessionStart == null,
                   leadingIcon: Icon(
                     categoryToIcon(selectedCategory ?? 'General'),
-                    color: scheme.primary,
+                    color: colorScheme.primary,
                   ),
                   trailingIcon: Icon(
                     Icons.expand_more_rounded,
                     color: notifier.sessionStart == null
-                        ? scheme.onSurfaceVariant
-                        : scheme.onSurface.withValues(alpha: 0.4),
+                        ? colorScheme.onSurfaceVariant
+                        : colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
                   textStyle: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                   inputDecorationTheme: InputDecorationTheme(
                     filled: true,
-                    fillColor: scheme.surfaceContainerHigh,
+                    fillColor: colorScheme.surfaceContainerHigh,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 10,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: scheme.outlineVariant),
+                      borderSide: BorderSide(color: colorScheme.outlineVariant),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: scheme.outlineVariant),
+                      borderSide: BorderSide(color: colorScheme.outlineVariant),
                     ),
                   ),
                   dropdownMenuEntries: categoryOptions
@@ -151,7 +153,7 @@ class PomodoroTimer extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
-                color: scheme.surfaceContainerHigh,
+                color: colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -159,7 +161,7 @@ class PomodoroTimer extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: scheme.onSurface,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ),

@@ -25,7 +25,7 @@ class CategoryManagerDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final categories = ref.watch(habitCategoriesProvider);
     final box = ref.watch(habitCategoriesBoxProvider);
     final notifier = ref.read(habitCategoriesProvider.notifier);
@@ -65,7 +65,7 @@ class CategoryManagerDialog extends ConsumerWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete, color: scheme.onSurfaceVariant),
+                  icon: Icon(Icons.delete, color: colorScheme.onSurfaceVariant),
                   onPressed: () {
                     if (key != null) {
                       notifier.deleteCategoryByKey(key);

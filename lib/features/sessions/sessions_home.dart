@@ -32,7 +32,7 @@ class SessionsHome extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final sessionsRaw = ref.watch(sessionsListProvider);
     final sessions = sessionsRaw.toList()
@@ -52,21 +52,21 @@ class SessionsHome extends ConsumerWidget {
               'Focus Sessions',
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: scheme.onSurface,
+                color: colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               'Latest sessions first',
               style: textTheme.bodySmall?.copyWith(
-                color: scheme.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 12),
             ...sessions.isEmpty
                 ? [
                     LockinCard(
-                      color: scheme.surfaceContainerHigh,
+                      color: colorScheme.surfaceContainerHigh,
                       child: Padding(
                         padding: const EdgeInsets.all(24),
                         child: Column(
@@ -74,13 +74,13 @@ class SessionsHome extends ConsumerWidget {
                             Icon(
                               Icons.timer_outlined,
                               size: 36,
-                              color: scheme.primary,
+                              color: colorScheme.primary,
                             ),
                             const SizedBox(height: 10),
                             Text(
                               'No sessions yet',
                               style: textTheme.titleMedium?.copyWith(
-                                color: scheme.onSurface,
+                                color: colorScheme.onSurface,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -88,7 +88,7 @@ class SessionsHome extends ConsumerWidget {
                             Text(
                               'Start a Pomodoro to build your focus streak.',
                               style: textTheme.bodyMedium?.copyWith(
-                                color: scheme.onSurfaceVariant,
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -119,14 +119,14 @@ class SessionsHome extends ConsumerWidget {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
-                                      color: scheme.onSurface,
+                                      color: colorScheme.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     'Duration: ${session.duration} min',
                                     style: TextStyle(
-                                      color: scheme.onSurfaceVariant,
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   const SizedBox(height: 8),

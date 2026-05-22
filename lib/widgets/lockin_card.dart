@@ -35,8 +35,8 @@ class LockinCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final bg = color ?? scheme.surfaceContainerHighest;
+    final colorScheme = Theme.of(context).colorScheme;
+    final bg = color ?? colorScheme.surfaceContainerHighest;
     return Container(
       margin: margin,
       decoration: BoxDecoration(

@@ -25,7 +25,7 @@ class ProductivityInsightsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final stats = ref.watch(productivityStatsProvider);
     final entries = <InsightEntry>[
       InsightEntry(
@@ -61,10 +61,10 @@ class ProductivityInsightsScreen extends ConsumerWidget {
         ),
       ),
       InsightEntry(
-        leading: Icon(Icons.lightbulb, color: scheme.onSurface),
+        leading: Icon(Icons.lightbulb, color: colorScheme.onSurface),
         title: const Text('Personalized Nudge'),
         subtitle: Text(stats.nudge),
-        backgroundColor: scheme.surfaceContainerHighest,
+        backgroundColor: colorScheme.surfaceContainerHighest,
       ),
     ];
 

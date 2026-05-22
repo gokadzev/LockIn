@@ -18,54 +18,66 @@
 import 'package:flutter/material.dart';
 
 class LockinAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const LockinAppBar({required this.title, this.actions, super.key});
+  const LockinAppBar({
+    required this.title,
+    this.actions,
+    this.leading,
+    this.bottom,
+    this.centerTitle = false,
+    this.elevation,
+    this.backgroundColor,
+    super.key,
+  });
+
   final String title;
   final List<Widget>? actions;
+  final Widget? leading;
+  final PreferredSizeWidget? bottom;
+  final bool centerTitle;
+  final double? elevation;
+  final Color? backgroundColor;
+
+  static const List<Widget> _defaultActions = [_SettingsAction()];
 
   @override
   Widget build(BuildContext context) {
-    final defaultActions = [
-      IconButton.filledTonal(
-        icon: const Icon(Icons.settings),
-        onPressed: () => Navigator.of(context).pushNamed('/settings'),
+    final actionsList = actions ?? _defaultActions;
+
+    return AppBar(
+      title: Text(
+        title,
+        style: Theme.of(
+          context,
+        ).textTheme.headlineSmall?.copyWith(letterSpacing: 1.1),
       ),
-    ];
-    return SafeArea(
-      bottom: false,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineSmall?.copyWith(letterSpacing: 1.1),
-                    ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: actions ?? defaultActions,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Subtle divider
-          Container(height: 1, color: Colors.white.withValues(alpha: 0.08)),
-        ],
-      ),
+      actionsPadding: const EdgeInsets.symmetric(horizontal: 16),
+      centerTitle: centerTitle,
+      leading: leading,
+      actions: actionsList,
+      bottom: bottom,
+      elevation: elevation,
+      toolbarHeight: 64,
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(64);
+  Size get preferredSize {
+    var height = 64.0;
+    if (bottom != null) {
+      height += bottom!.preferredSize.height;
+    }
+    return Size.fromHeight(height);
+  }
+}
+
+class _SettingsAction extends StatelessWidget {
+  const _SettingsAction();
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filledTonal(
+      icon: const Icon(Icons.settings),
+      onPressed: () => Navigator.of(context).pushNamed('/settings'),
+    );
+  }
 }

@@ -18,6 +18,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
+import 'package:lockin/widgets/lockin_app_bar.dart';
 
 class XPProgressionScreen extends ConsumerWidget {
   const XPProgressionScreen({super.key});
@@ -41,7 +42,7 @@ class XPProgressionScreen extends ConsumerWidget {
         .where((w) => level >= (w['level'] as int))
         .toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('Progression Coaching')),
+      appBar: const LockinAppBar(title: 'Progression Coaching'),
       body: ListView.builder(
         itemCount: unlockedWisdoms.length,
         itemBuilder: (context, index) {

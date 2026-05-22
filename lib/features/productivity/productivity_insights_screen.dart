@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/features/productivity/productivity_provider.dart';
 import 'package:lockin/widgets/insight_tile.dart';
+import 'package:lockin/widgets/lockin_app_bar.dart';
 
 class ProductivityInsightsScreen extends ConsumerWidget {
   const ProductivityInsightsScreen({super.key});
@@ -69,7 +70,7 @@ class ProductivityInsightsScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Productivity Insights')),
+      appBar: const LockinAppBar(title: 'Productivity Insights'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: entries

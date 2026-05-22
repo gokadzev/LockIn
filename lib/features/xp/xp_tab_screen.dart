@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/features/xp/xp_bar.dart';
 import 'package:lockin/features/xp/xp_rewards_screen.dart';
+import 'package:lockin/widgets/lockin_app_bar.dart';
 
 class XPTabScreen extends ConsumerWidget {
   const XPTabScreen({super.key});
@@ -27,7 +28,7 @@ class XPTabScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('XP Dashboard')),
+      appBar: const LockinAppBar(title: 'XP Dashboard'),
       body: SingleChildScrollView(
         padding: AppConstants.bodyPadding,
         child: Column(

@@ -31,6 +31,7 @@ import 'package:lockin/features/settings/backup_restore_util.dart';
 import 'package:lockin/features/settings/dynamic_color_provider.dart';
 import 'package:lockin/features/settings/engagement_time_provider.dart';
 import 'package:lockin/features/tasks/task_provider.dart';
+import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/settings_item.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -95,7 +96,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
     final dynamicColorEnabled = ref.watch(dynamicColorEnabledProvider);
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings'), elevation: 0),
+      appBar: const LockinAppBar(title: 'Settings', actions: []),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

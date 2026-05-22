@@ -30,6 +30,7 @@ import 'package:lockin/features/habits/habit_category_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
 import 'package:lockin/features/settings/engagement_time_provider.dart';
 import 'package:lockin/features/tasks/task_provider.dart';
+import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/recommendation_card.dart';
 
 // Selected category for filtering recommendations. null == All
@@ -114,8 +115,9 @@ class RecommendationsPage extends ConsumerWidget {
       length: 3,
       initialIndex: initialTabIndex,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Recommendations'),
+        appBar: LockinAppBar(
+          title: 'Recommendations',
+          actions: [],
           bottom: TabBar(
             tabs: const [
               Tab(text: 'Habits', icon: Icon(Icons.repeat)),
@@ -124,9 +126,7 @@ class RecommendationsPage extends ConsumerWidget {
             ],
             indicatorColor: colorScheme.primary,
             indicatorSize: TabBarIndicatorSize.label,
-            // Make the active label light (onSurface) so it contrasts with the dark background
             labelColor: colorScheme.onSurface,
-            // Use a muted grey for unselected labels
             unselectedLabelColor: colorScheme.onSurfaceVariant,
           ),
         ),

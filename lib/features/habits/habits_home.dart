@@ -161,6 +161,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                       lastDone: lastDone,
                       doneToday: doneToday,
                       onMarkDone: () {
+                        final prevHabit = habit.copy();
                         final today = DateTime.now();
                         bool isToday(DateTime d) =>
                             d.year == today.year &&
@@ -190,11 +191,63 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                             ref
                                 .read(xpNotifierProvider.notifier)
                                 .addXP(xpChange);
-                            LockinSnackBar.showSimple(
+                            final message = xpChange > 0
+                                ? 'You earned $xpChange XP!'
+                                : '${-xpChange} XP removed.';
+                            LockinSnackBar.showUndo(
                               context: context,
-                              message: xpChange > 0
-                                  ? 'You earned $xpChange XP!'
-                                  : '${-xpChange} XP removed.',
+                              message: message,
+                              onUndo: () {
+                                try {
+                                  notifier.updateHabitByKey(
+                                    habitKey,
+                                    prevHabit,
+                                    (xpRevert) {
+                                      ref
+                                          .read(xpNotifierProvider.notifier)
+                                          .addXP(xpRevert);
+                                      LockinSnackBar.showSimple(
+                                        context: context,
+                                        message: 'Change undone',
+                                      );
+                                    },
+                                  );
+
+                                  final prevWasDoneToday = prevHabit.history
+                                      .any((d) => isToday(d));
+                                  if (prevWasDoneToday) {
+                                    unawaited(
+                                      _habitNotificationManager
+                                          .skipTodayReminderIfCompleted(
+                                            habit: prevHabit,
+                                            habitId: habitKey.toString(),
+                                            completedAt: today,
+                                          ),
+                                    );
+                                  } else {
+                                    final reminderTime = _minutesToTime(
+                                      prevHabit.reminderMinutes,
+                                    );
+                                    if (reminderTime != null) {
+                                      unawaited(
+                                        _habitNotificationManager
+                                            .rescheduleHabitReminder(
+                                              habitId: habitKey.toString(),
+                                              habitTitle: prevHabit.title,
+                                              reminderTime: reminderTime,
+                                              frequency: prevHabit.frequency,
+                                              customWeekdays: prevHabit.cue,
+                                            ),
+                                      );
+                                    }
+                                  }
+                                } catch (e) {
+                                  LockinSnackBar.showSimple(
+                                    context: context,
+                                    message: 'Failed to undo change: $e',
+                                  );
+                                }
+                              },
                             );
                           });
                           if (!wasDoneToday) {

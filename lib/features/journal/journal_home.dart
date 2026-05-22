@@ -24,6 +24,7 @@ import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 import 'package:lockin/widgets/lockin_dialog.dart';
+import 'package:lockin/widgets/lockin_journal_card.dart';
 
 class JournalHome extends ConsumerStatefulWidget {
   const JournalHome({super.key});
@@ -373,87 +374,9 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final journal = selectedEntries[index];
-                  return LockinCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.sentiment_satisfied,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Mood: ${journal.mood}/10',
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.delete_outline,
-                                color: colorScheme.error,
-                                size: 28,
-                              ),
-                              onPressed: () async {
-                                final confirm = await showDialog<bool>(
-                                  context: context,
-                                  builder: (context) => LockinDialog(
-                                    title: const Text('Delete entry'),
-                                    content: const Text(
-                                      'Are you sure you want to delete this entry?',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, false),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      FilledButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, true),
-                                        child: const Text('Delete'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                                if (confirm == true) {
-                                  notifier.deleteJournalByKey(journal.key);
-                                }
-                              },
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          journal.entry ?? '',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            height: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          DateFormat.yMMMd().format(journal.date),
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                  return LockinJournalCard(
+                    journal: journal,
+                    onDelete: (key) => notifier.deleteJournalByKey(key),
                   );
                 }, childCount: selectedEntries.length),
               ),

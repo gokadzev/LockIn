@@ -80,6 +80,9 @@ class LockinJournalCard extends StatelessWidget {
                           child: const Text('Cancel'),
                         ),
                         FilledButton(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: colorScheme.error,
+                          ),
                           onPressed: () => Navigator.pop(context, true),
                           child: const Text('Delete'),
                         ),

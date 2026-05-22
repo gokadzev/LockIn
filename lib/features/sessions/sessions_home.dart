@@ -164,9 +164,9 @@ class SessionsHome extends ConsumerWidget {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.delete,
-                                color: Colors.redAccent,
+                                color: colorScheme.error,
                               ),
                               onPressed: () async {
                                 final confirm = await showDialog<bool>(
@@ -182,7 +182,10 @@ class SessionsHome extends ConsumerWidget {
                                             Navigator.of(context).pop(false),
                                         child: const Text('Cancel'),
                                       ),
-                                      FilledButton.tonal(
+                                      FilledButton(
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: colorScheme.error,
+                                        ),
                                         onPressed: () =>
                                             Navigator.of(context).pop(true),
                                         child: const Text('Delete'),

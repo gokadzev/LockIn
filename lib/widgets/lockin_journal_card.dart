@@ -18,6 +18,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/core/models/journal.dart';
+import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 import 'package:lockin/widgets/lockin_dialog.dart';
 
@@ -42,10 +43,10 @@ class LockinJournalCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(
-                    Icons.sentiment_satisfied,
-                    color: Colors.white,
-                    size: 20,
+                  IconBadge(
+                    icon: Icons.sentiment_satisfied,
+                    backgroundColor: colorScheme.secondaryContainer,
+                    color: colorScheme.onSecondaryContainer,
                   ),
                   const SizedBox(width: 8),
                   Text(

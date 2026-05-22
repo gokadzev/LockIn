@@ -34,6 +34,7 @@ class GoalCard extends StatelessWidget {
     this.onMilestoneAdd,
     this.onMilestoneRemove,
     this.onFinish,
+    this.onRestore,
   });
 
   final Goal goal;
@@ -44,6 +45,7 @@ class GoalCard extends StatelessWidget {
   final void Function(int)? onMilestoneAdd;
   final void Function(int)? onMilestoneRemove;
   final void Function(int)? onFinish;
+  final void Function(int)? onRestore;
 
   @override
   Widget build(BuildContext context) {
@@ -100,14 +102,14 @@ class GoalCard extends StatelessWidget {
             ),
             actions: [
               ActionIconButton(
-                icon: isFinished
-                    ? Icons.cancel_outlined
-                    : Icons.check_circle_outline,
+                icon: isFinished ? Icons.restore : Icons.check_circle_outline,
                 color: colorScheme.onSurface,
-                tooltip: isFinished ? 'Finished' : 'Mark as finished',
-                onPressed: (onFinish != null && !isFinished)
-                    ? () => onFinish!(index)
-                    : null,
+                tooltip: isFinished ? 'Restore' : 'Mark as finished',
+                onPressed: isFinished
+                    ? (onRestore != null ? () => onRestore!(index) : null)
+                    : (onFinish != null && !isFinished
+                          ? () => onFinish!(index)
+                          : null),
               ),
               const SizedBox(width: 8),
               if (onEdit != null)

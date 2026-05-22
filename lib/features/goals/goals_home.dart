@@ -552,6 +552,20 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                           index: idx,
                           isFinished: true,
                           onDelete: (i) => _handleDeleteGoal(goalKey, goal),
+                          onRestore: (i) {
+                            final updated = goal.copy();
+                            updated
+                              ..milestones = updated.milestones
+                                  .map((m) => Milestone(m.title))
+                                  .toList()
+                              ..progress = 0.0;
+                            final key = goal.key;
+                            notifier.updateGoalByKey(key, updated, null);
+                            LockinSnackBar.showSimple(
+                              context: context,
+                              message: 'Goal restored',
+                            );
+                          },
                         );
                       },
                     ),

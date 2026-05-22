@@ -494,10 +494,11 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
       },
     );
     if (result != null && (result['entry'] as String).isNotEmpty) {
+      final postedDate = DateTime.now();
       notifier.addJournal(
         Journal()
           ..entry = result['entry']
-          ..date = selectedDay
+          ..date = postedDate
           ..mood = result['mood'] as int,
       );
     }

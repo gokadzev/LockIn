@@ -7,8 +7,8 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.11.0 <4.0.0'
-  flutter: ^3.41.9
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: ^3.44.0
 
 dependencies:
   flutter:
@@ -17,7 +17,7 @@ dependencies:
   # Core dependencies
   dynamic_color: ^1.8.1
   fl_chart: ^1.2.0
-  flutter_local_notifications: ^21.0.0
+  flutter_local_notifications: ^22.0.0
   flutter_riverpod: ^3.3.1
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
@@ -25,7 +25,7 @@ dependencies:
   intl: ^0.20.2
   timezone: ^0.11.0
   workmanager: ^0.9.0+3
-  permission_handler: ^12.0.1
+  permission_handler: ^12.0.3
   file_picker: ^11.0.2
 
 dev_dependencies:
@@ -35,7 +35,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
   # For code generation
-  hive_ce_generator: ^1.11.0
+  hive_ce_generator: ^1.11.2
   build_runner: ^2.15.0
 
 # For information on the generic Dart part of this file, see the

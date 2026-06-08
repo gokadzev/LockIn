@@ -272,26 +272,27 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                             shrinkWrap: true,
                                             physics:
                                                 const NeverScrollableScrollPhysics(),
-                                            onReorder: (oldIndex, newIndex) {
-                                              setState(() {
-                                                if (newIndex > oldIndex) {
-                                                  newIndex--;
-                                                }
-                                                final ctrl = milestones
-                                                    .removeAt(oldIndex);
-                                                final node =
-                                                    milestonesFocusNodes
+                                            onReorderItem:
+                                                (oldIndex, newIndex) {
+                                                  setState(() {
+                                                    if (newIndex > oldIndex) {
+                                                      newIndex--;
+                                                    }
+                                                    final ctrl = milestones
                                                         .removeAt(oldIndex);
-                                                milestones.insert(
-                                                  newIndex,
-                                                  ctrl,
-                                                );
-                                                milestonesFocusNodes.insert(
-                                                  newIndex,
-                                                  node,
-                                                );
-                                              });
-                                            },
+                                                    final node =
+                                                        milestonesFocusNodes
+                                                            .removeAt(oldIndex);
+                                                    milestones.insert(
+                                                      newIndex,
+                                                      ctrl,
+                                                    );
+                                                    milestonesFocusNodes.insert(
+                                                      newIndex,
+                                                      node,
+                                                    );
+                                                  });
+                                                },
                                             children: [
                                               for (
                                                 int j = 0;
@@ -689,7 +690,7 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                         ReorderableListView(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          onReorder: (oldIndex, newIndex) {
+                          onReorderItem: (oldIndex, newIndex) {
                             setState(() {
                               if (newIndex > oldIndex) newIndex--;
                               final ctrl = milestones.removeAt(oldIndex);

@@ -191,12 +191,12 @@ class NotificationIdManager {
     do {
       id = start + _random.nextInt(end - start + 1);
       attempts++;
-    } while (_usedIds.contains(id) && attempts < maxAttempts);
+    } while (isIdInUse(id) && attempts < maxAttempts);
 
     if (attempts >= maxAttempts) {
       // Fallback: find first available ID in range
       for (var i = start; i <= end; i++) {
-        if (!_usedIds.contains(i)) {
+        if (!isIdInUse(i)) {
           id = i;
           break;
         }

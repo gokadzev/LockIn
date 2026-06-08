@@ -110,7 +110,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                           allTasks: allTasks,
                           ref: ref,
                           parentContext: context,
-                          onDelete: () => _handleDeleteTask(task.key, task),
+                          onDelete: () => _handleDeleteTask( task),
                         );
                       },
                     ),
@@ -134,7 +134,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                           ref: ref,
                           parentContext: context,
                           finished: true,
-                          onDelete: () => _handleDeleteTask(task.key, task),
+                          onDelete: () => _handleDeleteTask(task),
                         );
                       },
                     ),
@@ -242,7 +242,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
     );
   }
 
-  Future<void> _handleDeleteTask(dynamic taskKey, Task task) async {
+  Future<void> _handleDeleteTask(Task task) async {
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => LockinDialog(
@@ -267,7 +267,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
       if (!mounted) return;
       final deletedTask = task;
       final notifier = ref.read(tasksListProvider.notifier);
-      final deleted = notifier.deleteTaskByKey(taskKey);
+      final deleted = notifier.deleteTaskByKey(task.key);
       if (!deleted) return;
       LockinSnackBar.showUndo(
         context: context,

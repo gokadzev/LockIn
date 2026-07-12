@@ -26,27 +26,31 @@ import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
 
-enum PomodoroPhase { work, breakTime }
+enum PomodoroPhase { work, breakTime, longBreak }
 
 class PomodoroState {
   PomodoroState({
     required this.phase,
     required this.secondsLeft,
     required this.isRunning,
+    this.sessionsInCycle = 0,
   });
   final PomodoroPhase phase;
   final int secondsLeft;
   final bool isRunning;
+  final int sessionsInCycle;
 
   PomodoroState copyWith({
     PomodoroPhase? phase,
     int? secondsLeft,
     bool? isRunning,
+    int? sessionsInCycle,
   }) {
     return PomodoroState(
       phase: phase ?? this.phase,
       secondsLeft: secondsLeft ?? this.secondsLeft,
       isRunning: isRunning ?? this.isRunning,
+      sessionsInCycle: sessionsInCycle ?? this.sessionsInCycle,
     );
   }
 }
@@ -54,6 +58,7 @@ class PomodoroState {
 class PomodoroNotifier extends Notifier<PomodoroState> {
   late int workSeconds;
   late int breakSeconds;
+  late int longBreakSeconds;
   Timer? _timer;
   bool _cancelled = false;
 
@@ -84,6 +89,7 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
 
     workSeconds = AppValues.defaultWorkMinutes * 60;
     breakSeconds = AppValues.defaultBreakMinutes * 60;
+    longBreakSeconds = AppValues.defaultLongBreakMinutes * 60;
 
     ref.onDispose(() {
       _timer?.cancel();
@@ -102,7 +108,9 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
     _sessionStart ??= DateTime.now();
     final phaseDuration = state.phase == PomodoroPhase.work
         ? workSeconds
-        : breakSeconds;
+        : (state.phase == PomodoroPhase.breakTime
+              ? breakSeconds
+              : longBreakSeconds);
     final elapsedSoFar = (phaseDuration - state.secondsLeft).clamp(
       0,
       phaseDuration,
@@ -113,9 +121,12 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
 
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       final elapsed = DateTime.now().difference(_phaseStart!).inSeconds;
-      final remaining =
-          (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
-          elapsed;
+      final phaseDuration = state.phase == PomodoroPhase.work
+          ? workSeconds
+          : (state.phase == PomodoroPhase.breakTime
+                ? breakSeconds
+                : longBreakSeconds);
+      final remaining = phaseDuration - elapsed;
       final clampedRemaining = remaining < 0 ? 0 : remaining;
 
       if (clampedRemaining != lastSecondDisplayed) {
@@ -139,6 +150,8 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
   Future<void> _handlePhaseTransition() async {
     if (state.phase == PomodoroPhase.work) {
       _pomodoroCount++;
+      final sessionsInCycle =
+          (state.sessionsInCycle + 1) % AppValues.pomodoroSessionsPerCycle;
       _workAccumulatedSeconds += workSeconds;
       _sessionDuration = Duration(seconds: _workAccumulatedSeconds);
       await _sendNotification(
@@ -150,18 +163,27 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
       // Don't mutate state if the session was cancelled/stopped during the async work
       if (_cancelled) return;
 
+      // Determine if this is a long break (after 4 pomodoros) or short break
+      final isLongBreak = sessionsInCycle == 0;
       state = PomodoroState(
-        phase: PomodoroPhase.breakTime,
-        secondsLeft: breakSeconds,
+        phase: isLongBreak ? PomodoroPhase.longBreak : PomodoroPhase.breakTime,
+        secondsLeft: isLongBreak ? longBreakSeconds : breakSeconds,
         isRunning: true,
+        sessionsInCycle: sessionsInCycle,
       );
       _restartTimer();
     } else {
       _breakCount++;
+      final breakType = state.phase == PomodoroPhase.longBreak
+          ? 'long_break'
+          : 'break';
+      final breakMessage = state.phase == PomodoroPhase.longBreak
+          ? 'Long break finished! Time to focus!'
+          : 'Break finished! Time to focus!';
       await _sendNotification(
         title: '⏰ Break Finished',
-        body: 'Time to focus!',
-        sessionType: 'break',
+        body: breakMessage,
+        sessionType: breakType,
       );
 
       if (_cancelled) return;
@@ -171,6 +193,7 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
         phase: PomodoroPhase.work,
         secondsLeft: workSeconds,
         isRunning: true,
+        sessionsInCycle: state.sessionsInCycle,
       );
       _restartTimer();
     }
@@ -183,9 +206,12 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
 
     _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       final elapsed = DateTime.now().difference(_phaseStart!).inSeconds;
-      final remaining =
-          (state.phase == PomodoroPhase.work ? workSeconds : breakSeconds) -
-          elapsed;
+      final phaseDuration = state.phase == PomodoroPhase.work
+          ? workSeconds
+          : (state.phase == PomodoroPhase.breakTime
+                ? breakSeconds
+                : longBreakSeconds);
+      final remaining = phaseDuration - elapsed;
       final clampedRemaining = remaining < 0 ? 0 : remaining;
 
       if (clampedRemaining != lastSecondDisplayed) {

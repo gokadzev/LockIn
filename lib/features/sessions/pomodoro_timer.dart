@@ -17,6 +17,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lockin/constants/app_values.dart';
 import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/features/categories/categories_provider.dart';
 import 'package:lockin/features/sessions/pomodoro_provider.dart';
@@ -57,14 +58,22 @@ class PomodoroTimer extends ConsumerWidget {
                 Icon(
                   phaseIsWork
                       ? Icons.bolt_rounded
-                      : Icons.free_breakfast_rounded,
+                      : (pomodoro.phase == PomodoroPhase.longBreak
+                            ? Icons.local_cafe_rounded
+                            : Icons.free_breakfast_rounded),
                   color: phaseIsWork
                       ? colorScheme.primary
-                      : colorScheme.tertiary,
+                      : (pomodoro.phase == PomodoroPhase.longBreak
+                            ? colorScheme.secondary
+                            : colorScheme.tertiary),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  phaseIsWork ? 'Focus Time' : 'Break',
+                  phaseIsWork
+                      ? 'Focus Time'
+                      : (pomodoro.phase == PomodoroPhase.longBreak
+                            ? 'Long Break'
+                            : 'Short Break'),
                   style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
@@ -75,13 +84,43 @@ class PomodoroTimer extends ConsumerWidget {
             const SizedBox(height: 6),
             Text(
               pomodoro.isRunning
-                  ? (phaseIsWork ? 'Deep work in progress' : 'Recovery time')
+                  ? (phaseIsWork
+                        ? 'Deep work in progress'
+                        : (pomodoro.phase == PomodoroPhase.longBreak
+                              ? 'Extended recovery time'
+                              : 'Recovery time'))
                   : 'Ready to start',
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
+            if (hasActiveSession)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'Session ${pomodoro.sessionsInCycle + 1}/${AppValues.pomodoroSessionsPerCycle}',
+                        style: textTheme.labelMedium?.copyWith(
+                          color: colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(

@@ -26,6 +26,8 @@ class AppValues {
   // Pomodoro Settings
   static const int defaultWorkMinutes = 25;
   static const int defaultBreakMinutes = 5;
+  static const int defaultLongBreakMinutes = 15;
+  static const int pomodoroSessionsPerCycle = 4;
 
   // Notification IDs - Use sequential IDs instead of hashCodes
   static const int pomodoroNotificationId = 1001;

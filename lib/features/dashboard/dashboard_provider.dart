@@ -258,8 +258,8 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
       completedSessions += 1;
     }
     // Convert to UTC before calculating the exact calendar day delta.
-    // UTC lacks Daylight Saving Time transitions, ensuring that 
-    // every calendar day is perfectly 24 hours long. This guarantees .inDays 
+    // UTC lacks Daylight Saving Time transitions, ensuring that
+    // every calendar day is perfectly 24 hours long. This guarantees .inDays
     // will never truncate integer division during a 23-hour DST "Spring Forward" day.
     final sessionDayUtc = DateTime.utc(
       session.startTime.year,

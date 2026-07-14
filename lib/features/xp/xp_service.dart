@@ -47,12 +47,10 @@ class XPService {
       }
     } else if (newLevel < profile.level) {
       // Level-down: revoke rewards that require a level above the new level.
-      newUnlocked = newUnlocked
-          .where((ur) {
-            final def = XPData.rewards.where((r) => r.id == ur.id).firstOrNull;
-            return def == null || def.unlockLevel <= newLevel;
-          })
-          .toList();
+      newUnlocked = newUnlocked.where((ur) {
+        final def = XPData.rewards.where((r) => r.id == ur.id).firstOrNull;
+        return def == null || def.unlockLevel <= newLevel;
+      }).toList();
       // Reset streak saver if it was revoked.
       final hasStreakSaver = newUnlocked.any((ur) => ur.id == 'streak_saver');
       if (!hasStreakSaver) {

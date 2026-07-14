@@ -110,7 +110,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
                           allTasks: allTasks,
                           ref: ref,
                           parentContext: context,
-                          onDelete: () => _handleDeleteTask( task),
+                          onDelete: () => _handleDeleteTask(task),
                         );
                       },
                     ),

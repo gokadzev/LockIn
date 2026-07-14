@@ -93,7 +93,11 @@ class HabitStreakCalculator {
     if (weekStarts.any((d) => _isSameDay(d, currentWeek))) {
       cursor = currentWeek;
     } else {
-      final previousWeek = DateTime(currentWeek.year, currentWeek.month, currentWeek.day - 7);
+      final previousWeek = DateTime(
+        currentWeek.year,
+        currentWeek.month,
+        currentWeek.day - 7,
+      );
       if (weekStarts.any((d) => _isSameDay(d, previousWeek))) {
         cursor = previousWeek;
       } else {
@@ -148,7 +152,11 @@ class HabitStreakCalculator {
   static DateTime _startOfWeek(DateTime date) {
     final normalized = _normalizeDate(date);
     final weekday = normalized.weekday; // 1=Mon ... 7=Sun
-    return DateTime(normalized.year, normalized.month, normalized.day - (weekday - 1));
+    return DateTime(
+      normalized.year,
+      normalized.month,
+      normalized.day - (weekday - 1),
+    );
   }
 
   static int _monthKey(DateTime date) => date.year * 12 + date.month;

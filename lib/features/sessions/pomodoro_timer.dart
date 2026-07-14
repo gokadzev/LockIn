@@ -67,7 +67,7 @@ class PomodoroTimer extends ConsumerWidget {
                             ? colorScheme.secondary
                             : colorScheme.tertiary),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Text(
                   phaseIsWork
                       ? 'Focus Time'

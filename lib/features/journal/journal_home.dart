@@ -141,6 +141,12 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        Icon(
+                                          Icons.calendar_month_rounded,
+                                          size: 18,
+                                          color: colorScheme.primary,
+                                        ),
+                                        const SizedBox(width: 6),
                                         Text(
                                           DateFormat.yMMMM().format(
                                             _selectedDay,
@@ -148,14 +154,7 @@ class _JournalHomeState extends ConsumerState<JournalHome> {
                                           style: textTheme.titleLarge?.copyWith(
                                             color: colorScheme.onSurface,
                                             fontWeight: FontWeight.bold,
-                                            letterSpacing: 0.2,
                                           ),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Icon(
-                                          Icons.calendar_month_rounded,
-                                          size: 18,
-                                          color: colorScheme.onSurfaceVariant,
                                         ),
                                       ],
                                     ),

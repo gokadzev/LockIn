@@ -15,6 +15,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'dart:async';
+
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,11 +31,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeApp();
 
-  // Initialize the new background notification service
-  final backgroundManager = NotificationBackgroundManager();
-  await backgroundManager.initialize();
-
   runApp(const ProviderScope(child: LockinApp()));
+
+  unawaited(NotificationBackgroundManager().initialize());
 }
 
 class LockinApp extends ConsumerWidget {

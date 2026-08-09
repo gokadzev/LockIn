@@ -41,15 +41,17 @@ Future<void> initializeApp() async {
     ..registerAdapter(RewardAdapter())
     ..registerAdapter(RewardTypeAdapter())
     ..registerAdapter(HabitCategoryAdapter());
-  await Hive.openBox<Task>(HiveBoxes.tasks);
-  await Hive.openBox<Habit>(HiveBoxes.habits);
-  await Hive.openBox<Goal>(HiveBoxes.goals);
-  await Hive.openBox<Session>(HiveBoxes.sessions);
-  await Hive.openBox<Journal>(HiveBoxes.journals);
-  await Hive.openBox<Rule>(HiveBoxes.rules);
-  await Hive.openBox<XPProfile>(HiveBoxes.xpProfile);
-  await Hive.openBox<String>(HiveBoxes.habitCategories);
-  await Hive.openBox<dynamic>(HiveBoxes.appSettings);
-  await Hive.openBox(HiveBoxes.settings);
-  await Hive.openBox<int>(HiveBoxes.userActivity);
+  await Future.wait([
+    Hive.openBox<Task>(HiveBoxes.tasks),
+    Hive.openBox<Habit>(HiveBoxes.habits),
+    Hive.openBox<Goal>(HiveBoxes.goals),
+    Hive.openBox<Session>(HiveBoxes.sessions),
+    Hive.openBox<Journal>(HiveBoxes.journals),
+    Hive.openBox<Rule>(HiveBoxes.rules),
+    Hive.openBox<XPProfile>(HiveBoxes.xpProfile),
+    Hive.openBox<String>(HiveBoxes.habitCategories),
+    Hive.openBox<dynamic>(HiveBoxes.appSettings),
+    Hive.openBox<dynamic>(HiveBoxes.settings),
+    Hive.openBox<int>(HiveBoxes.userActivity),
+  ]);
 }

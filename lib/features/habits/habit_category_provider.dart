@@ -17,12 +17,13 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/utils/box_crud_mixin.dart';
 import 'package:lockin/core/utils/hive_utils.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
 
 final habitCategoriesBoxProvider = Provider<Box<String>?>(
-  (ref) => openBoxIfAvailable<String>('habit_categories'),
+  (ref) => openBoxIfAvailable<String>(HiveBoxes.habitCategories),
 );
 
 final habitCategoriesProvider =
@@ -30,21 +31,9 @@ final habitCategoriesProvider =
       HabitCategoriesNotifier.new,
     );
 
-class HabitCategoriesNotifier extends Notifier<List<String>>
-    with BoxCrudMixin<String> {
-  Box<String>? _box;
-
+class HabitCategoriesNotifier extends BoxCrudNotifier<String> {
   @override
-  Box<String>? get box => _box;
-
-  @override
-  List<String> build() {
-    stopWatchingBox();
-    _box = ref.watch(habitCategoriesBoxProvider);
-    startWatchingBox();
-    ref.onDispose(stopWatchingBox);
-    return _box?.values.toList() ?? [];
-  }
+  String get boxName => HiveBoxes.habitCategories;
 
   void addCategory(String name) {
     if (box == null) return;

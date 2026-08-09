@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/notifications/habit_notification_manager.dart';
+import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
 import 'package:lockin/features/categories/categories_provider.dart';
 import 'package:lockin/features/categories/category_manager_dialog.dart';
 import 'package:lockin/features/habits/habit_category_provider.dart';
@@ -148,10 +149,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                       ? habit.history.reduce((a, b) => a.isAfter(b) ? a : b)
                       : null;
                   final doneToday =
-                      lastDone != null &&
-                      lastDone.year == today.year &&
-                      lastDone.month == today.month &&
-                      lastDone.day == today.day;
+                      lastDone != null && lastDone.isSameDay(today);
 
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
@@ -163,10 +161,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                       onMarkDone: () {
                         final prevHabit = habit.copy();
                         final today = DateTime.now();
-                        bool isToday(DateTime d) =>
-                            d.year == today.year &&
-                            d.month == today.month &&
-                            d.day == today.day;
+                        bool isToday(DateTime d) => d.isSameDay(today);
                         final wasDoneToday = habit.history.any(isToday);
                         Habit updated;
                         if (!wasDoneToday) {

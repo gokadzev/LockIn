@@ -25,6 +25,7 @@ import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/core/notifications/notification_types.dart';
 import 'package:lockin/core/notifications/timezone_manager.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
+import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Manages engagement and motivational notifications
@@ -74,7 +75,7 @@ class EngagementNotificationManager {
       }
 
       final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
+      final today = now.dateOnly;
 
       final analysis = _analyzeUserState(habits, tasks, goals, today);
       if (!_shouldSendNotification(analysis)) return true;
@@ -123,8 +124,6 @@ class EngagementNotificationManager {
     List<Goal> goals,
     DateTime today,
   ) {
-    final todayDate = DateTime(today.year, today.month, today.day);
-
     // Single-pass analysis for habits
     var habitsCompletedToday = 0;
     double totalStreak = 0;
@@ -136,12 +135,7 @@ class EngagementNotificationManager {
       totalStreak += habit.streak;
 
       // Check if completed today
-      if (habit.history.any(
-        (d) =>
-            d.year == todayDate.year &&
-            d.month == todayDate.month &&
-            d.day == todayDate.day,
-      )) {
+      if (habit.history.any((d) => d.isSameDay(today))) {
         habitsCompletedToday++;
       }
     }
@@ -157,9 +151,7 @@ class EngagementNotificationManager {
     for (final task in tasks) {
       if (task.completed) {
         if (task.completionTime != null &&
-            task.completionTime!.year == todayDate.year &&
-            task.completionTime!.month == todayDate.month &&
-            task.completionTime!.day == todayDate.day) {
+            task.completionTime!.isSameDay(today)) {
           tasksCompletedToday++;
         }
       } else {

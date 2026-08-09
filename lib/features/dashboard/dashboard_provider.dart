@@ -21,6 +21,7 @@ import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
 import 'package:lockin/features/goals/goal_provider.dart';
 import 'package:lockin/features/habits/habit_provider.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
@@ -182,7 +183,7 @@ final weeklyOverviewStatsProvider = Provider<WeeklyOverviewStats>((ref) {
   final start = DateTime(end.year, end.month, end.day - 6);
 
   bool inWindow(DateTime date) {
-    final day = DateTime(date.year, date.month, date.day);
+    final day = date.dateOnly;
     return !day.isBefore(start) && !day.isAfter(end);
   }
 
@@ -228,7 +229,7 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
   );
 
   bool inWindow(DateTime date) {
-    final day = DateTime(date.year, date.month, date.day);
+    final day = date.dateOnly;
     return !day.isBefore(windowStart) && !day.isAfter(windowEnd);
   }
 

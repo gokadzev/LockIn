@@ -23,6 +23,7 @@ import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
 import 'package:lockin/features/dashboard/dashboard_provider.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
@@ -149,12 +150,7 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
   } else {
     final today = DateTime.now();
     final doneToday = habitBox.values.any(
-      (h) => h.history.any(
-        (d) =>
-            d.year == today.year &&
-            d.month == today.month &&
-            d.day == today.day,
-      ),
+      (h) => h.history.any((d) => d.isSameDay(today)),
     );
     if (!doneToday) {
       items.add(
@@ -185,12 +181,7 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
     );
   } else {
     final today = DateTime.now();
-    final hasToday = journals.any(
-      (j) =>
-          j.date.year == today.year &&
-          j.date.month == today.month &&
-          j.date.day == today.day,
-    );
+    final hasToday = journals.any((j) => j.date.isSameDay(today));
     if (!hasToday) {
       items.add(
         DashboardItem(

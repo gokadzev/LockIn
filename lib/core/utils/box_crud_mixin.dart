@@ -17,7 +17,7 @@
 
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/core/utils/hive_utils.dart';
@@ -35,14 +35,28 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
   }
 
   StreamSubscription? _boxSub;
+  int _watchGeneration = 0;
+  bool _syncScheduled = false;
+  bool _isDisposed = false;
+
+  void _scheduleWatchedStateSync() {
+    if (_syncScheduled) return;
+    _syncScheduled = true;
+    final generation = _watchGeneration;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncScheduled = false;
+      if (!_isDisposed && generation == _watchGeneration) {
+        syncStateFromBox();
+      }
+    });
+  }
 
   /// Start listening to the Hive box and keep state in sync for external changes.
   void startWatchingBox() {
     if (box == null || _boxSub != null) return;
     try {
       _boxSub = box!.watch().listen((event) {
-        // On any change event, refresh state from box.
-        syncStateFromBox();
+        _scheduleWatchedStateSync();
       });
     } catch (e, stackTrace) {
       debugPrint('Error watching box: $e');
@@ -52,6 +66,9 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
 
   /// Stop listening to the Hive box.
   void stopWatchingBox() {
+    _isDisposed = true;
+    _watchGeneration++;
+    _syncScheduled = false;
     _boxSub?.cancel();
     _boxSub = null;
   }
@@ -218,9 +235,16 @@ abstract class BoxCrudNotifier<T> extends Notifier<List<T>>
 
   @override
   List<T> build() {
+    _isDisposed = false;
     stopWatchingBox();
+    _isDisposed = false;
     _box = openBoxIfAvailable<T>(boxName);
-    startWatchingBox();
+    final generation = _watchGeneration;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isDisposed && generation == _watchGeneration) {
+        startWatchingBox();
+      }
+    });
     ref.onDispose(stopWatchingBox);
     return _box?.values.toList() ?? [];
   }

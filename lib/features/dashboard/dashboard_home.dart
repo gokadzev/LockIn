@@ -41,11 +41,36 @@ import 'package:lockin/widgets/quick_stats_card.dart';
 import 'package:lockin/widgets/weekly_overview_chart.dart';
 import 'package:lockin/widgets/xp_dashboard_card.dart';
 
-class DashboardHome extends ConsumerWidget {
+class DashboardHome extends ConsumerStatefulWidget {
   const DashboardHome({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardHome> createState() => _DashboardHomeState();
+}
+
+class _DashboardHomeState extends ConsumerState<DashboardHome> {
+  var _subscriptionsReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+        ..read(xpNotifierProvider)
+        ..read(dashboardStatsProvider)
+        ..read(weeklyOverviewStatsProvider)
+        ..read(advancedDashboardInsightsProvider)
+        ..read(monthlyHeatmapProvider);
+      if (mounted) setState(() => _subscriptionsReady = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_subscriptionsReady) return const SizedBox.shrink();
+
+    final ref = this.ref;
     final xpProfile = ref.watch(xpNotifierProvider);
     final userLevel = xpProfile.level;
     final isAdvanced = userLevel >= GamificationConstants.advancedLevel;

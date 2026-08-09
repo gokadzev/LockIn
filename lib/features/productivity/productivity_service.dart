@@ -28,6 +28,23 @@ class ProductivityService {
   final Box<Habit> habitBox;
   final Box<Session> sessionBox;
 
+  Map<DateTime, int> _completedTaskCountsByDay() {
+    final counts = <DateTime, int>{};
+    for (final task in taskBox.values) {
+      final completionTime = task.completionTime;
+      if (!task.completed || task.abandoned || completionTime == null) {
+        continue;
+      }
+      final day = DateTime(
+        completionTime.year,
+        completionTime.month,
+        completionTime.day,
+      );
+      counts[day] = (counts[day] ?? 0) + 1;
+    }
+    return counts;
+  }
+
   // 1. Exponential moving average for task durations
   double getMovingAverageDuration({String? tag, double alpha = 0.5}) {
     final tasks =
@@ -81,42 +98,33 @@ class ProductivityService {
   // 3. Sliding window productivity score (last 7 days)
   List<double> getSlidingWindowScores({int window = 7}) {
     final now = DateTime.now();
+    final counts = _completedTaskCountsByDay();
     final scores = <double>[];
     for (var i = 0; i < window; i++) {
       final day = DateTime(now.year, now.month, now.day - i);
-      final tasks = taskBox.values.where(
-        (t) =>
-            t.completed &&
-            !t.abandoned &&
-            t.completionTime != null &&
-            t.completionTime!.year == day.year &&
-            t.completionTime!.month == day.month &&
-            t.completionTime!.day == day.day,
-      );
-      scores.add(tasks.length.toDouble());
+      scores.add((counts[day] ?? 0).toDouble());
     }
     return scores.reversed.toList();
   }
 
   // 4. Estimate vs. actual accuracy
   double getEstimateAccuracy() {
-    final tasks = taskBox.values.where(
-      (t) =>
-          t.completed &&
-          !t.abandoned &&
-          t.estimatedDuration != null &&
-          t.actualDuration != null,
-    );
-    if (tasks.isEmpty) return 1;
     double sum = 0;
-    for (final t in tasks) {
+    var count = 0;
+    for (final t in taskBox.values) {
+      if (!t.completed ||
+          t.abandoned ||
+          t.estimatedDuration == null ||
+          t.actualDuration == null) {
+        continue;
+      }
       final est = t.estimatedDuration!.toDouble();
       if (est <= 0) continue; // skip invalid estimates
       final taskAccuracy =
           1 - (t.estimatedDuration! - t.actualDuration!).abs() / est;
       sum += taskAccuracy.clamp(-1.0, 1.0);
+      count++;
     }
-    final count = tasks.where((t) => t.estimatedDuration! > 0).length;
     return count == 0 ? 1 : (sum / count).clamp(-1.0, 1.0);
   }
 
@@ -142,19 +150,11 @@ class ProductivityService {
   // 7. Streaks
   int getDailyStreak() {
     final today = DateTime.now();
+    final counts = _completedTaskCountsByDay();
     var streak = 0;
     for (var i = 0; i < 30; i++) {
       final day = DateTime(today.year, today.month, today.day - i);
-      final tasks = taskBox.values.where(
-        (t) =>
-            t.completed &&
-            !t.abandoned &&
-            t.completionTime != null &&
-            t.completionTime!.year == day.year &&
-            t.completionTime!.month == day.month &&
-            t.completionTime!.day == day.day,
-      );
-      if (tasks.isNotEmpty) {
+      if ((counts[day] ?? 0) > 0) {
         streak++;
       } else if (i == 0) {
         continue;

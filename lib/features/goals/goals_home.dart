@@ -439,7 +439,11 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
                                   ? 'General'
                                   : category;
                               final key = goalToEdit.key;
-                              notifier.updateGoalByKey(key, updated, null);
+                              await notifier.updateGoalByKey(
+                                key,
+                                updated,
+                                null,
+                              );
                             }
                           },
                           onMilestoneRemove:
@@ -846,8 +850,9 @@ class _GoalsHomeState extends ConsumerState<GoalsHome> {
     if (confirm == true) {
       if (!mounted) return;
       final deletedGoal = goal;
-      final notifier = ref.read(goalsListProvider.notifier)
-        ..deleteGoalByKey(goalKey);
+      final notifier = ref.read(goalsListProvider.notifier);
+      await notifier.deleteGoalByKey(goalKey);
+      if (!mounted) return;
       LockinSnackBar.showUndo(
         context: context,
         message: 'Goal deleted',

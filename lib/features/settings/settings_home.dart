@@ -176,7 +176,9 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                       initialTime: engagementTime,
                     );
                     if (picked != null) {
-                      ref.read(engagementTimeProvider.notifier).setTime(picked);
+                      await ref
+                          .read(engagementTimeProvider.notifier)
+                          .setTime(picked);
                     }
                   },
                 ),

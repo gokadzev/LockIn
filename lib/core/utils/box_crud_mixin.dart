@@ -57,13 +57,13 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
   }
 
   /// Adds an item to the box and updates state.
-  void addItem(T item) {
+  Future<void> addItem(T item) async {
     if (box == null) {
       debugPrint('Cannot add item: box is null');
       return;
     }
     try {
-      box!.add(item);
+      await box!.add(item);
       syncStateFromBox();
     } catch (e, stackTrace) {
       debugPrint('Error adding item to box: $e');
@@ -74,7 +74,7 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
   }
 
   /// Updates an item at [index] in the box and updates state efficiently.
-  bool updateItem(int index, T item) {
+  Future<bool> updateItem(int index, T item) async {
     if (box == null) {
       debugPrint('Cannot update item: box is null');
       return false;
@@ -84,7 +84,7 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
       return false;
     }
     try {
-      box!.putAt(index, item);
+      await box!.putAt(index, item);
       if (index < state.length) {
         final updated = List<T>.from(state);
         updated[index] = item;
@@ -102,16 +102,16 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
   }
 
   /// Prepares and persists an item, then applies effects only after success.
-  bool updateItemWithPrevious(
+  Future<bool> updateItemWithPrevious(
     int index,
     T item, {
     required T Function(T? previous) prepare,
     void Function(T? previous, T updated)? onSuccess,
-  }) {
+  }) async {
     if (box == null || index < 0 || index >= box!.length) return false;
     final previous = box!.getAt(index);
     final updated = prepare(previous);
-    final success = updateItem(index, updated);
+    final success = await updateItem(index, updated);
     if (success) onSuccess?.call(previous, updated);
     return success;
   }
@@ -124,7 +124,7 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
   }
 
   /// Deletes an item at [index] from the box and updates state.
-  void deleteItem(int index) {
+  Future<void> deleteItem(int index) async {
     if (box == null) {
       debugPrint('Cannot delete item: box is null');
       return;
@@ -134,7 +134,7 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
       return;
     }
     try {
-      box!.deleteAt(index);
+      await box!.deleteAt(index);
       syncStateFromBox();
     } catch (e, stackTrace) {
       debugPrint('Error deleting item at index $index: $e');
@@ -144,7 +144,7 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
   }
 
   /// Updates an item by its Hive key. Returns true if update succeeded.
-  bool updateItemByKey(dynamic key, T item) {
+  Future<bool> updateItemByKey(dynamic key, T item) async {
     if (box == null) {
       debugPrint('Cannot update item by key: box is null');
       return false;
@@ -155,7 +155,7 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
         return false;
       }
 
-      box!.put(key, item);
+      await box!.put(key, item);
 
       syncStateFromBox();
 
@@ -168,7 +168,7 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
   }
 
   /// Deletes an item by its Hive key. Returns true if deletion succeeded.
-  bool deleteItemByKey(dynamic key) {
+  Future<bool> deleteItemByKey(dynamic key) async {
     if (box == null) {
       debugPrint('Cannot delete item by key: box is null');
       return false;
@@ -179,7 +179,7 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
         return false;
       }
 
-      box!.delete(key);
+      await box!.delete(key);
       syncStateFromBox();
       return true;
     } catch (e, stackTrace) {

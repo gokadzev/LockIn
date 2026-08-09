@@ -39,15 +39,15 @@ class TasksNotifier extends BoxCrudNotifier<Task> {
   String get boxName => HiveBoxes.tasks;
 
   /// Adds a new task to the box and updates state.
-  void addTask(Task task) => addItem(task);
+  Future<void> addTask(Task task) => addItem(task);
 
   /// Updates a task at [index], manages completion time, and awards/removes XP.
-  void updateTask(
+  Future<void> updateTask(
     int index,
     Task task,
     void Function(int xpChange)? onXPChange,
-  ) {
-    updateItemWithPrevious(
+  ) async {
+    await updateItemWithPrevious(
       index,
       task,
       prepare: (prevTask) {
@@ -75,20 +75,20 @@ class TasksNotifier extends BoxCrudNotifier<Task> {
   }
 
   /// Updates a task by its Hive key. Returns true if update succeeded.
-  bool updateTaskByKey(
+  Future<bool> updateTaskByKey(
     dynamic key,
     Task task,
     void Function(int xpChange)? onXPChange,
-  ) {
+  ) async {
     final index = indexForKey(key);
     if (index == null) return false;
-    updateTask(index, task, onXPChange);
+    await updateTask(index, task, onXPChange);
     return true;
   }
 
   /// Deletes a task at [index] from the box and updates state.
-  void deleteTask(int index) => deleteItem(index);
+  Future<void> deleteTask(int index) => deleteItem(index);
 
   /// Deletes a task by its Hive key - delegates to mixin.
-  bool deleteTaskByKey(dynamic key) => deleteItemByKey(key);
+  Future<bool> deleteTaskByKey(dynamic key) => deleteItemByKey(key);
 }

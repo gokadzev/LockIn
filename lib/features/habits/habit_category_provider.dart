@@ -35,28 +35,28 @@ class HabitCategoriesNotifier extends BoxCrudNotifier<String> {
   @override
   String get boxName => HiveBoxes.habitCategories;
 
-  void addCategory(String name) {
+  Future<void> addCategory(String name) async {
     if (box == null) return;
     final trimmed = name.trim();
     if (trimmed.isEmpty) return;
-    box!.add(trimmed);
+    await box!.add(trimmed);
     state = box!.values.toList();
   }
 
-  void editCategoryByKey(dynamic key, String newName) {
+  Future<void> editCategoryByKey(dynamic key, String newName) async {
     if (box == null) return;
     final trimmed = newName.trim();
     if (trimmed.isEmpty) return;
     if (!box!.containsKey(key)) return;
-    box!.put(key, trimmed);
+    await box!.put(key, trimmed);
     state = box!.values.toList();
   }
 
-  void deleteCategoryByKey(dynamic key) {
+  Future<void> deleteCategoryByKey(dynamic key) async {
     if (box == null) return;
     if (!box!.containsKey(key)) return;
     final deletedCategory = box!.get(key);
-    box!.delete(key);
+    await box!.delete(key);
     state = box!.values.toList();
     if (deletedCategory != null) {
       final habitsBox = ref.read(habitsBoxProvider);
@@ -64,9 +64,8 @@ class HabitCategoriesNotifier extends BoxCrudNotifier<String> {
         for (var i = 0; i < habitsBox.length; i++) {
           final habit = habitsBox.getAt(i);
           if (habit != null && habit.category == deletedCategory) {
-            habit
-              ..category = 'General'
-              ..save();
+            habit.category = 'General';
+            await habit.save();
           }
         }
         ref.read(habitsListProvider.notifier).state = habitsBox.values.toList();

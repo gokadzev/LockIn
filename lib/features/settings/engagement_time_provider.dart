@@ -42,10 +42,10 @@ class EngagementTimeNotifier extends Notifier<TimeOfDay> {
     return const TimeOfDay(hour: 9, minute: 0); // default
   }
 
-  void setTime(TimeOfDay time) {
+  Future<void> setTime(TimeOfDay time) async {
     final box = openBoxIfAvailable(HiveBoxes.settings);
     if (box != null) {
-      box.put(HiveKeys.engagementTime, {
+      await box.put(HiveKeys.engagementTime, {
         'hour': time.hour,
         'minute': time.minute,
       });

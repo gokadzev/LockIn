@@ -212,14 +212,14 @@ class RecommendationsPage extends ConsumerWidget {
                           final category = s.category ?? 'General';
                           if (category.isNotEmpty &&
                               !categories.any((c) => c == category)) {
-                            categoriesNotifier.addCategory(category);
+                            await categoriesNotifier.addCategory(category);
                           }
                           final newHabit = Habit()
                             ..title = s.title
                             ..frequency = s.frequency
                             ..category = category;
 
-                          habitNotifier.addHabit(newHabit);
+                          await habitNotifier.addHabit(newHabit);
 
                           try {
                             final engagementTime = ref.read(

@@ -2,7 +2,7 @@
  *     Copyright (C) 2026 Valeri Gokadze
  *
  *     LockIn is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
+              await notifier.addCategory(result.trim());
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
@@ -108,7 +108,7 @@ class CategoryManagerDialog extends ConsumerWidget {
               ),
             );
             if (result != null && result.trim().isNotEmpty) {
-              notifier.addCategory(result.trim());
+              await notifier.addCategory(result.trim());
             }
           },
         ),

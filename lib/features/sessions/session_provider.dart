@@ -37,19 +37,20 @@ class SessionsNotifier extends BoxCrudNotifier<Session> {
   String get boxName => HiveBoxes.sessions;
 
   /// Adds a new session to the box and updates state.
-  void addSession(Session session) => addItem(session);
+  Future<void> addSession(Session session) => addItem(session);
 
   /// Updates a session at [index] and updates state.
-  void updateSession(int index, Session session) => updateItem(index, session);
+  Future<void> updateSession(int index, Session session) =>
+      updateItem(index, session).then((_) {});
 
   /// Deletes a session at [index] from the box and updates state.
-  void deleteSession(int index) => deleteItem(index);
+  Future<void> deleteSession(int index) => deleteItem(index);
 
   /// Deletes a session by Hive key. Returns true when delete succeeded.
-  bool deleteSessionByKey(dynamic key) {
+  Future<bool> deleteSessionByKey(dynamic key) async {
     if (box == null) return false;
     try {
-      return deleteItemByKey(key);
+      return await deleteItemByKey(key);
     } catch (_) {
       return false;
     }

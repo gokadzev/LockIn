@@ -41,11 +41,11 @@ class XPNotifier extends Notifier<XPProfile> {
   int get level => state.level;
   List<Reward> get unlockedRewards => state.unlockedRewards;
 
-  void addXP(int amount) {
+  Future<void> addXP(int amount) async {
     try {
       service.addXP(amount);
       state = service.profile;
-      box?.put('profile', state);
+      await box?.put('profile', state);
     } catch (e, stackTrace) {
       debugPrint('Error adding XP: $e');
       debugPrint('StackTrace: $stackTrace');

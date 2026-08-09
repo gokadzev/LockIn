@@ -234,7 +234,7 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
             t.tags = [
               if (category == null || category.isEmpty) 'General' else category,
             ];
-            notifier.addTask(t);
+            await notifier.addTask(t);
           }
         },
         child: const Icon(Icons.add),
@@ -267,8 +267,9 @@ class _TasksHomeState extends ConsumerState<TasksHome> {
       if (!mounted) return;
       final deletedTask = task;
       final notifier = ref.read(tasksListProvider.notifier);
-      final deleted = notifier.deleteTaskByKey(task.key);
+      final deleted = await notifier.deleteTaskByKey(task.key);
       if (!deleted) return;
+      if (!mounted) return;
       LockinSnackBar.showUndo(
         context: context,
         message: 'Task deleted',

@@ -42,10 +42,10 @@ class HabitsNotifier extends BoxCrudNotifier<Habit> {
 
   /// Checks all habits for missed days and resets streaks if needed.
   /// If [streakSaverAvailable] is true and a streak is missed by 1-3 days, calls [onStreakSaverUsed].
-  void checkStreaksWithStreakSaver(
+  Future<void> checkStreaksWithStreakSaver(
     bool streakSaverAvailable,
     void Function(bool used)? onStreakSaverUsed,
-  ) {
+  ) async {
     if (box == null) return;
     final now = DateTime.now();
     final today = now.dateOnly;
@@ -74,35 +74,35 @@ class HabitsNotifier extends BoxCrudNotifier<Habit> {
             habit.history = HabitStreakCalculator.normalizeHistory(
               habit.history,
             );
-            updateItem(i, habit);
+            await updateItem(i, habit);
             continue;
           }
         }
         habit.streak = 0;
-        updateItem(i, habit);
+        await updateItem(i, habit);
         continue;
       }
 
       if (recalculated != habit.streak) {
         habit.streak = recalculated;
-        updateItem(i, habit);
+        await updateItem(i, habit);
       }
     }
     syncStateFromBox();
   }
 
   /// Adds a new habit to the box and updates state.
-  void addHabit(Habit habit) => addItem(habit);
+  Future<void> addHabit(Habit habit) => addItem(habit);
 
   /// Updates a habit at [index], recalculates streak, and manages XP for today's completion.
-  void updateHabit(
+  Future<void> updateHabit(
     int index,
     Habit habit,
     void Function(int xpChange)? onXPChange,
-  ) {
+  ) async {
     var wasDoneToday = false;
     var isDoneToday = false;
-    updateItemWithPrevious(
+    await updateItemWithPrevious(
       index,
       habit,
       prepare: (prevHabit) {
@@ -134,19 +134,19 @@ class HabitsNotifier extends BoxCrudNotifier<Habit> {
   }
 
   /// Deletes a habit at [index] from the box and updates state.
-  void deleteHabit(int index) => deleteItem(index);
+  Future<void> deleteHabit(int index) => deleteItem(index);
 
   /// Update habit by Hive [key] instead of index.
-  void updateHabitByKey(
+  Future<void> updateHabitByKey(
     dynamic key,
     Habit habit,
     void Function(int xpChange)? onXPChange,
-  ) {
+  ) async {
     final index = indexForKey(key);
     if (index == null) return;
-    updateHabit(index, habit, onXPChange);
+    await updateHabit(index, habit, onXPChange);
   }
 
   /// Delete habit by Hive [key] instead of index - delegates to mixin.
-  void deleteHabitByKey(dynamic key) => deleteItemByKey(key);
+  Future<bool> deleteHabitByKey(dynamic key) => deleteItemByKey(key);
 }

@@ -34,18 +34,21 @@ class JournalsNotifier extends BoxCrudNotifier<Journal> {
   @override
   String get boxName => HiveBoxes.journals;
 
-  void addJournal(Journal journal) => addItem(journal);
-  void updateJournal(int index, Journal journal) => updateItem(index, journal);
-  void deleteJournal(int index) => deleteItem(index);
-
-  void updateJournalByKey(dynamic key, Journal journal) {
-    final index = indexForKey(key);
-    if (index == null) return;
-    updateJournal(index, journal);
+  Future<void> addJournal(Journal journal) => addItem(journal);
+  Future<void> updateJournal(int index, Journal journal) async {
+    await updateItem(index, journal);
   }
 
-  void deleteJournalByKey(dynamic key) {
-    if (box == null) return;
-    deleteItemByKey(key);
+  Future<void> deleteJournal(int index) => deleteItem(index);
+
+  Future<void> updateJournalByKey(dynamic key, Journal journal) async {
+    final index = indexForKey(key);
+    if (index == null) return;
+    await updateJournal(index, journal);
+  }
+
+  Future<bool> deleteJournalByKey(dynamic key) {
+    if (box == null) return Future.value(false);
+    return deleteItemByKey(key);
   }
 }

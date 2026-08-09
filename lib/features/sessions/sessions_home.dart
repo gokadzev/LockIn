@@ -195,7 +195,9 @@ class SessionsHome extends ConsumerWidget {
                                 );
 
                                 if (confirm == true) {
-                                  notifier.deleteSessionByKey(session.key);
+                                  await notifier.deleteSessionByKey(
+                                    session.key,
+                                  );
                                 }
                               },
                             ),

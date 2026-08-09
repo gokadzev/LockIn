@@ -53,13 +53,13 @@ class GoalsNotifier extends BoxCrudNotifier<Goal> {
 
   /// Updates a goal at [index], recalculates progress, and manages XP for milestone completion.
   /// If the number of milestones changes, progress is recalculated.
-  void updateGoal(
+  Future<void> updateGoal(
     int index,
     Goal goal,
     void Function(int xpChange)? onXPChange,
-  ) {
+  ) async {
     var xpDelta = 0;
-    updateItemWithPrevious(
+    await updateItemWithPrevious(
       index,
       goal,
       prepare: (prevGoal) {
@@ -87,19 +87,19 @@ class GoalsNotifier extends BoxCrudNotifier<Goal> {
   }
 
   /// Deletes a goal at [index] from the box and updates state.
-  void deleteGoal(int index) => deleteItem(index);
+  Future<void> deleteGoal(int index) => deleteItem(index);
 
   /// Update goal by Hive [key] instead of index.
-  void updateGoalByKey(
+  Future<void> updateGoalByKey(
     dynamic key,
     Goal goal,
     void Function(int xpChange)? onXPChange,
-  ) {
+  ) async {
     final index = indexForKey(key);
     if (index == null) return;
-    updateGoal(index, goal, onXPChange);
+    await updateGoal(index, goal, onXPChange);
   }
 
   /// Delete goal by Hive [key] instead of index - delegates to mixin.
-  void deleteGoalByKey(dynamic key) => deleteItemByKey(key);
+  Future<bool> deleteGoalByKey(dynamic key) => deleteItemByKey(key);
 }

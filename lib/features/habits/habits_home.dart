@@ -60,7 +60,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
     Future.microtask(() async {
       final xpNotifier = ref.read(xpNotifierProvider.notifier);
       final streakSaverAvailable = xpNotifier.profile.streakSaverAvailable;
-      ref.read(habitsListProvider.notifier).checkStreaksWithStreakSaver(
+      await ref.read(habitsListProvider.notifier).checkStreaksWithStreakSaver(
         streakSaverAvailable,
         (used) async {
           if (used) {
@@ -314,7 +314,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                 ..cue = cue
                 ..reminderMinutes = _timeToMinutes(reminder)
                 ..category = result['category'] ?? 'General';
-              notifier.addHabit(habit);
+              await notifier.addHabit(habit);
               // Schedule notification
               if (reminder != null) {
                 await _scheduleHabitNotification(
@@ -572,7 +572,9 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
                               ),
                             );
                             if (result != null && result.trim().isNotEmpty) {
-                              categoriesNotifier.addCategory(result.trim());
+                              await categoriesNotifier.addCategory(
+                                result.trim(),
+                              );
                               setState(() => selectedCategory = result.trim());
                             }
                           },
@@ -673,7 +675,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       );
 
       try {
-        notifier.deleteHabitByKey(habitKey);
+        await notifier.deleteHabitByKey(habitKey);
 
         if (!mounted) return;
         LockinSnackBar.showUndo(
@@ -772,7 +774,7 @@ class _HabitsHomeState extends ConsumerState<HabitsHome> {
       // If title changed, remove old notification ID
       if (habit.title != updated.title) {}
 
-      notifier.updateHabitByKey(habitKey, updated, null);
+      await notifier.updateHabitByKey(habitKey, updated, null);
 
       // Schedule new notifications
       final time = result['reminder'] as TimeOfDay?;

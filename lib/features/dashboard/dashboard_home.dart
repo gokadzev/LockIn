@@ -16,17 +16,14 @@
  */
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/constants/gamification_constants.dart';
-import 'package:lockin/constants/hive_constants.dart';
-import 'package:lockin/core/models/habit.dart';
-import 'package:lockin/core/models/session.dart';
-import 'package:lockin/core/models/task.dart';
 import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
 import 'package:lockin/features/dashboard/dashboard_provider.dart';
+import 'package:lockin/features/habits/habit_provider.dart';
 import 'package:lockin/features/journal/journal_provider.dart';
 import 'package:lockin/features/sessions/session_provider.dart';
+import 'package:lockin/features/tasks/task_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
 import 'package:lockin/widgets/advanced_dashboard_section.dart';
 import 'package:lockin/widgets/average_mood_card.dart';
@@ -70,63 +67,23 @@ class _DashboardHomeState extends ConsumerState<DashboardHome> {
   Widget build(BuildContext context) {
     if (!_subscriptionsReady) return const SizedBox.shrink();
 
-    final ref = this.ref;
-    final xpProfile = ref.watch(xpNotifierProvider);
-    final userLevel = xpProfile.level;
-    final isAdvanced = userLevel >= GamificationConstants.advancedLevel;
-    final stats = ref.watch(dashboardStatsProvider);
-    final weeklyStats = ref.watch(weeklyOverviewStatsProvider);
-    final sessions = ref.watch(sessionsListProvider);
-    final advancedInsights = isAdvanced
-        ? ref.watch(advancedDashboardInsightsProvider)
-        : null;
-
-    return Scaffold(
-      appBar: const LockinAppBar(title: 'Dashboard'),
+    return const Scaffold(
+      appBar: LockinAppBar(title: 'Dashboard'),
       body: SingleChildScrollView(
         padding: AppConstants.bodyPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            EncouragementCard(stats: stats, userLevel: userLevel),
+            _DashboardSummary(),
             // Average Mood Card
-            const AverageMoodCard(),
-            LockinDashboardCard(
-              title: 'Recommendations',
-              items: _buildRecommendations(context, ref),
-              trailing: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(999),
-                  onTap: () {
-                    Navigator.of(context).pushNamed('/recommendations');
-                  },
-                  child: Container(
-                    height: 36,
-                    width: 36,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondaryContainer,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (isAdvanced) AdvancedDashboardSection(stats: advancedInsights!),
-            QuickStatsCard(stats: stats),
-            XPDashboardCard(xpProfile: xpProfile),
-            WeeklyOverviewChart(stats: weeklyStats),
-            FocusOverviewCard(sessions: sessions),
-            MonthlyOverviewHeatmap(
-              monthlyData: ref.watch(monthlyHeatmapProvider),
-            ),
-            GoalProgressCard(progress: stats.goalsProgress),
-            const SizedBox(height: 24),
+            AverageMoodCard(),
+            _DashboardRecommendations(),
+            _AdvancedDashboard(),
+            _DashboardQuickStats(),
+            _DashboardXP(),
+            _DashboardActivity(),
+            _DashboardGoalProgress(),
+            SizedBox(height: 24),
           ],
         ),
       ),
@@ -134,10 +91,117 @@ class _DashboardHomeState extends ConsumerState<DashboardHome> {
   }
 }
 
+class _DashboardSummary extends ConsumerWidget {
+  const _DashboardSummary();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final xpProfile = ref.watch(xpNotifierProvider);
+    final stats = ref.watch(dashboardStatsProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [EncouragementCard(stats: stats, userLevel: xpProfile.level)],
+    );
+  }
+}
+
+class _DashboardQuickStats extends ConsumerWidget {
+  const _DashboardQuickStats();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return QuickStatsCard(stats: ref.watch(dashboardStatsProvider));
+  }
+}
+
+class _DashboardXP extends ConsumerWidget {
+  const _DashboardXP();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return XPDashboardCard(xpProfile: ref.watch(xpNotifierProvider));
+  }
+}
+
+class _AdvancedDashboard extends ConsumerWidget {
+  const _AdvancedDashboard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userLevel = ref.watch(xpNotifierProvider).level;
+    if (userLevel < GamificationConstants.advancedLevel) {
+      return const SizedBox.shrink();
+    }
+    return AdvancedDashboardSection(
+      stats: ref.watch(advancedDashboardInsightsProvider),
+    );
+  }
+}
+
+class _DashboardActivity extends ConsumerWidget {
+  const _DashboardActivity();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        WeeklyOverviewChart(stats: ref.watch(weeklyOverviewStatsProvider)),
+        FocusOverviewCard(sessions: ref.watch(sessionsListProvider)),
+        MonthlyOverviewHeatmap(monthlyData: ref.watch(monthlyHeatmapProvider)),
+      ],
+    );
+  }
+}
+
+class _DashboardRecommendations extends ConsumerWidget {
+  const _DashboardRecommendations();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final items = _buildRecommendations(context, ref);
+    return LockinDashboardCard(
+      title: 'Recommendations',
+      items: items,
+      trailing: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () => Navigator.of(context).pushNamed('/recommendations'),
+          child: Container(
+            height: 36,
+            width: 36,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.arrow_forward,
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              size: 20,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashboardGoalProgress extends ConsumerWidget {
+  const _DashboardGoalProgress();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GoalProgressCard(
+      progress: ref.watch(dashboardStatsProvider).goalsProgress,
+    );
+  }
+}
+
 List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
-  final taskBox = Hive.box<Task>(HiveBoxes.tasks);
-  final habitBox = Hive.box<Habit>(HiveBoxes.habits);
-  final sessionBox = Hive.box<Session>(HiveBoxes.sessions);
+  final tasks = ref.watch(tasksListProvider);
+  final habits = ref.watch(habitsListProvider);
+  final sessions = ref.watch(sessionsListProvider);
   final journals = ref.watch(journalsListProvider);
   final items = <DashboardItem>[];
   void navTo(int index) {
@@ -147,7 +211,7 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
     );
   }
 
-  if (taskBox.isEmpty) {
+  if (tasks.isEmpty) {
     items.add(
       DashboardItem(
         icon: Icons.add_task,
@@ -155,7 +219,7 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
         onTap: () => navTo(1),
       ),
     );
-  } else if (taskBox.values.where((t) => !t.completed).isEmpty) {
+  } else if (tasks.every((t) => t.completed)) {
     items.add(
       DashboardItem(
         icon: Icons.check_circle,
@@ -164,7 +228,7 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
       ),
     );
   }
-  if (habitBox.isEmpty) {
+  if (habits.isEmpty) {
     items.add(
       DashboardItem(
         icon: Icons.repeat,
@@ -174,7 +238,7 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
     );
   } else {
     final today = DateTime.now();
-    final doneToday = habitBox.values.any(
+    final doneToday = habits.any(
       (h) => h.history.any((d) => d.isSameDay(today)),
     );
     if (!doneToday) {
@@ -187,7 +251,7 @@ List<DashboardItem> _buildRecommendations(BuildContext context, WidgetRef ref) {
       );
     }
   }
-  if (sessionBox.isEmpty) {
+  if (sessions.isEmpty) {
     items.add(
       DashboardItem(
         icon: Icons.timer,

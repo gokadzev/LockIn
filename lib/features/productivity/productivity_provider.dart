@@ -21,7 +21,10 @@ import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:lockin/features/habits/habit_provider.dart';
 import 'package:lockin/features/productivity/productivity_service.dart';
+import 'package:lockin/features/sessions/session_provider.dart';
+import 'package:lockin/features/tasks/task_provider.dart';
 
 class ProductivityStats {
   ProductivityStats({
@@ -43,6 +46,11 @@ class ProductivityStats {
 }
 
 final productivityStatsProvider = Provider<ProductivityStats>((ref) {
+  // Keep the expensive analytics cache reactive to persisted list changes.
+  ref
+    ..watch(tasksListProvider)
+    ..watch(habitsListProvider)
+    ..watch(sessionsListProvider);
   final taskBox = Hive.box<Task>(HiveBoxes.tasks);
   final habitBox = Hive.box<Habit>(HiveBoxes.habits);
   final sessionBox = Hive.box<Session>(HiveBoxes.sessions);

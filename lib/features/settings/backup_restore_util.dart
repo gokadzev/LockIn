@@ -61,14 +61,26 @@ class BackupRestoreUtil {
   static Future<Map<String, dynamic>> importBackupFile(File file) async {
     try {
       final content = await file.readAsString();
-      return jsonDecode(content);
+      final decoded = jsonDecode(content);
+      if (decoded is! Map) {
+        throw const FormatException('Backup must contain a JSON object');
+      }
+      return Map<String, dynamic>.from(decoded);
     } catch (e) {
       debugPrint('Error importing backup file: $e');
-      return {};
+      rethrow;
     }
   }
 
   static Future<void> restoreAllData(Map<String, dynamic> data) async {
+    const collections = ['tasks', 'goals', 'journals', 'habits', 'sessions'];
+    for (final collection in collections) {
+      final value = data[collection];
+      if (value is! List) {
+        throw FormatException('Backup is missing the "$collection" collection');
+      }
+    }
+
     // Stage all parsed objects in memory BEFORE touching any Hive box.
     // If any entry is malformed and throws, existing data remains untouched.
     final stagedTasks = <Task>[];
@@ -77,19 +89,19 @@ class BackupRestoreUtil {
     final stagedHabits = <Habit>[];
     final stagedSessions = <Session>[];
 
-    for (final t in data['tasks'] ?? []) {
+    for (final t in data['tasks'] as List) {
       stagedTasks.add(Task.fromJson(t));
     }
-    for (final g in data['goals'] ?? []) {
+    for (final g in data['goals'] as List) {
       stagedGoals.add(Goal.fromJson(g));
     }
-    for (final j in data['journals'] ?? []) {
+    for (final j in data['journals'] as List) {
       stagedJournals.add(Journal.fromJson(j));
     }
-    for (final h in data['habits'] ?? []) {
+    for (final h in data['habits'] as List) {
       stagedHabits.add(Habit.fromJson(h));
     }
-    for (final s in data['sessions'] ?? []) {
+    for (final s in data['sessions'] as List) {
       stagedSessions.add(Session.fromJson(s));
     }
 

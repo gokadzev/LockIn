@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_values.dart';
@@ -101,39 +100,37 @@ class HabitsNotifier extends BoxCrudNotifier<Habit> {
     Habit habit,
     void Function(int xpChange)? onXPChange,
   ) {
-    if (box == null) return;
-    if (index < 0 || index >= box!.length) return;
+    var wasDoneToday = false;
+    var isDoneToday = false;
+    updateItemWithPrevious(
+      index,
+      habit,
+      prepare: (prevHabit) {
+        // Normalize history using the streak calculator
+        habit.history = HabitStreakCalculator.normalizeHistory(habit.history);
+        final prevHistory =
+            prevHabit?.history.map((d) => d.dateOnly).toList() ?? [];
 
-    try {
-      final prevHabit = box!.getAt(index);
+        wasDoneToday = prevHistory.any((d) => d.isToday);
+        isDoneToday = habit.history.any((d) => d.isToday);
 
-      // Normalize history using the streak calculator
-      habit.history = HabitStreakCalculator.normalizeHistory(habit.history);
-      final prevHistory =
-          prevHabit?.history.map((d) => d.dateOnly).toList() ?? [];
-
-      final wasDoneToday = prevHistory.any((d) => d.isToday);
-      final isDoneToday = habit.history.any((d) => d.isToday);
-
-      // Recalculate streak using the dedicated service
-      habit.streak = HabitStreakCalculator.calculateStreak(
-        habit.history,
-        frequency: habit.frequency,
-        cue: habit.cue,
-      );
-
-      updateItem(index, habit);
-
-      // Award or remove XP if today's completion status changed.
-      if (!wasDoneToday && isDoneToday) {
-        onXPChange?.call(AppValues.habitCompletionXP);
-      } else if (wasDoneToday && !isDoneToday) {
-        onXPChange?.call(-AppValues.habitCompletionXP);
-      }
-    } catch (e, stackTrace) {
-      debugPrint('Error updating habit at index $index: $e');
-      debugPrint('StackTrace: $stackTrace');
-    }
+        // Recalculate streak using the dedicated service
+        habit.streak = HabitStreakCalculator.calculateStreak(
+          habit.history,
+          frequency: habit.frequency,
+          cue: habit.cue,
+        );
+        return habit;
+      },
+      onSuccess: (prevHabit, _) {
+        // Award or remove XP if today's completion status changed.
+        if (!wasDoneToday && isDoneToday) {
+          onXPChange?.call(AppValues.habitCompletionXP);
+        } else if (wasDoneToday && !isDoneToday) {
+          onXPChange?.call(-AppValues.habitCompletionXP);
+        }
+      },
+    );
   }
 
   /// Deletes a habit at [index] from the box and updates state.

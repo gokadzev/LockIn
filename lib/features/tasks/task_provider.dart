@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/app_values.dart';
@@ -48,35 +47,31 @@ class TasksNotifier extends BoxCrudNotifier<Task> {
     Task task,
     void Function(int xpChange)? onXPChange,
   ) {
-    if (box == null) return;
-    if (index < 0 || index >= box!.length) return;
-
-    try {
-      final prevTask = box!.getAt(index);
-
-      // If marking as completed, set completion time; if un-completing, clear it.
-      if (prevTask != null && !prevTask.completed && task.completed) {
-        task.completionTime ??= DateTime.now();
-      } else if (prevTask != null && prevTask.completed && !task.completed) {
-        task.completionTime = null;
-      } else if (prevTask != null && prevTask.completed && task.completed) {
-        task.completionTime ??= prevTask.completionTime;
-      }
-
-      updateItem(index, task);
-
-      // Award or remove XP if completion state changed.
-      if (prevTask != null) {
-        if (!prevTask.completed && task.completed) {
-          onXPChange?.call(AppValues.taskCompletionXP);
-        } else if (prevTask.completed && !task.completed) {
-          onXPChange?.call(-AppValues.taskCompletionXP);
+    updateItemWithPrevious(
+      index,
+      task,
+      prepare: (prevTask) {
+        // If marking as completed, set completion time; if un-completing, clear it.
+        if (prevTask != null && !prevTask.completed && task.completed) {
+          task.completionTime ??= DateTime.now();
+        } else if (prevTask != null && prevTask.completed && !task.completed) {
+          task.completionTime = null;
+        } else if (prevTask != null && prevTask.completed && task.completed) {
+          task.completionTime ??= prevTask.completionTime;
         }
-      }
-    } catch (e, stackTrace) {
-      debugPrint('Error updating task at index $index: $e');
-      debugPrint('StackTrace: $stackTrace');
-    }
+        return task;
+      },
+      onSuccess: (prevTask, _) {
+        // Award or remove XP if completion state changed.
+        if (prevTask != null) {
+          if (!prevTask.completed && task.completed) {
+            onXPChange?.call(AppValues.taskCompletionXP);
+          } else if (prevTask.completed && !task.completed) {
+            onXPChange?.call(-AppValues.taskCompletionXP);
+          }
+        }
+      },
+    );
   }
 
   /// Updates a task by its Hive key. Returns true if update succeeded.

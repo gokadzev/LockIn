@@ -74,14 +74,14 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
   }
 
   /// Updates an item at [index] in the box and updates state efficiently.
-  void updateItem(int index, T item) {
+  bool updateItem(int index, T item) {
     if (box == null) {
       debugPrint('Cannot update item: box is null');
-      return;
+      return false;
     }
     if (index < 0 || index >= box!.length) {
       debugPrint('Invalid index $index for box with length ${box!.length}');
-      return;
+      return false;
     }
     try {
       box!.putAt(index, item);
@@ -92,11 +92,28 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
       } else {
         syncStateFromBox();
       }
+      return true;
     } catch (e, stackTrace) {
       debugPrint('Error updating item at index $index: $e');
       debugPrint('StackTrace: $stackTrace');
       syncStateFromBox();
+      return false;
     }
+  }
+
+  /// Prepares and persists an item, then applies effects only after success.
+  bool updateItemWithPrevious(
+    int index,
+    T item, {
+    required T Function(T? previous) prepare,
+    void Function(T? previous, T updated)? onSuccess,
+  }) {
+    if (box == null || index < 0 || index >= box!.length) return false;
+    final previous = box!.getAt(index);
+    final updated = prepare(previous);
+    final success = updateItem(index, updated);
+    if (success) onSuccess?.call(previous, updated);
+    return success;
   }
 
   /// Returns the current list index for a Hive key, or null when absent.

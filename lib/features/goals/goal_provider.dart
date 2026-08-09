@@ -58,35 +58,32 @@ class GoalsNotifier extends BoxCrudNotifier<Goal> {
     Goal goal,
     void Function(int xpChange)? onXPChange,
   ) {
-    if (box == null) return;
-    if (index < 0 || index >= box!.length) return;
+    var xpDelta = 0;
+    updateItemWithPrevious(
+      index,
+      goal,
+      prepare: (prevGoal) {
+        // Calculate XP delta BEFORE mutating storage/state
+        final prevCompleted =
+            prevGoal?.milestones.where((m) => m.completed).length ?? 0;
+        final newCompleted = goal.milestones.where((m) => m.completed).length;
+        xpDelta =
+            (newCompleted - prevCompleted) * AppValues.milestoneCompletionXP;
 
-    try {
-      final prevGoal = box!.getAt(index);
-
-      // Calculate XP delta BEFORE mutating storage/state
-      final prevCompleted =
-          prevGoal?.milestones.where((m) => m.completed).length ?? 0;
-      final newCompleted = goal.milestones.where((m) => m.completed).length;
-      final xpDelta =
-          (newCompleted - prevCompleted) * AppValues.milestoneCompletionXP;
-
-      // Recalculate progress only if there are milestones; for milestone-less
-      // goals we preserve manually set progress (e.g., marking finished sets 1.0)
-      if (goal.milestones.isNotEmpty) {
-        goal.progress = goal.milestoneProgress;
-      }
-
-      updateItem(index, goal);
-
-      // Award or remove XP if milestone completion status changed.
-      if (xpDelta != 0) {
-        onXPChange?.call(xpDelta);
-      }
-    } catch (e, stackTrace) {
-      debugPrint('Error updating goal at index $index: $e');
-      debugPrint('StackTrace: $stackTrace');
-    }
+        // Recalculate progress only if there are milestones; for milestone-less
+        // goals we preserve manually set progress (e.g., marking finished sets 1.0)
+        if (goal.milestones.isNotEmpty) {
+          goal.progress = goal.milestoneProgress;
+        }
+        return goal;
+      },
+      onSuccess: (_, _) {
+        // Award or remove XP if milestone completion status changed.
+        if (xpDelta != 0) {
+          onXPChange?.call(xpDelta);
+        }
+      },
+    );
   }
 
   /// Deletes a goal at [index] from the box and updates state.

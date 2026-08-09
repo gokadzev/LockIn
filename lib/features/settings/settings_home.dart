@@ -90,6 +90,24 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
     }
   }
 
+  Widget _sectionHeader(
+    BuildContext context,
+    String title, {
+    bool muted = true,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: muted ? colorScheme.onSurface.withValues(alpha: 0.8) : null,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final engagementTime = ref.watch(engagementTimeProvider);
@@ -126,20 +144,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
                 const SizedBox(height: 12),
 
-                // --- Appearance ---
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 4,
-                  ),
-                  child: Text(
-                    'Appearance',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: colorScheme.onSurface.withValues(alpha: 0.8),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                _sectionHeader(context, 'Appearance'),
 
                 // Dynamic Color Toggle
                 SettingsItem(
@@ -157,19 +162,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
 
                 const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 4,
-                  ),
-                  child: Text(
-                    'Notifications',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: colorScheme.onSurface.withValues(alpha: 0.8),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                _sectionHeader(context, 'Notifications'),
 
                 // Engagement Notification Time
                 SettingsItem(
@@ -189,19 +182,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
 
                 const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 4,
-                  ),
-                  child: Text(
-                    'General',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: colorScheme.onSurface.withValues(alpha: 0.8),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                _sectionHeader(context, 'General'),
 
                 // Backup
                 SettingsItem(
@@ -222,18 +203,7 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
                 ),
 
                 const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 4,
-                  ),
-                  child: Text(
-                    'System',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                _sectionHeader(context, 'System', muted: false),
 
                 // Battery optimization
                 SettingsItem(

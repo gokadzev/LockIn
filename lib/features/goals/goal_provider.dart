@@ -35,20 +35,9 @@ final goalsListProvider = NotifierProvider<GoalsNotifier, List<Goal>>(
 );
 
 /// StateNotifier for managing the list of goals, including milestone progress and XP updates.
-class GoalsNotifier extends Notifier<List<Goal>> with BoxCrudMixin<Goal> {
-  Box<Goal>? _box;
-
+class GoalsNotifier extends BoxCrudNotifier<Goal> {
   @override
-  Box<Goal>? get box => _box;
-
-  @override
-  List<Goal> build() {
-    stopWatchingBox();
-    _box = ref.watch(goalsBoxProvider);
-    startWatchingBox();
-    ref.onDispose(stopWatchingBox);
-    return _box?.values.toList() ?? [];
-  }
+  String get boxName => HiveBoxes.goals;
 
   /// Adds a new goal to the box and updates state. Progress is set from milestones.
   Future<void> addGoal(Goal goal) async {

@@ -30,21 +30,9 @@ final journalsListProvider = NotifierProvider<JournalsNotifier, List<Journal>>(
   JournalsNotifier.new,
 );
 
-class JournalsNotifier extends Notifier<List<Journal>>
-    with BoxCrudMixin<Journal> {
-  Box<Journal>? _box;
-
+class JournalsNotifier extends BoxCrudNotifier<Journal> {
   @override
-  Box<Journal>? get box => _box;
-
-  @override
-  List<Journal> build() {
-    stopWatchingBox();
-    _box = ref.watch(journalsBoxProvider);
-    startWatchingBox();
-    ref.onDispose(stopWatchingBox);
-    return _box?.values.toList() ?? [];
-  }
+  String get boxName => HiveBoxes.journals;
 
   void addJournal(Journal journal) => addItem(journal);
   void updateJournal(int index, Journal journal) => updateItem(index, journal);

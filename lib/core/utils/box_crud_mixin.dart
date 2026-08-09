@@ -20,9 +20,11 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:lockin/core/utils/hive_utils.dart';
 
+/// Shared CRUD operations for Hive-backed Riverpod notifiers.
 mixin BoxCrudMixin<T> on Notifier<List<T>> {
-  /// The Hive box backing this provider. Must be implemented by the class using the mixin.
+  /// The Hive box backing this notifier.
   Box<T>? get box;
 
   /// Refreshes the StateNotifier state from the current box values.
@@ -176,5 +178,26 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
       debugPrint('StackTrace: $stackTrace');
       return null;
     }
+  }
+}
+
+/// Base notifier that provides the shared Hive box lifecycle.
+abstract class BoxCrudNotifier<T> extends Notifier<List<T>>
+    with BoxCrudMixin<T> {
+  /// The Hive box name backing this notifier.
+  String get boxName;
+
+  Box<T>? _box;
+
+  @override
+  Box<T>? get box => _box;
+
+  @override
+  List<T> build() {
+    stopWatchingBox();
+    _box = openBoxIfAvailable<T>(boxName);
+    startWatchingBox();
+    ref.onDispose(stopWatchingBox);
+    return _box?.values.toList() ?? [];
   }
 }

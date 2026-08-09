@@ -37,20 +37,9 @@ final habitsListProvider = NotifierProvider<HabitsNotifier, List<Habit>>(
 );
 
 /// StateNotifier for managing the list of habits, including streak logic and XP updates.
-class HabitsNotifier extends Notifier<List<Habit>> with BoxCrudMixin<Habit> {
-  Box<Habit>? _box;
-
+class HabitsNotifier extends BoxCrudNotifier<Habit> {
   @override
-  Box<Habit>? get box => _box;
-
-  @override
-  List<Habit> build() {
-    stopWatchingBox();
-    _box = ref.watch(habitsBoxProvider);
-    startWatchingBox();
-    ref.onDispose(stopWatchingBox);
-    return _box?.values.toList() ?? [];
-  }
+  String get boxName => HiveBoxes.habits;
 
   /// Checks all habits for missed days and resets streaks if needed.
   /// If [streakSaverAvailable] is true and a streak is missed by 1-3 days, calls [onStreakSaverUsed].

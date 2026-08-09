@@ -32,21 +32,9 @@ final sessionsListProvider = NotifierProvider<SessionsNotifier, List<Session>>(
   SessionsNotifier.new,
 );
 
-class SessionsNotifier extends Notifier<List<Session>>
-    with BoxCrudMixin<Session> {
-  Box<Session>? _box;
-
+class SessionsNotifier extends BoxCrudNotifier<Session> {
   @override
-  Box<Session>? get box => _box;
-
-  @override
-  List<Session> build() {
-    stopWatchingBox();
-    _box = ref.watch(sessionsBoxProvider);
-    startWatchingBox();
-    ref.onDispose(stopWatchingBox);
-    return _box?.values.toList() ?? [];
-  }
+  String get boxName => HiveBoxes.sessions;
 
   /// Adds a new session to the box and updates state.
   void addSession(Session session) => addItem(session);

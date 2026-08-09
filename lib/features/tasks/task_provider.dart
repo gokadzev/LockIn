@@ -35,20 +35,9 @@ final tasksListProvider = NotifierProvider<TasksNotifier, List<Task>>(
 );
 
 /// StateNotifier for managing the list of tasks, including completion time and XP updates.
-class TasksNotifier extends Notifier<List<Task>> with BoxCrudMixin<Task> {
-  Box<Task>? _box;
-
+class TasksNotifier extends BoxCrudNotifier<Task> {
   @override
-  Box<Task>? get box => _box;
-
-  @override
-  List<Task> build() {
-    stopWatchingBox();
-    _box = ref.watch(tasksBoxProvider);
-    startWatchingBox();
-    ref.onDispose(stopWatchingBox);
-    return _box?.values.toList() ?? [];
-  }
+  String get boxName => HiveBoxes.tasks;
 
   /// Adds a new task to the box and updates state.
   void addTask(Task task) => addItem(task);

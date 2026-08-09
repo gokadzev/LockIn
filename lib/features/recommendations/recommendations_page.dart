@@ -21,8 +21,11 @@ import 'package:lockin/constants/recommendations/goals.dart';
 import 'package:lockin/constants/recommendations/habits.dart';
 import 'package:lockin/constants/recommendations/tasks.dart';
 import 'package:lockin/core/models/goal.dart';
+import 'package:lockin/core/models/goal_suggestion.dart';
 import 'package:lockin/core/models/habit.dart';
+import 'package:lockin/core/models/habit_suggestion.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:lockin/core/models/task_suggestion.dart';
 import 'package:lockin/core/notifications/habit_notification_manager.dart';
 import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/features/goals/goal_provider.dart';
@@ -197,235 +200,107 @@ class RecommendationsPage extends ConsumerWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    // Habits tab
-                    SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (filteredHabits.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 24),
-                              child: Center(
-                                child: Text(
-                                  'No habit suggestions',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
+                    _RecommendationTab<HabitSuggestion>(
+                      title: 'Habits',
+                      emptyText: 'No habit suggestions',
+                      items: filteredHabits,
+                      itemBuilder: (s) => RecommendationCard(
+                        title: s.title,
+                        description: s.description,
+                        category: s.category,
+                        onAdd: () async {
+                          final category = s.category ?? 'General';
+                          if (category.isNotEmpty &&
+                              !categories.any((c) => c == category)) {
+                            categoriesNotifier.addCategory(category);
+                          }
+                          final newHabit = Habit()
+                            ..title = s.title
+                            ..frequency = s.frequency
+                            ..category = category;
+
+                          habitNotifier.addHabit(newHabit);
+
+                          try {
+                            final engagementTime = ref.read(
+                              engagementTimeProvider,
+                            );
+
+                            final habitId =
+                                newHabit.key?.toString() ??
+                                DateTime.now().millisecondsSinceEpoch
+                                    .toString();
+
+                            await HabitNotificationManager()
+                                .scheduleHabitReminder(
+                                  habitId: habitId,
+                                  habitTitle: s.title,
+                                  reminderTime: TimeOfDay(
+                                    hour: engagementTime.hour,
+                                    minute: engagementTime.minute,
+                                  ),
+                                  frequency: s.frequency,
+                                );
+                          } catch (_) {
+                            debugPrint(
+                              'Failed to schedule notification for ${s.title}',
+                            );
+                          }
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Habit added: ${s.title}'),
                               ),
-                            )
-                          else ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              'Habits',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: Wrap(
-                                spacing: 6,
-                                runSpacing: 6,
-                                children: filteredHabits
-                                    .map(
-                                      (s) => RecommendationCard(
-                                        title: s.title,
-                                        description: s.description,
-                                        category: s.category,
-                                        onAdd: () async {
-                                          final category =
-                                              s.category ?? 'General';
-                                          if (category.isNotEmpty &&
-                                              !categories.any(
-                                                (c) => c == category,
-                                              )) {
-                                            categoriesNotifier.addCategory(
-                                              category,
-                                            );
-                                          }
-                                          final newHabit = Habit()
-                                            ..title = s.title
-                                            ..frequency = s.frequency
-                                            ..category = category;
-
-                                          habitNotifier.addHabit(newHabit);
-
-                                          try {
-                                            final engagementTime = ref.read(
-                                              engagementTimeProvider,
-                                            );
-
-                                            final habitId =
-                                                newHabit.key?.toString() ??
-                                                DateTime.now()
-                                                    .millisecondsSinceEpoch
-                                                    .toString();
-
-                                            await HabitNotificationManager()
-                                                .scheduleHabitReminder(
-                                                  habitId: habitId,
-                                                  habitTitle: s.title,
-                                                  reminderTime: TimeOfDay(
-                                                    hour: engagementTime.hour,
-                                                    minute:
-                                                        engagementTime.minute,
-                                                  ),
-                                                  frequency: s.frequency,
-                                                );
-                                          } catch (_) {
-                                            debugPrint(
-                                              'Failed to schedule notification for ${s.title}',
-                                            );
-                                          }
-                                          if (context.mounted) {
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  'Habit added: ${s.title}',
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-                          ],
-                        ],
+                            );
+                          }
+                        },
                       ),
                     ),
 
-                    // Tasks tab
-                    SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (filteredTasks.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 24),
-                              child: Center(
-                                child: Text(
-                                  'No task suggestions',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                            )
-                          else ...[
-                            Text(
-                              'Tasks',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: Wrap(
-                                spacing: 6,
-                                runSpacing: 6,
-                                children: filteredTasks
-                                    .map(
-                                      (s) => RecommendationCard(
-                                        title: s.title,
-                                        description: s.description,
-                                        category: s.category,
-                                        priority: s.priority,
-                                        onAdd: () {
-                                          tasksNotifier.addTask(
-                                            Task()
-                                              ..title = s.title
-                                              ..description = s.description
-                                              ..priority = s.priority
-                                              ..tags = [
-                                                (s.category ?? 'General'),
-                                              ],
-                                          );
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Task added: ${s.title}',
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-                          ],
-                        ],
+                    _RecommendationTab<TaskSuggestion>(
+                      title: 'Tasks',
+                      emptyText: 'No task suggestions',
+                      items: filteredTasks,
+                      itemBuilder: (s) => RecommendationCard(
+                        title: s.title,
+                        description: s.description,
+                        category: s.category,
+                        priority: s.priority,
+                        onAdd: () {
+                          tasksNotifier.addTask(
+                            Task()
+                              ..title = s.title
+                              ..description = s.description
+                              ..priority = s.priority
+                              ..tags = [(s.category ?? 'General')],
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Task added: ${s.title}')),
+                          );
+                        },
                       ),
                     ),
 
-                    // Goals tab
-                    SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (filteredGoals.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 24),
-                              child: Center(
-                                child: Text(
-                                  'No goal suggestions',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                            )
-                          else ...[
-                            Text(
-                              'Goals',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: Wrap(
-                                spacing: 6,
-                                runSpacing: 6,
-                                children: filteredGoals
-                                    .map(
-                                      (s) => RecommendationCard(
-                                        title: s.title,
-                                        description: s.description,
-                                        category: s.category,
-                                        onAdd: () {
-                                          final category =
-                                              s.category ?? 'General';
-                                          goalsNotifier.addGoal(
-                                            Goal()
-                                              ..title = s.title
-                                              ..smart = s.description
-                                              ..category = category,
-                                          );
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Goal added: ${s.title}',
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                          ],
-                        ],
+                    _RecommendationTab<GoalSuggestion>(
+                      title: 'Goals',
+                      emptyText: 'No goal suggestions',
+                      items: filteredGoals,
+                      itemBuilder: (s) => RecommendationCard(
+                        title: s.title,
+                        description: s.description,
+                        category: s.category,
+                        onAdd: () {
+                          final category = s.category ?? 'General';
+                          goalsNotifier.addGoal(
+                            Goal()
+                              ..title = s.title
+                              ..smart = s.description
+                              ..category = category,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Goal added: ${s.title}')),
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -434,6 +309,57 @@ class RecommendationsPage extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RecommendationTab<T> extends StatelessWidget {
+  const _RecommendationTab({
+    required this.title,
+    required this.emptyText,
+    required this.items,
+    required this.itemBuilder,
+  });
+
+  final String title;
+  final String emptyText;
+  final List<T> items;
+  final Widget Function(T item) itemBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 24),
+          child: Center(
+            child: Text(
+              emptyText,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 8),
+          Text(title, style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: items.map(itemBuilder).toList(),
+            ),
+          ),
+          const SizedBox(height: 32),
+        ],
       ),
     );
   }

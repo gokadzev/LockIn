@@ -24,6 +24,7 @@ import 'package:lockin/core/models/task.dart';
 import 'package:lockin/core/notifications/engagement_notification_manager.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
 import 'package:lockin/core/utils/hive_background_init.dart';
+import 'package:lockin/hive_registrar.g.dart';
 import 'package:workmanager/workmanager.dart';
 
 const String engagementTaskName = 'dailyEngagementTask';
@@ -37,6 +38,7 @@ void notificationBackgroundHandler() {
       debugPrint('Background task started: $task');
 
       await initHiveForBackground();
+      Hive.registerAdapters();
 
       switch (task) {
         case engagementTaskName:
@@ -61,7 +63,7 @@ Future<bool> _handleEngagementTask() async {
     final habitBox = await _openBox<Habit>(HiveBoxes.habits);
     final taskBox = await _openBox<Task>(HiveBoxes.tasks);
     final goalBox = await _openBox<Goal>(HiveBoxes.goals);
-    final settingsBox = await _openBox(HiveBoxes.settings);
+    final settingsBox = await _openBox<dynamic>(HiveBoxes.settings);
 
     try {
       // Get preferred notification time
@@ -97,10 +99,10 @@ Future<bool> _handleEngagementTask() async {
       return success;
     } finally {
       // Always close boxes to prevent resource accumulation in background isolate
-      _closeBox(HiveBoxes.habits);
-      _closeBox(HiveBoxes.tasks);
-      _closeBox(HiveBoxes.goals);
-      _closeBox(HiveBoxes.settings);
+      await _closeBox(habitBox);
+      await _closeBox(taskBox);
+      await _closeBox(goalBox);
+      await _closeBox(settingsBox);
     }
   } catch (e) {
     debugPrint('Error in engagement task: $e');
@@ -136,13 +138,11 @@ Future<Box<T>?> _openBox<T>(String boxName) async {
 }
 
 /// Safely close a Hive box to prevent resource accumulation
-void _closeBox(String boxName) {
+Future<void> _closeBox<T>(Box<T>? box) async {
   try {
-    if (Hive.isBoxOpen(boxName)) {
-      Hive.box(boxName).close();
-    }
+    await box?.close();
   } catch (e) {
-    debugPrint('Error closing box $boxName: $e');
+    debugPrint('Error closing box: $e');
   }
 }
 

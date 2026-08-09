@@ -19,28 +19,17 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
-import 'package:lockin/core/models/habit_category.dart';
 import 'package:lockin/core/models/journal.dart';
 import 'package:lockin/core/models/rule.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
 import 'package:lockin/core/utils/hive_background_init.dart';
 import 'package:lockin/features/xp/xp_models.dart';
+import 'package:lockin/hive_registrar.g.dart';
 
 Future<void> initializeApp() async {
   await initHiveForBackground();
-  Hive
-    ..registerAdapter(TaskAdapter())
-    ..registerAdapter(HabitAdapter())
-    ..registerAdapter(GoalAdapter())
-    ..registerAdapter(MilestoneAdapter())
-    ..registerAdapter(SessionAdapter())
-    ..registerAdapter(JournalAdapter())
-    ..registerAdapter(RuleAdapter())
-    ..registerAdapter(XPProfileAdapter())
-    ..registerAdapter(RewardAdapter())
-    ..registerAdapter(RewardTypeAdapter())
-    ..registerAdapter(HabitCategoryAdapter());
+  Hive.registerAdapters();
   await Future.wait([
     Hive.openBox<Task>(HiveBoxes.tasks),
     Hive.openBox<Habit>(HiveBoxes.habits),

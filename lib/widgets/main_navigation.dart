@@ -37,24 +37,22 @@ class MainNavigation extends StatefulWidget {
 class MainNavigationState extends State<MainNavigation> {
   late int _selectedIndex;
   static const List<_NavigationItem> _items = [
-    _NavigationItem(
-      icon: Icons.dashboard,
-      label: 'Dashboard',
-      page: DashboardHome(),
-    ),
-    _NavigationItem(
-      icon: Icons.check_circle_outline,
-      label: 'Tasks',
-      page: TasksHome(),
-    ),
-    _NavigationItem(icon: Icons.repeat, label: 'Habits', page: HabitsHome()),
-    _NavigationItem(icon: Icons.flag, label: 'Goals', page: GoalsHome()),
-    _NavigationItem(icon: Icons.timer, label: 'Focus', page: SessionsHome()),
-    _NavigationItem(icon: Icons.book, label: 'Journal', page: JournalHome()),
+    _NavigationItem(icon: Icons.dashboard, label: 'Dashboard'),
+    _NavigationItem(icon: Icons.check_circle_outline, label: 'Tasks'),
+    _NavigationItem(icon: Icons.repeat, label: 'Habits'),
+    _NavigationItem(icon: Icons.flag, label: 'Goals'),
+    _NavigationItem(icon: Icons.timer, label: 'Focus'),
+    _NavigationItem(icon: Icons.book, label: 'Journal'),
   ];
 
-  List<Widget> get _pages =>
-      _items.map((item) => item.page).toList(growable: false);
+  static const List<Widget> _pages = [
+    DashboardHome(),
+    TasksHome(),
+    HabitsHome(),
+    GoalsHome(),
+    SessionsHome(),
+    JournalHome(),
+  ];
 
   @override
   void initState() {
@@ -143,13 +141,8 @@ class MainNavigationState extends State<MainNavigation> {
 }
 
 class _NavigationItem {
-  const _NavigationItem({
-    required this.icon,
-    required this.label,
-    required this.page,
-  });
+  const _NavigationItem({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
-  final Widget page;
 }

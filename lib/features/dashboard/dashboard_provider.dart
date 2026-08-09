@@ -231,6 +231,8 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
 
   final focusMinutesByDay = List<int>.filled(windowDays, 0);
   final sessionsInWindow = <Session>[];
+  final dayCounts = <int, int>{};
+  final hourCounts = <int, int>{};
   var totalCompletedMinutes = 0;
   var completedSessions = 0;
 
@@ -260,6 +262,10 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
     if (dayIndex >= 0 && dayIndex < windowDays) {
       focusMinutesByDay[dayIndex] += minutes;
     }
+    final weekday = session.startTime.weekday;
+    dayCounts[weekday] = (dayCounts[weekday] ?? 0) + 1;
+    final hour = session.startTime.hour;
+    hourCounts[hour] = (hourCounts[hour] ?? 0) + 1;
   }
 
   final avgSessionMinutes = completedSessions == 0
@@ -274,30 +280,22 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
   var completionsInWindow = 0;
   for (final habit in activeHabits) {
     for (final date in habit.history) {
-      if (inWindow(date)) completionsInWindow += 1;
+      if (!inWindow(date)) continue;
+      completionsInWindow += 1;
+      final weekday = date.weekday;
+      dayCounts[weekday] = (dayCounts[weekday] ?? 0) + 1;
     }
   }
   final habitConsistencyRate = totalPossible == 0
       ? 0.0
       : (completionsInWindow / totalPossible).clamp(0.0, 1.0);
 
-  final dayCounts = <int, int>{};
   for (final task in tasks) {
     final time = task.completionTime;
     if (task.completed && !task.abandoned && time != null && inWindow(time)) {
       dayCounts[time.weekday] = (dayCounts[time.weekday] ?? 0) + 1;
+      hourCounts[time.hour] = (hourCounts[time.hour] ?? 0) + 1;
     }
-  }
-  for (final habit in activeHabits) {
-    for (final date in habit.history) {
-      if (inWindow(date)) {
-        dayCounts[date.weekday] = (dayCounts[date.weekday] ?? 0) + 1;
-      }
-    }
-  }
-  for (final session in sessionsInWindow) {
-    dayCounts[session.startTime.weekday] =
-        (dayCounts[session.startTime.weekday] ?? 0) + 1;
   }
 
   String dayLabel(int weekday) {
@@ -317,18 +315,6 @@ final advancedDashboardInsightsProvider = Provider<AdvancedDashboardStats>((
     final best = dayCounts.entries.reduce((a, b) => a.value >= b.value ? a : b);
     bestDayLabel = dayLabel(best.key);
     bestDayCount = best.value;
-  }
-
-  final hourCounts = <int, int>{};
-  for (final task in tasks) {
-    final time = task.completionTime;
-    if (task.completed && !task.abandoned && time != null && inWindow(time)) {
-      hourCounts[time.hour] = (hourCounts[time.hour] ?? 0) + 1;
-    }
-  }
-  for (final session in sessionsInWindow) {
-    final hour = session.startTime.hour;
-    hourCounts[hour] = (hourCounts[hour] ?? 0) + 1;
   }
 
   var bestHourLabel = 'No data';

@@ -88,16 +88,7 @@ class NotificationService {
     NotificationChannel channel = NotificationChannel.engagement,
     NotificationPriority priority = NotificationPriority.normal,
     String? payload,
-  }) async {
-    if (!_initialized) {
-      return NotificationResult.failure('Service not initialized');
-    }
-
-    final hasPermission = await _permissionManager.hasPermission();
-    if (!hasPermission) {
-      return NotificationResult.failure('No notification permission');
-    }
-
+  }) => _runWhenReady(() {
     final data = InstantNotificationData(
       id: _idManager.generateDynamicId(),
       title: title,
@@ -106,9 +97,8 @@ class NotificationService {
       priority: priority,
       payload: payload,
     );
-
     return _platform.showNotification(data);
-  }
+  });
 
   /// Schedule a habit notification
   Future<NotificationResult> scheduleHabitNotification({
@@ -121,16 +111,7 @@ class NotificationService {
     List<int>? customWeekdays,
     String? payload,
     DateTime? scheduledTime,
-  }) async {
-    if (!_initialized) {
-      return NotificationResult.failure('Service not initialized');
-    }
-
-    final hasPermission = await _permissionManager.hasPermission();
-    if (!hasPermission) {
-      return NotificationResult.failure('No notification permission');
-    }
-
+  }) => _runWhenReady(() {
     final resolvedScheduledTime =
         scheduledTime ?? _timezoneManager.getNextOccurrence(time);
     final data = HabitNotificationData(
@@ -143,9 +124,8 @@ class NotificationService {
       customWeekdays: customWeekdays,
       payload: payload,
     );
-
     return _platform.scheduleNotification(data);
-  }
+  });
 
   /// Schedule a pomodoro notification
   Future<NotificationResult> showPomodoroNotification({
@@ -154,16 +134,7 @@ class NotificationService {
     required String sessionType,
     String? sessionId,
     String? payload,
-  }) async {
-    if (!_initialized) {
-      return NotificationResult.failure('Service not initialized');
-    }
-
-    final hasPermission = await _permissionManager.hasPermission();
-    if (!hasPermission) {
-      return NotificationResult.failure('No notification permission');
-    }
-
+  }) => _runWhenReady(() {
     final data = PomodoroNotificationData(
       id: _idManager.getPomodoroId(sessionId),
       title: title,
@@ -171,9 +142,8 @@ class NotificationService {
       sessionType: sessionType,
       payload: payload,
     );
-
     return _platform.showNotification(data);
-  }
+  });
 
   /// Schedule an engagement notification
   Future<NotificationResult> scheduleEngagementNotification({
@@ -183,16 +153,7 @@ class NotificationService {
     required String engagementType,
     Map<String, dynamic>? metadata,
     String? payload,
-  }) async {
-    if (!_initialized) {
-      return NotificationResult.failure('Service not initialized');
-    }
-
-    final hasPermission = await _permissionManager.hasPermission();
-    if (!hasPermission) {
-      return NotificationResult.failure('No notification permission');
-    }
-
+  }) => _runWhenReady(() {
     final data = EngagementNotificationData(
       id: _idManager.getEngagementId(engagementType),
       title: title,
@@ -202,9 +163,8 @@ class NotificationService {
       metadata: metadata,
       payload: payload,
     );
-
     return _platform.scheduleNotification(data);
-  }
+  });
 
   /// Cancel a habit's notifications
   Future<NotificationResult> cancelHabitNotifications(
@@ -242,6 +202,18 @@ class NotificationService {
       _idManager.clearHabitIds();
     }
     return result;
+  }
+
+  Future<NotificationResult> _runWhenReady(
+    Future<NotificationResult> Function() action,
+  ) async {
+    if (!_initialized) {
+      return NotificationResult.failure('Service not initialized');
+    }
+    if (!await _permissionManager.hasPermission()) {
+      return NotificationResult.failure('No notification permission');
+    }
+    return action();
   }
 
   /// Get health check information

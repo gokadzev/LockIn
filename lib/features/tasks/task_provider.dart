@@ -85,41 +85,10 @@ class TasksNotifier extends BoxCrudNotifier<Task> {
     Task task,
     void Function(int xpChange)? onXPChange,
   ) {
-    if (box == null) return false;
-    try {
-      final prevTask = box!.get(key);
-      if (prevTask == null) {
-        debugPrint('Task key $key not found');
-        return false;
-      }
-
-      // Manage completion time
-      if (!prevTask.completed && task.completed) {
-        task.completionTime ??= DateTime.now();
-      } else if (prevTask.completed && !task.completed) {
-        task.completionTime = null;
-      } else if (prevTask.completed && task.completed) {
-        task.completionTime ??= prevTask.completionTime;
-      }
-
-      // Persist using key-based update
-      final success = updateItemByKey(key, task);
-
-      // Manage XP only if update succeeded
-      if (success) {
-        if (!prevTask.completed && task.completed) {
-          onXPChange?.call(AppValues.taskCompletionXP);
-        } else if (prevTask.completed && !task.completed) {
-          onXPChange?.call(-AppValues.taskCompletionXP);
-        }
-      }
-
-      return success;
-    } catch (e, stackTrace) {
-      debugPrint('Error updating task by key: $e');
-      debugPrint('StackTrace: $stackTrace');
-      return false;
-    }
+    final index = indexForKey(key);
+    if (index == null) return false;
+    updateTask(index, task, onXPChange);
+    return true;
   }
 
   /// Deletes a task at [index] from the box and updates state.

@@ -145,43 +145,9 @@ class HabitsNotifier extends BoxCrudNotifier<Habit> {
     Habit habit,
     void Function(int xpChange)? onXPChange,
   ) {
-    if (box == null) return;
-    try {
-      final prevHabit = box!.get(key);
-      if (prevHabit == null) {
-        debugPrint('Habit key $key not found');
-        return;
-      }
-
-      // Normalize history using the streak calculator
-      habit.history = HabitStreakCalculator.normalizeHistory(habit.history);
-      final prevHistory = prevHabit.history.map((d) => d.dateOnly).toList();
-
-      final wasDoneToday = prevHistory.any((d) => d.isToday);
-      final isDoneToday = habit.history.any((d) => d.isToday);
-
-      // Recalculate streak using the dedicated service
-      habit.streak = HabitStreakCalculator.calculateStreak(
-        habit.history,
-        frequency: habit.frequency,
-        cue: habit.cue,
-      );
-
-      // Persist using key-based update
-      final success = updateItemByKey(key, habit);
-
-      // Award or remove XP if today's completion status changed.
-      if (success) {
-        if (!wasDoneToday && isDoneToday) {
-          onXPChange?.call(AppValues.habitCompletionXP);
-        } else if (wasDoneToday && !isDoneToday) {
-          onXPChange?.call(-AppValues.habitCompletionXP);
-        }
-      }
-    } catch (e, stackTrace) {
-      debugPrint('Error updating habit by key: $e');
-      debugPrint('StackTrace: $stackTrace');
-    }
+    final index = indexForKey(key);
+    if (index == null) return;
+    updateHabit(index, habit, onXPChange);
   }
 
   /// Delete habit by Hive [key] instead of index - delegates to mixin.

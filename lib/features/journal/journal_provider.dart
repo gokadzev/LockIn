@@ -39,9 +39,9 @@ class JournalsNotifier extends BoxCrudNotifier<Journal> {
   void deleteJournal(int index) => deleteItem(index);
 
   void updateJournalByKey(dynamic key, Journal journal) {
-    if (box == null) return;
-    if (!box!.containsKey(key)) return;
-    updateItemByKey(key, journal);
+    final index = indexForKey(key);
+    if (index == null) return;
+    updateJournal(index, journal);
   }
 
   void deleteJournalByKey(dynamic key) {

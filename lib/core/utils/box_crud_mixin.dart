@@ -99,6 +99,13 @@ mixin BoxCrudMixin<T> on Notifier<List<T>> {
     }
   }
 
+  /// Returns the current list index for a Hive key, or null when absent.
+  int? indexForKey(dynamic key) {
+    if (box == null) return null;
+    final index = box!.keys.toList().indexOf(key);
+    return index == -1 ? null : index;
+  }
+
   /// Deletes an item at [index] from the box and updates state.
   void deleteItem(int index) {
     if (box == null) {

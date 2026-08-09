@@ -98,37 +98,9 @@ class GoalsNotifier extends BoxCrudNotifier<Goal> {
     Goal goal,
     void Function(int xpChange)? onXPChange,
   ) {
-    if (box == null) return;
-    try {
-      final prevGoal = box!.get(key);
-      if (prevGoal == null) {
-        debugPrint('Goal key $key not found');
-        return;
-      }
-
-      // Calculate XP delta BEFORE mutating storage/state
-      final prevCompleted = prevGoal.milestones
-          .where((m) => m.completed)
-          .length;
-      final newCompleted = goal.milestones.where((m) => m.completed).length;
-      final xpDelta =
-          (newCompleted - prevCompleted) * AppValues.milestoneCompletionXP;
-
-      // Recalculate progress only if there are milestones
-      if (goal.milestones.isNotEmpty) {
-        goal.progress = goal.milestoneProgress;
-      }
-
-      // Persist using key-based update
-      final success = updateItemByKey(key, goal);
-
-      if (success && xpDelta != 0) {
-        onXPChange?.call(xpDelta);
-      }
-    } catch (e, stackTrace) {
-      debugPrint('Error updating goal by key: $e');
-      debugPrint('StackTrace: $stackTrace');
-    }
+    final index = indexForKey(key);
+    if (index == null) return;
+    updateGoal(index, goal, onXPChange);
   }
 
   /// Delete goal by Hive [key] instead of index - delegates to mixin.

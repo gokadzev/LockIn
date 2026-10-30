@@ -56,23 +56,23 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
 
   Future<void> _restore() async {
     try {
-      final result = await FilePicker.pickFiles(
+      final file = await FilePicker.pickFile(
         type: FileType.custom,
         allowedExtensions: ['json'],
       );
-      if (result == null || result.files.isEmpty) {
+      if (file == null) {
         if (!mounted) return;
         setState(() => _status = (text: 'No file selected.', success: false));
         return;
       }
-      final filePath = result.files.first.path;
+      final filePath = file.path;
       if (filePath == null) {
         if (!mounted) return;
         setState(() => _status = (text: 'Invalid file path.', success: false));
         return;
       }
-      final file = File(filePath);
-      final data = await BackupRestoreUtil.importBackupFile(file);
+      final fileToImport = File(filePath);
+      final data = await BackupRestoreUtil.importBackupFile(fileToImport);
       await BackupRestoreUtil.restoreAllData(data);
       // Invalidate all major providers to refresh UI
       if (!mounted) return;

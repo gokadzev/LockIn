@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class InfoChip extends StatelessWidget {
   const InfoChip({super.key, required this.icon, required this.label});

@@ -14,7 +14,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/constants/gamification_constants.dart';
@@ -37,6 +36,7 @@ import 'package:lockin/widgets/monthly_overview_heatmap.dart';
 import 'package:lockin/widgets/quick_stats_card.dart';
 import 'package:lockin/widgets/weekly_overview_chart.dart';
 import 'package:lockin/widgets/xp_dashboard_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 class DashboardHome extends ConsumerStatefulWidget {
   const DashboardHome({super.key});

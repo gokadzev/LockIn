@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/utils/hive_utils.dart';
+import 'package:material_ui/material_ui.dart';
 
 final engagementTimeProvider =
     NotifierProvider<EngagementTimeNotifier, TimeOfDay>(

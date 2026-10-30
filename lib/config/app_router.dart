@@ -15,11 +15,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/features/recommendations/recommendations_page.dart';
 import 'package:lockin/features/settings/settings_home.dart';
 import 'package:lockin/features/xp/xp_tab_screen.dart';
 import 'package:lockin/widgets/main_navigation.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {

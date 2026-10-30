@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
@@ -25,6 +24,7 @@ import 'package:lockin/core/notifications/engagement_notification_manager.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
 import 'package:lockin/core/utils/hive_background_init.dart';
 import 'package:lockin/hive_registrar.g.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:workmanager/workmanager.dart';
 
 const String engagementTaskName = 'dailyEngagementTask';

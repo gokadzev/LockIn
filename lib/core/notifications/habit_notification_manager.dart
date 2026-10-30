@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/core/notifications/notification_types.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Manages habit-specific notifications
 class HabitNotificationManager {

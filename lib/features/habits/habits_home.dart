@@ -17,7 +17,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/models/habit.dart';
@@ -34,6 +33,7 @@ import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/lockin_dialog.dart';
 import 'package:lockin/widgets/lockin_habit_card.dart';
 import 'package:lockin/widgets/lockin_snackbar.dart';
+import 'package:material_ui/material_ui.dart';
 
 extension StringCasingExtension on String {
   String capitalize() {

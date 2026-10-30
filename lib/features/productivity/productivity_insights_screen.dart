@@ -15,11 +15,11 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/features/productivity/productivity_provider.dart';
 import 'package:lockin/widgets/insight_tile.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ProductivityInsightsScreen extends ConsumerWidget {
   const ProductivityInsightsScreen({super.key});

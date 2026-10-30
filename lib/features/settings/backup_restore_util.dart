@@ -18,7 +18,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:lockin/constants/hive_constants.dart';
 import 'package:lockin/core/models/goal.dart';
@@ -26,6 +25,7 @@ import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/journal.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/models/task.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BackupRestoreUtil {
   static Future<String> exportAllData() async {

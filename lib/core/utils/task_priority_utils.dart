@@ -15,8 +15,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/constants/app_values.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Utility class for handling task priority related operations
 class TaskPriorityUtils {

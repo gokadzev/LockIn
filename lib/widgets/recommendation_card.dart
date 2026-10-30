@@ -15,9 +15,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/core/utils/task_priority_utils.dart';
 import 'package:lockin/widgets/lockin_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 class RecommendationCard extends StatelessWidget {
   const RecommendationCard({

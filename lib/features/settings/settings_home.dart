@@ -18,7 +18,6 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/core/utils/battery_optimization_helper.dart';
@@ -33,6 +32,7 @@ import 'package:lockin/features/settings/engagement_time_provider.dart';
 import 'package:lockin/features/tasks/task_provider.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/settings_item.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SettingsHome extends ConsumerStatefulWidget {

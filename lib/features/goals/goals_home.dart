@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/models/goal.dart';
@@ -30,6 +29,7 @@ import 'package:lockin/widgets/lockin_dialog.dart';
 import 'package:lockin/widgets/lockin_goal_card.dart';
 import 'package:lockin/widgets/lockin_section_tabs.dart';
 import 'package:lockin/widgets/lockin_snackbar.dart';
+import 'package:material_ui/material_ui.dart';
 
 class GoalsHome extends ConsumerStatefulWidget {
   const GoalsHome({super.key});

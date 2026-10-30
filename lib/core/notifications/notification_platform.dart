@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lockin/core/notifications/notification_id_manager.dart';
 import 'package:lockin/core/notifications/notification_types.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 /// Result of a notification operation

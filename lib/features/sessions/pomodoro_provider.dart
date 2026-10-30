@@ -17,14 +17,13 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_values.dart';
 import 'package:lockin/core/models/session.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
-
 import 'package:lockin/features/sessions/session_provider.dart';
 import 'package:lockin/features/xp/xp_provider.dart';
+import 'package:material_ui/material_ui.dart';
 
 enum PomodoroPhase { work, breakTime, longBreak }
 

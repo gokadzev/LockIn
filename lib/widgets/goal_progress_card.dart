@@ -16,10 +16,10 @@
  */
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
 import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/lockin_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Widget that displays goal progress as a pie chart
 class GoalProgressCard extends StatelessWidget {

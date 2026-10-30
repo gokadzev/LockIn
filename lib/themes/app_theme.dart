@@ -15,8 +15,8 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/themes/text_theme.dart';
+import 'package:material_ui/material_ui.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   seedColor: Colors.brown,

@@ -15,12 +15,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/core/notifications/notification_id_manager.dart';
 import 'package:lockin/core/notifications/notification_permission_manager.dart';
 import 'package:lockin/core/notifications/notification_platform.dart';
 import 'package:lockin/core/notifications/notification_types.dart';
 import 'package:lockin/core/notifications/timezone_manager.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Main notification service that provides a clean API for the app

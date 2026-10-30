@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/core/models/goal.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/models/task.dart';
@@ -26,6 +25,7 @@ import 'package:lockin/core/notifications/notification_types.dart';
 import 'package:lockin/core/notifications/timezone_manager.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
 import 'package:lockin/core/utils/extensions/date_time_extensions.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Manages engagement and motivational notifications

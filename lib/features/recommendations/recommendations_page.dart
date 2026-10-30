@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/recommendations/goals.dart';
 import 'package:lockin/constants/recommendations/habits.dart';
@@ -35,6 +34,7 @@ import 'package:lockin/features/settings/engagement_time_provider.dart';
 import 'package:lockin/features/tasks/task_provider.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/recommendation_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 // Selected category for filtering recommendations. null == All
 final recommendationsCategoryProvider =

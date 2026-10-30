@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/constants/gamification_constants.dart';
 import 'package:lockin/features/dashboard/dashboard_provider.dart';
 import 'package:lockin/widgets/lockin_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Widget that displays an encouraging message based on user progress
 class EncouragementCard extends StatelessWidget {

@@ -15,13 +15,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/features/xp/xp_models.dart';
 import 'package:lockin/features/xp/xp_service.dart';
 import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/lockin_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 class XPDashboardCard extends ConsumerWidget {
   const XPDashboardCard({required this.xpProfile, super.key});

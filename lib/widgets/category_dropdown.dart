@@ -15,9 +15,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/features/categories/categories_provider.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Reusable category dropdown used across Add/Edit dialogs.
 class CategoryDropdown extends ConsumerWidget {

@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/core/models/task.dart';
@@ -29,6 +28,7 @@ import 'package:lockin/widgets/lockin_dialog.dart';
 import 'package:lockin/widgets/lockin_section_tabs.dart';
 import 'package:lockin/widgets/lockin_snackbar.dart';
 import 'package:lockin/widgets/lockin_task_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 class TasksHome extends ConsumerStatefulWidget {
   const TasksHome({super.key});

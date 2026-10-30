@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/core/models/habit.dart';
 import 'package:lockin/core/utils/category_icon.dart';
 import 'package:lockin/features/habits/habits_home.dart';
@@ -24,6 +23,7 @@ import 'package:lockin/widgets/habit_activity_mosaic.dart';
 import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 import 'package:lockin/widgets/lockin_card_header.dart';
+import 'package:material_ui/material_ui.dart';
 
 class HabitCard extends StatelessWidget {
   const HabitCard({

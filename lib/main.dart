@@ -18,7 +18,6 @@
 import 'dart:async';
 
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/config/app_router.dart';
 import 'package:lockin/config/app_setup.dart';
@@ -26,6 +25,7 @@ import 'package:lockin/core/notifications/notification_background_service.dart';
 import 'package:lockin/features/settings/dynamic_color_provider.dart';
 import 'package:lockin/themes/app_theme.dart';
 import 'package:lockin/widgets/main_navigation.dart';
+import 'package:material_ui/material_ui.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

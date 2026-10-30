@@ -16,12 +16,12 @@
  */
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/features/dashboard/dashboard_provider.dart';
 import 'package:lockin/widgets/card_header.dart';
 import 'package:lockin/widgets/lockin_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AdvancedDashboardSection extends StatelessWidget {
   const AdvancedDashboardSection({required this.stats, super.key});

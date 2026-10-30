@@ -15,13 +15,13 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/core/models/journal.dart';
 import 'package:lockin/core/utils/mood_icon.dart';
 import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/lockin_card.dart';
 import 'package:lockin/widgets/lockin_dialog.dart';
+import 'package:material_ui/material_ui.dart';
 
 class LockinJournalCard extends StatelessWidget {
   const LockinJournalCard({

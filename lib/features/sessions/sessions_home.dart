@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lockin/constants/app_constants.dart';
@@ -26,6 +25,7 @@ import 'package:lockin/widgets/icon_badge.dart';
 import 'package:lockin/widgets/info_chip.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
 import 'package:lockin/widgets/lockin_card.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SessionsHome extends ConsumerWidget {
   const SessionsHome({super.key});

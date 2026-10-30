@@ -15,12 +15,12 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/constants/app_constants.dart';
 import 'package:lockin/features/xp/xp_bar.dart';
 import 'package:lockin/features/xp/xp_rewards_screen.dart';
 import 'package:lockin/widgets/lockin_app_bar.dart';
+import 'package:material_ui/material_ui.dart';
 
 class XPTabScreen extends ConsumerWidget {
   const XPTabScreen({super.key});

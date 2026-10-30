@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lockin/features/habits/habit_category_provider.dart';
 import 'package:lockin/widgets/lockin_dialog.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CategoryManagerDialog extends ConsumerWidget {
   const CategoryManagerDialog({super.key});

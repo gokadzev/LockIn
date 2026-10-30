@@ -15,7 +15,6 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flutter/material.dart';
 import 'package:lockin/constants/ui_constants.dart';
 import 'package:lockin/core/notifications/notification_service.dart';
 import 'package:lockin/core/services/user_activity_tracker.dart';
@@ -25,6 +24,7 @@ import 'package:lockin/features/habits/habits_home.dart';
 import 'package:lockin/features/journal/journal_home.dart';
 import 'package:lockin/features/sessions/sessions_home.dart';
 import 'package:lockin/features/tasks/tasks_home.dart';
+import 'package:material_ui/material_ui.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key, this.initialIndex = 0});

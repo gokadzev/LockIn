@@ -56,13 +56,20 @@ class _SettingsHomeState extends ConsumerState<SettingsHome> {
 
   Future<void> _restore() async {
     try {
-      final file = await FilePicker.pickFile(
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-      );
+      final file = await FilePicker.pickFile();
       if (file == null) {
         if (!mounted) return;
         setState(() => _status = (text: 'No file selected.', success: false));
+        return;
+      }
+      if (file.extension != 'json') {
+        if (!mounted) return;
+        setState(
+          () => _status = (
+            text: 'Invalid file type. Please select a JSON file.',
+            success: false,
+          ),
+        );
         return;
       }
       final filePath = file.path;
